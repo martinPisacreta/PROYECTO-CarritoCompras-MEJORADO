@@ -1,0 +1,16 @@
+.icon {
+    width: 100px;
+    height: 100px;
+    margin: 100px;
+    font-size: 80px;
+    line-height: 100px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    transform: scale(1);
+  }
+  
+  .icon:hover {
+    transition: transform 0.3s ease-in-out;
+    transform: scale(1.5);
+  }
+

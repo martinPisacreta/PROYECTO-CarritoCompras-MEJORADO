@@ -1,0 +1,17 @@
+#gridContainer {
+    height: 600px;
+}
+
+/* css Header */
+.dx-datagrid-headers .dx-datagrid-table .dx-row.dx-header-row td {
+    background: rgba(127, 179, 213);
+    font-weight: bold;
+    color: black;
+}
+
+/* css FilterRow */
+.dx-datagrid-filter-row,  
+.dx-datagrid-filter-row .dx-editor-cell .dx-texteditor-input  
+{  
+    background-color: #EBF5FB;  
+} 
