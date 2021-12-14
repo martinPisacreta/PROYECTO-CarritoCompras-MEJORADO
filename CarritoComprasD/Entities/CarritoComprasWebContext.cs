@@ -514,7 +514,8 @@ namespace CarritoComprasD.Entities
 
                 entity.Property(e => e.DescripcionArticulo)
                     .IsRequired()
-                    .HasColumnName("descripcion_articulo");
+                    .HasColumnName("descripcion_articulo")
+                    .HasMaxLength(400);
 
                 entity.Property(e => e.IdArticulo).HasColumnName("id_articulo");
 
@@ -556,6 +557,10 @@ namespace CarritoComprasD.Entities
                 entity.ToView("v_articulo");
 
                 entity.Property(e => e.CodigoArticulo).HasMaxLength(100);
+
+                entity.Property(e => e.CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo)
+                    .HasColumnName("CodigoArticulo_DescripcionArticulo_MarcaArticulo_FamiliaArticulo")
+                    .HasMaxLength(1258);
 
                 entity.Property(e => e.DescripcionArticulo).HasMaxLength(400);
 

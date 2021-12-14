@@ -17,5 +17,6 @@ namespace CarritoComprasD.Entities
         public string FamiliaArticulo { get; set; }
         public decimal UtilidadArticulo { get; set; }
         public int? SnOferta { get; set; }
+        public string CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo { get; set; }
     }
 }

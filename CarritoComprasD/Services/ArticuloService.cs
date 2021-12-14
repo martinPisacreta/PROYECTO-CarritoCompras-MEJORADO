@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using CarritoComprasD.Models.Articulo;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
+using LinqKit;
 
 namespace CarritoComprasD.Services
 {
@@ -54,7 +56,15 @@ namespace CarritoComprasD.Services
             int _skip = model.skip * model.take;
             ArticuloResponse articuloResponse = new ArticuloResponse();
             int oferta = (model.oferta == true ? -1 : 0);
-            string filter = model.filter.Replace(' ', '%');
+
+
+            string filter = model.filter;
+            var filter_separado = filter.Split(' ').ToList();
+
+          
+
+        
+
             try
             {
                 if (filter == "" && oferta == 0)
@@ -64,33 +74,27 @@ namespace CarritoComprasD.Services
                 }
                 else
                 {
-                    articuloResponse.Articulos =
-                                    await _context.VArticulo
-                                    .Where(a =>
-                                                (filter != "" && (EF.Functions.Like(a.MarcaArticulo, $"%{filter}%") ||
-                                                                    EF.Functions.Like(a.CodigoArticulo, $"%{filter}%") ||
-                                                                    EF.Functions.Like(a.DescripcionArticulo, $"%{filter}%") ||
-                                                                    EF.Functions.Like(a.FamiliaArticulo, $"%{filter}%"))
-                                                )
-                                                && 
-                                                (
-                                                    (a.SnOferta == oferta && oferta == -1) || 
-                                                    oferta == 0
-                                                )
-                                               
-                                            )
-                                    .Select(a => new VArticulo
-                                    {
-                                        Id = a.Id,
-                                        CodigoArticulo = a.CodigoArticulo,
-                                        PrecioListaPorCoeficientePorMedioIva = a.PrecioListaPorCoeficientePorMedioIva,
-                                        DescripcionArticulo = a.DescripcionArticulo,
-                                        MarcaArticulo = a.MarcaArticulo,
-                                        FamiliaArticulo = a.FamiliaArticulo,
-                                        UtilidadArticulo = a.PrecioListaPorCoeficientePorMedioIva.Value * ((_utilidad / _cien) + _uno),
-                                        SnOferta = a.SnOferta
-                                    })
-                                    .ToListAsync();
+
+                    articuloResponse.Articulos = await _context.VArticulo.AsNoTracking().ToListAsync();
+
+                    articuloResponse.Articulos = articuloResponse.Articulos
+                                                 .Where(a =>
+                                                                (filter != "" &&  filter_separado.All(p => a.CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo.Contains(p)))
+                                                                && ((a.SnOferta == oferta && oferta == -1) || oferta == 0)
+                                                       )
+                                                 .Select(a => new VArticulo
+                                                 {
+                                                      Id = a.Id,
+                                                      CodigoArticulo = a.CodigoArticulo,
+                                                      PrecioListaPorCoeficientePorMedioIva = a.PrecioListaPorCoeficientePorMedioIva,
+                                                      DescripcionArticulo = a.DescripcionArticulo,
+                                                      MarcaArticulo = a.MarcaArticulo,
+                                                      FamiliaArticulo = a.FamiliaArticulo,
+                                                      UtilidadArticulo = a.PrecioListaPorCoeficientePorMedioIva.Value * ((_utilidad / _cien) + _uno),
+                                                      SnOferta = a.SnOferta
+                                                 })
+                                                 .ToList();
+
 
 
                     articuloResponse.Total = articuloResponse.Articulos.Count();

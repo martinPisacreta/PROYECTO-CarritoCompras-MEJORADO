@@ -142,20 +142,25 @@ function ArticuloDevExpresList(props) {
 
     (async () => {
       setLoading(true);
-      const newRows = await getAllArticulos(_page,_rowsPerPage,_utilidad,_filterValue,_snOferta);
+      await getAllArticulos(_page,_rowsPerPage,_utilidad,_filterValue,_snOferta)
+      .then(newRows => {
+        if (!active) {
+          return;
+        }
   
-
-      if (!active) {
-        return;
-      }
-
-      setRows(newRows);
-      setLoading(false);
+        setRows(newRows);
+        setLoading(false);
+      })
+      .catch(error => {
+        setRows(null);
+        setLoading(false);
+      })
     })();
 
     return () => {
       active = false;
     };
+
 }
 
 
