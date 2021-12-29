@@ -79,7 +79,7 @@ namespace CarritoComprasD.Services
 
                     articuloResponse.Articulos = articuloResponse.Articulos
                                                  .Where(a =>
-                                                                (filter != "" &&  filter_separado.All(p => a.CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo.Contains(p)))
+                                                                ((filter != "" &&  filter_separado.All(p => a.CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo.Contains(p))) || filter == "")
                                                                 && ((a.SnOferta == oferta && oferta == -1) || oferta == 0)
                                                        )
                                                  .Select(a => new VArticulo
@@ -91,7 +91,12 @@ namespace CarritoComprasD.Services
                                                       MarcaArticulo = a.MarcaArticulo,
                                                       FamiliaArticulo = a.FamiliaArticulo,
                                                       UtilidadArticulo = a.PrecioListaPorCoeficientePorMedioIva.Value * ((_utilidad / _cien) + _uno),
-                                                      SnOferta = a.SnOferta
+                                                      SnOferta = a.SnOferta,
+                                                      PathImagenArticulo = a.PathImagenArticulo,
+                                                      CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo = "", //no me interesa traer toda la info al dataGrid
+                                                      PrecioLista = a.PrecioLista,
+                                                      Coeficiente = a.Coeficiente
+                                                        
                                                  })
                                                  .ToList();
 

@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './descripcion_fila.css'
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import ImageZoom from 'react-medium-image-zoom'
-
+import CircularProgress from '@mui/material/CircularProgress';
+import Stack from '@mui/material/Stack';
+import Backdrop from '@mui/material/Backdrop';
 
 function DescripcionFila(props) {
-    const [loaded, setLoaded] = useState(false);
+    let { selectedRowArticulo , imagenCargada , setImagenCargada , onClick , onChange , usuario , cantidad} = props;
     const [isOpen,setIsOpen] = useState(false);
-    let { selectedRowArticulo } = props;
-    
-   
-    //la funcion "onClick_IconCart" llama al Parent <ArticuloList/>
+    const [imagenCargadaDialog, setImagenCargadaDialog] = useState(false);
+
     function onClick_IconCart() {
-        props.onClick(props.selectedRowArticulo) 
+        //selectedRowArticulo -> viene de <ArticuloDevExpresList/>
+        //onClick -> viene de <ArticuloDevExpresList/> , y llama a onClick_IconCart de <ArticuloDevExpresList/>
+        onClick(selectedRowArticulo)
     }
 
-    //la funcion "handleChange_CantidadArticulos" llama al Parent <ArticuloList/>
+   
     function handleChange_CantidadArticulos(e) {     
 
         let valor = e.target.value;
@@ -32,7 +31,8 @@ function DescripcionFila(props) {
             return;
         }
 
-        props.onChange(valor)    
+        //onChange -> viene de <ArticuloDevExpresList/> , y llama a handleChange_CantidadArticulos de <ArticuloDevExpresList/>
+        onChange(valor)
     }
 
     //esta funcion me marca toda la casilla de texto pintada en azul
@@ -40,63 +40,101 @@ function DescripcionFila(props) {
         e.target.select();
       };
 
+    // imagenCargada viene del <ArticuloDevExpresList/>
+    // setImagenCargada viene del <ArticuloDevExpresList/>
+    function  handleImageLoaded() {
+        if (!imagenCargada) { 
+            setImagenCargada(true)
+            
+        }
+    } 
+
     function handleShowDialog () {
+        setImagenCargadaDialog(false)
         setIsOpen(!isOpen);
       };
 
-
  
+    function  handleImageLoadedDialog() {
+        if (!imagenCargadaDialog) { 
+            setImagenCargadaDialog(true)
+        }
+    } 
+
+
+    
 
 
     return (
-
-        <div id="articulo-info">
-                  <div>
-                        <LazyLoadImage
-                            src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'}
-                            className="articulo-photo"
-                            effect="blur"
+        <>
+        <div id="articulo-info" >
+            <div>    
+                <div className="articulo-photo">
+                    <img
+                        src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} //selectedRowArticulo -> viene de <ArticuloDevExpresList/>
+                        onLoad={handleImageLoaded}
+                        height={!imagenCargada ? 0 : '150px'} //si no esta cargada la imagen , pongo el height en 0
+                        width={!imagenCargada  ? 0  : '150px'}  //si no esta cargada la imagen , pongo el width en 0
+                        onClick={handleShowDialog}
+                        loading="lazy"
+                        
+                    />
+                    {!imagenCargada && ( //si no esta cargada la imagen muestro esto....
+                        <div className="image-container-overlay" style={{display: 'flex', justifyContent: 'center'}}>
+                            <CircularProgress />
+                        </div>
+                    )}
+                </div>
+                {isOpen && (
+                    <Backdrop
+                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={open}
+                        onClick={handleShowDialog}
+                    >   
+                        <img
+                            src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} //selectedRowArticulo -> viene de <ArticuloDevExpresList/>
+                            onLoad={handleImageLoadedDialog}
+                            height={!imagenCargadaDialog && 0} //si no esta cargada la imagen , pongo el height en 0
+                            width={!imagenCargadaDialog && 0}  //si no esta cargada la imagen , pongo el width en 0
                             onClick={handleShowDialog}
-                            // key={Date.now()}
+                            loading="lazy"
+                            style={{height: '500px' , widht: '500px'}}
                         />
-                        {isOpen && (
-                            <Dialog 
-                                className="dialog"
- 
-                                open
-                                onClick={handleShowDialog}
-                            >
-                            <LazyLoadImage
-                                className="image"
-                                style={{ height:'500px',width:'500px',objectFit:'contain'}}
-                                src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'}
-                                onClick={handleShowDialog}
-                            />
-                            </Dialog>
+                        {!imagenCargadaDialog && ( //si no esta cargada la imagen muestro esto....
+                                <Stack gap={1} justifyContent="center" alignItems="center">
+                                    <CircularProgress color="inherit" />
+                                </Stack>
                         )}
-                    </div>
-                    <p 
-                      className="articulo-descripcion"
-                    >{selectedRowArticulo.codigoArticulo + ' --- '}  {selectedRowArticulo.descripcionArticulo} </p>
-                    {
-                        props.usuario && //si hay usuario cargado
-                        <p 
-                            className="articulo-descripcion"
-                        >
-                            <IconButton aria-label="delete" onClick={onClick_IconCart}>
-                                <AddShoppingCartIcon fontSize="large" color="primary" /> 
-                            </IconButton>
-                                <input 
-                                    type="number" 
-                                    value={ props.cantidad } 
-                                    onChange={ e => handleChange_CantidadArticulos(e)} 
-                                    min="1"
-                                    max="5000"
-                                    onClick={e => handleClick_CantidadArticulos(e)}
-                                />
-                        </p>    
-                    }     
-      </div>
+                    </Backdrop>
+                )}
+            </div>
+            <p 
+                className="articulo-descripcion"
+            >
+                {/* selectedRowArticulo -> viene de <ArticuloDevExpresList/> */}
+                {selectedRowArticulo.codigoArticulo + ' --- '}  {selectedRowArticulo.descripcionArticulo} 
+            </p>
+            {
+                
+                usuario && //usuario -> viene de <ArticuloDevExpresList/> 
+                <p 
+                    className="articulo-descripcion"
+                >
+                    <IconButton aria-label="delete" onClick={onClick_IconCart}>
+                        <AddShoppingCartIcon fontSize="large" color="primary" /> 
+                    </IconButton>
+                        <input 
+                            type="number" 
+                            value={ cantidad  }  // cantidad -> viene de <ArticuloDevExpresList/> 
+                            onChange={ e => handleChange_CantidadArticulos(e)} 
+                            min="1"
+                            max="5000"
+                            onClick={e => handleClick_CantidadArticulos(e)}
+                        />
+                </p>    
+            }     
+        </div>
+      </>
     )
   }
   

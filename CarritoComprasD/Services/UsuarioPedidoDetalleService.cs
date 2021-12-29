@@ -2,18 +2,20 @@ using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
 using CarritoComprasD.Entities;
-using CarritoComprasD.Models.UsuarioPedidoDetalles;
+using CarritoComprasD.Models.UsuarioPedidos;
 
 namespace CarritoComprasD.Services
 {
     public interface IUsuarioPedidoDetalleService
     {
-        IEnumerable<UsuarioPedidoDetalleResponse> GetAll();
-        UsuarioPedidoDetalleResponse GetByIdPedidoDetalle(int idPedidoDetalle);
-        IEnumerable<UsuarioPedidoDetalleResponse> GetByIdPedido(int idPedido);
-        UsuarioPedidoDetalleResponse Create(CreateUsuarioPedidoDetalleRequest model);
-        UsuarioPedidoDetalleResponse Update(int id, UpdateUsuarioPedidoDetalleRequest model);
-        void Delete(int idPedidoDetalle);
+        IEnumerable<UsuarioPedidoDetalle> GetAll();
+        UsuarioPedidoDetalle GetByIdPedidoDetalle(int idPedidoDetalle);
+        IEnumerable<UsuarioPedidoDetalle> GetByIdPedido(int idPedido);
+        List<UsuarioPedidoDetalle> AgregarArticuloPedido(UsuarioPedidoRequest model);
+
+        UsuarioPedidoDetalle ModificarArticuloPedido(int idUsuarioPedido, UsuarioPedidoDetalle usuarioPedidoDetalle, UsuarioPedidoRequest model);
+
+        UsuarioPedidoDetalle ModificarArticuloPedido(int idUsuarioPedido, UsuarioPedidoDetalle usuarioPedidoDetalle);
     }
 
     public class UsuarioPedidoDetalleService : IUsuarioPedidoDetalleService
@@ -31,77 +33,90 @@ namespace CarritoComprasD.Services
   
         }
 
-   
-        public IEnumerable<UsuarioPedidoDetalleResponse> GetAll()
+
+        public List<UsuarioPedidoDetalle> AgregarArticuloPedido( UsuarioPedidoRequest model)
         {
-            var pedidos = _context.UsuarioPedidoDetalle;
-            return _mapper.Map<IList<UsuarioPedidoDetalleResponse>>(pedidos);
+
+            //agrego un articulo al pedido
+            List<UsuarioPedidoDetalle> lista_usuarioPedidoDetalle = new List<UsuarioPedidoDetalle>() { };
+            UsuarioPedidoDetalle usuarioPedidoDetalle = new UsuarioPedidoDetalle();
+            usuarioPedidoDetalle.IdUsuarioPedido = model.IdUsuario;
+            usuarioPedidoDetalle.CodigoArticulo = model.Articulo.CodigoArticulo;
+            usuarioPedidoDetalle.DescripcionArticulo = model.Articulo.DescripcionArticulo;
+            usuarioPedidoDetalle.TxtDescMarca = model.Articulo.MarcaArticulo;
+            usuarioPedidoDetalle.TxtDescFamilia = model.Articulo.FamiliaArticulo;
+            usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva = model.Articulo.PrecioListaPorCoeficientePorMedioIva.Value;
+            usuarioPedidoDetalle.Utilidad = model.Utilidad;
+            usuarioPedidoDetalle.SnOferta = model.Articulo.SnOferta.Value;
+            usuarioPedidoDetalle.PrecioLista = model.Articulo.PrecioLista.Value;
+            usuarioPedidoDetalle.Coeficiente = model.Articulo.Coeficiente.Value;
+            usuarioPedidoDetalle.Cantidad = model.Cantidad;
+            usuarioPedidoDetalle.IdArticulo = model.Articulo.Id;
+            lista_usuarioPedidoDetalle.Add(usuarioPedidoDetalle);
+            return lista_usuarioPedidoDetalle;
         }
 
-        public UsuarioPedidoDetalleResponse GetByIdPedidoDetalle(int idPedidoDetalle)
+        public UsuarioPedidoDetalle ModificarArticuloPedido(int idUsuarioPedido, UsuarioPedidoDetalle usuarioPedidoDetalle, UsuarioPedidoRequest model)
+        {
+
+            //modifico articulo del pedido
+            usuarioPedidoDetalle.IdUsuarioPedido = idUsuarioPedido;
+            usuarioPedidoDetalle.CodigoArticulo = model.Articulo.CodigoArticulo;
+            usuarioPedidoDetalle.DescripcionArticulo = model.Articulo.DescripcionArticulo;
+            usuarioPedidoDetalle.TxtDescMarca = model.Articulo.MarcaArticulo;
+            usuarioPedidoDetalle.TxtDescFamilia = model.Articulo.FamiliaArticulo;
+            usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva = model.Articulo.PrecioListaPorCoeficientePorMedioIva.Value;
+            usuarioPedidoDetalle.Utilidad = model.Utilidad;
+            usuarioPedidoDetalle.SnOferta = model.Articulo.SnOferta.Value;
+            usuarioPedidoDetalle.PrecioLista = model.Articulo.PrecioLista.Value;
+            usuarioPedidoDetalle.Coeficiente = model.Articulo.Coeficiente.Value;
+            usuarioPedidoDetalle.Cantidad = model.Cantidad + usuarioPedidoDetalle.Cantidad;
+            usuarioPedidoDetalle.IdArticulo = model.Articulo.Id;
+            return usuarioPedidoDetalle;
+        }
+
+        public UsuarioPedidoDetalle ModificarArticuloPedido(int idUsuarioPedido, UsuarioPedidoDetalle usuarioPedidoDetalle)
+        {
+
+            //modifico articulo del pedido
+            //upd.IdUsuarioPedido = ESTO NO LO MODIFICO;
+            usuarioPedidoDetalle.CodigoArticulo = usuarioPedidoDetalle.Articulo.CodigoArticulo;
+            usuarioPedidoDetalle.DescripcionArticulo = usuarioPedidoDetalle.Articulo.DescripcionArticulo;
+            usuarioPedidoDetalle.TxtDescMarca = usuarioPedidoDetalle.Articulo.MarcaArticulo;
+            usuarioPedidoDetalle.TxtDescFamilia = usuarioPedidoDetalle.Articulo.FamiliaArticulo;
+            usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva = usuarioPedidoDetalle.Articulo.PrecioListaPorCoeficientePorMedioIva.Value;
+            //upd.Utilidad = ESTO NO LO MODIFICO;
+            usuarioPedidoDetalle.SnOferta = usuarioPedidoDetalle.Articulo.SnOferta.Value;
+            usuarioPedidoDetalle.PrecioLista = usuarioPedidoDetalle.Articulo.PrecioLista.Value;
+            usuarioPedidoDetalle.Coeficiente = usuarioPedidoDetalle.Articulo.Coeficiente.Value;
+            //upd.Cantidad = ESTO NO LO MODIFICO;
+            //upd.IdArticulo = ESTO NO LO MODIFICO;
+            return usuarioPedidoDetalle;
+        }
+
+
+        public IEnumerable<UsuarioPedidoDetalle> GetAll()
+        {
+            var pedidos = _context.UsuarioPedidoDetalle;
+            return pedidos.ToList();
+        }
+
+        public UsuarioPedidoDetalle GetByIdPedidoDetalle(int idPedidoDetalle)
         {
 
             var pedidoDetalles = getByIdPedidoDetalle(idPedidoDetalle);
-            return _mapper.Map<UsuarioPedidoDetalleResponse>(pedidoDetalles);
+            return pedidoDetalles;
 
         }
 
-        public IEnumerable<UsuarioPedidoDetalleResponse> GetByIdPedido(int idPedido)
+        public IEnumerable<UsuarioPedidoDetalle> GetByIdPedido(int idPedido)
         {
             var pedidoDetalle = getByIdPedido(idPedido);
-            return _mapper.Map<IList<UsuarioPedidoDetalleResponse>>(pedidoDetalle);
+            return pedidoDetalle.ToList();
   
         }
 
-        public UsuarioPedidoDetalleResponse Create(CreateUsuarioPedidoDetalleRequest model)
-        {
-          
-            // map model to new usuarioPedidoDetalle object
-            var pedidoDetalle = _mapper.Map<UsuarioPedidoDetalle>(model);
-
-
-            pedidoDetalle.IdUsuarioPedido = model.IdUsuarioPedido;
-            pedidoDetalle.CodigoArticulo = model.CodigoArticulo;
-            pedidoDetalle.DescripcionArticulo = model.DescripcionArticulo;
-            pedidoDetalle.TxtDescMarca = model.TxtDescMarca;
-            pedidoDetalle.TxtDescFamilia = model.TxtDescFamilia;
-            pedidoDetalle.PrecioListaPorCoeficientePorMedioIva = model.PrecioListaPorCoeficientePorMedioIva;
-            pedidoDetalle.Utilidad = model.Utilidad;
-            pedidoDetalle.SnOferta = model.SnOferta;
-            pedidoDetalle.PrecioLista = model.PrecioLista;
-            pedidoDetalle.Coeficiente = model.Coeficiente;
-            pedidoDetalle.Cantidad = model.Cantidad;
-            pedidoDetalle.IdArticulo = model.IdArticulo;
-
-
-            // save usuarioPedidoDetalle
-            _context.UsuarioPedidoDetalle.Add(pedidoDetalle);
-            _context.SaveChanges();
-
-
-            return _mapper.Map<UsuarioPedidoDetalleResponse>(pedidoDetalle);
-        }
-
-        public UsuarioPedidoDetalleResponse Update(int id, UpdateUsuarioPedidoDetalleRequest model)
-        {
-            var pedidoDetalle = getByIdPedidoDetalle(id);
-
-            // copy model to usuarioPedidoDetalle and save
-            _mapper.Map(model, pedidoDetalle);
-            _context.UsuarioPedidoDetalle.Update(pedidoDetalle);
-            _context.SaveChanges();
-
-            return _mapper.Map<UsuarioPedidoDetalleResponse>(pedidoDetalle);
-        }
-
-        public void Delete(int idPedidoDetalle)
-        {
-            var pedidoDetalle = getByIdPedidoDetalle(idPedidoDetalle);
-            _context.UsuarioPedidoDetalle.Remove(pedidoDetalle);
-            _context.SaveChanges();
-        }
-
-
+     
         private IEnumerable<UsuarioPedidoDetalle>  getByIdPedido(int idPedido)
         {
             var pedidos = _context.UsuarioPedidoDetalle

@@ -2,8 +2,6 @@ using AutoMapper;
 using CarritoComprasD.Entities;
 using CarritoComprasD.Models.Articulo;
 using CarritoComprasD.Models.Usuario;
-using CarritoComprasD.Models.UsuarioPedidoDetalles;
-using CarritoComprasD.Models.UsuarioPedidos;
 
 namespace CarritoComprasD.Helpers
 {
@@ -36,9 +34,9 @@ namespace CarritoComprasD.Helpers
                 ));
 
 
-            CreateMap<UsuarioPedidoDetalleResponse, UsuarioPedidoDetalle>();
+          
 
-            CreateMap<UsuarioPedidoResponse, UsuarioPedido>();
+          
 
            
 

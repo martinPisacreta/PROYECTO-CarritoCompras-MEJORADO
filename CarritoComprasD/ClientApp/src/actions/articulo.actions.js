@@ -3,12 +3,12 @@ import { articuloService , alertService} from '../services';
 
 
 export const articuloActions = {
-    getAll,
+    getByFilters,
     getCount
 };
 
 
-function getAll(page,rowsPerPage,utilidad,filterValue,snOferta) {
+function getByFilters(page,rowsPerPage,utilidad,filterValue,snOferta) {
 
     const payload = {
         skip: page,
@@ -23,7 +23,7 @@ function getAll(page,rowsPerPage,utilidad,filterValue,snOferta) {
         dispatch(request());
 
         return new Promise((resolve, reject) => {
-            articuloService.getAll(payload)
+            articuloService.getByFilters(payload)
             .then(
                 articulos => { 
                     dispatch(success(articulos))
@@ -40,9 +40,9 @@ function getAll(page,rowsPerPage,utilidad,filterValue,snOferta) {
         
     };
 
-    function request() { return { type: articuloConstantes.GETALL_REQUEST } }
-    function success(articulos) { return { type: articuloConstantes.GETALL_SUCCESS, articulos } }
-    function failure(error) { return { type: articuloConstantes.GETALL_FAILURE, error } }
+    function request() { return { type: articuloConstantes.GET_BY_FILTERS_REQUEST } }
+    function success(articulos) { return { type: articuloConstantes.GET_BY_FILTERS_SUCCESS, articulos } }
+    function failure(error) { return { type: articuloConstantes.GET_BY_FILTERS_FAILURE, error } }
 }
 
 function getCount() {

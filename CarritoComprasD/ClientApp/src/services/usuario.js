@@ -51,6 +51,7 @@ function refreshToken() {
             // publicar el usuario a los suscriptores e iniciar el temporizador para actualizar el token
             userSubject.next(usuario);
             startRefreshTokenTimer();
+            localStorage.setItem('user', JSON.stringify(usuario));
             return usuario;
         });
 }

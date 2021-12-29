@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 using CarritoComprasD.Entities;
-using CarritoComprasD.Models.UsuarioPedidos;
 using CarritoComprasD.Services;
 using AutoMapper;
+using CarritoComprasD.Models.UsuarioPedidos;
 
 namespace Carrito_Compras_Core.Controllers
 {
@@ -31,41 +31,20 @@ namespace Carrito_Compras_Core.Controllers
         }
 
 
-    
-        [HttpPost]
-        public ActionResult<UsuarioPedidoResponse> Create(CreateUsuarioPedidoRequest model)
-        {
-            var usuarioPedido = _usuarioPedidoService.Create(model);
-          
-
-
-            return Ok(usuarioPedido);
-        }
-
-
         [Authorize]
-        [HttpPut("{id:int}")]
-        public ActionResult<UsuarioPedidoResponse> Update(int id, UpdateUsuarioPedidoRequest model)
+        [HttpPost("agregar-articulo-pedido")]
+        public ActionResult<UsuarioPedidoResponse> AgregarArticuloPedido(UsuarioPedidoRequest model)
         {
-           
-
-            var usuarioPedido = _usuarioPedidoService.Update(id, model);
-            return Ok(usuarioPedido);
+            var response = _usuarioPedidoService.AgregarArticuloPedido(model);
+            return Ok(response);
         }
 
-        [Authorize]
-        [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
-        {
-      
 
-            _usuarioPedidoService.Delete(id);
-            return Ok(new { message = "Pedido eliminado exitosamente" });
-        }
+
 
         [Authorize]
         [HttpGet]
-        public ActionResult<IEnumerable<UsuarioPedidoResponse>> GetAll()
+        public ActionResult<IEnumerable<UsuarioPedido>> GetAll()
         {
             var pedidos = _usuarioPedidoService.GetAll();
             return Ok(pedidos);
@@ -73,7 +52,7 @@ namespace Carrito_Compras_Core.Controllers
 
         [Authorize]
         [HttpGet("{idPedido:int}")]
-        public ActionResult<UsuarioPedidoResponse> GetByIdPedido(int idPedido)
+        public ActionResult<UsuarioPedido> GetByIdPedido(int idPedido)
         {
           
             var pedidos = _usuarioPedidoService.GetByIdPedido(idPedido);
@@ -82,7 +61,7 @@ namespace Carrito_Compras_Core.Controllers
 
         [Authorize]
         [HttpGet("{idUsuario:int}")]
-        public ActionResult<IEnumerable<UsuarioPedidoResponse>> GetByIdUsuario(int idUsuario)
+        public ActionResult<IEnumerable<UsuarioPedido>> GetByIdUsuario(int idUsuario)
         {
 
             var usuarioPedido = _usuarioPedidoService.GetByIdUsuario(idUsuario);
@@ -93,7 +72,7 @@ namespace Carrito_Compras_Core.Controllers
         [Authorize]
         [HttpGet("{idUsuario:int}")]
         [Route("get-by-idUsuario-not-finalized/{idUsuario}")]
-        public ActionResult<UsuarioPedidoResponse> GetByIdUsuarioNotFinalized(int idUsuario)
+        public ActionResult<UsuarioPedido> GetByIdUsuarioNotFinalized(int idUsuario)
         {
 
             var usuarioPedido = _usuarioPedidoService.GetByIdUsuarioNotFinalized(idUsuario);

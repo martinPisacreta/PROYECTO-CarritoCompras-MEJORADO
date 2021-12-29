@@ -1,16 +1,16 @@
 import {  marcaConstantes } from '../../actions/types';
 
-export default function marcaReducers(state = {}, action) {
+export default function marcaReducer(state = {}, action) {
   switch (action.type) {
-    case marcaConstantes.GETALL_REQUEST:
+    case marcaConstantes.GET_BY_FILTERS_REQUEST:
       return {
         cargando: true
       };
-    case marcaConstantes.GETALL_SUCCESS:
+    case marcaConstantes.GET_BY_FILTERS_SUCCESS:
       return {
         marcas: action.marcas
       };
-    case marcaConstantes.GETALL_FAILURE:
+    case marcaConstantes.GET_BY_FILTERS_FAILURE:
       return { 
         error: action.error
       };

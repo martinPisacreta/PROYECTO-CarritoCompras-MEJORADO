@@ -13,9 +13,9 @@ import { usuarioPedidoDetalleActions , usuarioPedidoActions } from '../../../act
 
 
 function Carrito( props ) {
-    const { pedidoDetalle, getPrecioTotalPedido , cambiarCantidadArticulo , crearPedido , eliminarArticulo} = props;
-    let total = getPrecioTotalPedido( pedidoDetalle );
-   
+    const { usuarioPedido , cambiarCantidadArticuloPedido , finalizarPedido , eliminarArticuloPedido} = props;
+    let pedidoDetalle = usuarioPedido ? usuarioPedido.usuarioPedidoDetalle : [];
+  
     const [loading,setLoading] = useState(false);
 
     const empresa = JSON.parse(localStorage.getItem('empresa'));
@@ -27,7 +27,7 @@ function Carrito( props ) {
 
  
     function onChangeQty( e, articuloId ) {
-        cambiarCantidadArticulo( articuloId, e.currentTarget.querySelector( 'input[type="number"]' ).value );
+        cambiarCantidadArticuloPedido( articuloId, e.currentTarget.querySelector( 'input[type="number"]' ).value );
     }
 
     function goToCheckout() {
@@ -39,7 +39,7 @@ function Carrito( props ) {
                 descripcionArticulo: cl.descripcionArticulo,
                 txtDescMarca: cl.marcaArticulo,
                 txtDescFamilia: cl.familiaArticulo,
-                precioListaPorCoeficientePorMedioIva: cl.precioLista_por_coeficiente_por_medioIva,
+                precioListaPorCoeficientePorMedioIva: cl.precioListaPorCoeficientePorMedioIva,
                 utilidad: usuario.utilidad,
                 snOferta: cl.ofertaArticulo,
                 precioLista: cl.precioListaArticulo,
@@ -60,7 +60,7 @@ function Carrito( props ) {
         }
 
 
-        crearPedido(pedido);
+        finalizarPedido(pedido);
     }
 
     
@@ -116,7 +116,7 @@ function Carrito( props ) {
 
                                                         <td className="price-col">
                                                             ${
-                                                                item.precioLista_por_coeficiente_por_medioIva.toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } )
+                                                                item.precioListaPorCoeficientePorMedioIva.toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } )
                                                             }
                                                         </td>
 
@@ -140,7 +140,7 @@ function Carrito( props ) {
                                                         </td>
 
                                                         <td className="remove-col">
-                                                            <button className="btn-remove" onClick={ ( e ) => eliminarArticulo( item.id ) }><i className="icon-close"></i></button>
+                                                            <button className="btn-remove" onClick={ ( e ) => eliminarArticuloPedido( item.id ) }><i className="icon-close"></i></button>
                                                         </td>
                                                     </tr>
                                                 ) :
@@ -203,17 +203,16 @@ function Carrito( props ) {
 
 const mapStateToProps = (state) => {
     return { //cualquier cosa que retorno aca , va a estar disponible como propiedad (props) en nuestro componente
-        pedidoDetalle: state.usuarioPedidoDetalleReducers.pedidoDetalle ? state.usuarioPedidoDetalleReducers.pedidoDetalle : [] 
+        usuarioPedido: state.usuarioPedidoDetalleReducer.usuarioPedido ? state.usuarioPedidoDetalleReducer.usuarioPedido : [] 
     }
   }
 
 
 
 const actionCreators = {
-    eliminarArticulo: usuarioPedidoDetalleActions.eliminarArticulo,
-    cambiarCantidadArticulo: usuarioPedidoDetalleActions.cambiarCantidadArticulo,
-    getPrecioTotalPedido: usuarioPedidoActions.getPrecioTotalPedido,
-    crearPedido: usuarioPedidoActions.crearPedido
+    eliminarArticuloPedido: usuarioPedidoDetalleActions.eliminarArticuloPedido,
+    cambiarCantidadArticuloPedido: usuarioPedidoDetalleActions.cambiarCantidadArticuloPedido,
+    finalizarPedido: usuarioPedidoActions.finalizarPedido
 };
 
 

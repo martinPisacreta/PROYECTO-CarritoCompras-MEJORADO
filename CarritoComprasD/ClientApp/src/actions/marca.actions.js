@@ -31,9 +31,9 @@ function getAll() {
         
     };
 
-    function request() { return { type: marcaConstantes.GETALL_REQUEST } }
-    function success(marcas) { return { type: marcaConstantes.GETALL_SUCCESS, marcas } }
-    function failure(error) { return { type: marcaConstantes.GETALL_FAILURE, error } }
+    function request() { return { type: marcaConstantes.GET_BY_FILTERS_REQUEST } }
+    function success(marcas) { return { type: marcaConstantes.GET_BY_FILTERS_SUCCESS, marcas } }
+    function failure(error) { return { type: marcaConstantes.GET_BY_FILTERS_FAILURE, error } }
 }
 
 

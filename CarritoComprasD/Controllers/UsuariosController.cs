@@ -37,7 +37,7 @@ namespace WebApi.Controllers
         public ActionResult<AuthenticateResponse> RefreshToken()
         {
 
-            var refreshToken = Request.Cookies["refreshToken"];
+           var refreshToken = Request.Cookies["refreshToken"];
             var response = _usuarioService.RefreshToken(refreshToken, ipAddress());
             setTokenCookie(response.RefreshToken);
             return Ok(response);

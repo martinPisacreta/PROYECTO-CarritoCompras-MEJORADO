@@ -37,6 +37,8 @@ namespace CarritoComprasD
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen();
 
+            services.AddControllers().AddNewtonsoftJson(x =>x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             // configure strongly typed settings object
             services.Configure<_DomainName>(Configuration.GetSection("DomainName"));
             services.Configure<_Email>(Configuration.GetSection("Email"));
@@ -53,6 +55,7 @@ namespace CarritoComprasD
             services.AddScoped<IEmpresaService, EmpresaService>();
             services.AddScoped<IMarcaService, MarcaService>();
             services.AddScoped<IArticuloService,ArticuloService>();
+            services.AddScoped<IUsuarioPedidoDetalleService, UsuarioPedidoDetalleService>();
 
             services.AddControllersWithViews();
 
@@ -74,7 +77,12 @@ namespace CarritoComprasD
             app.UseSwagger();
             app.UseSwaggerUI(x => x.SwaggerEndpoint("/swagger/v1/swagger.json", "Carrito Compras Core Encendido_Alsina.csproj"));
 
+            
+
+            app.UseAuthentication();
             app.UseRouting();
+            app.UseAuthorization();
+
 
             // global cors policy
             app.UseCors(x => x

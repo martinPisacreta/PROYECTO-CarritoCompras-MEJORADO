@@ -3,29 +3,15 @@ import { usuarioPedidoConstantes } from './types';
 import { usuarioPedidosService } from '../services';
 
 export const usuarioPedidoActions = {
-    getPrecioTotalPedido,
     getCantidadArticulosPedido,
-    crearPedido
+    finalizarPedido
 };
 
 
 
 
 
-function getPrecioTotalPedido(pedidoDetalle) {
-  
-    return dispatch => {
-        let total = 0;
 
-        for ( let i = 0; i < pedidoDetalle.length; i++ ) {
-            total += parseInt( pedidoDetalle[ i ].cantidad, 10 ) * ( pedidoDetalle[i].precioLista_por_coeficiente_por_medioIva );
-        }
-     
-        dispatch( success(total));
-    };
-
-    function success(total) { return { type: usuarioPedidoConstantes.GET_PRECIO_TOTAL_PEDIDO,  total } } 
-}
 
 
 
@@ -43,12 +29,12 @@ function getCantidadArticulosPedido(usuarioPedidoDetalles) {
     function success(total) { return { type: usuarioPedidoConstantes.GET_CANTIDAD_ARTICULOS_PEDIDO,  total } } 
 }
 
-function crearPedido(pedido) {
+function finalizarPedido(pedido) {
     return dispatch => {
         dispatch(request(pedido));
 
         return new Promise((resolve, reject) => {
-            usuarioPedidosService.create(pedido)
+            usuarioPedidosService.finalizarPedido(pedido)
                     .then(
                         _pedido => { 
                             dispatch(success());
@@ -74,3 +60,5 @@ function crearPedido(pedido) {
     function success() { return { type: usuarioPedidoConstantes.CREAR_PEDIDO_SUCCESS } }
     function failure() { return { type: usuarioPedidoConstantes.CREAR_PEDIDO_FAILURE } }
 }
+
+

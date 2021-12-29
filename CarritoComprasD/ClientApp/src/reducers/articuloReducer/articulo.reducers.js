@@ -1,16 +1,16 @@
 import {   articuloConstantes } from '../../actions/types';
 
-export default function articuloReducers(state = {}, action) {
+export default function articuloReducer(state = {}, action) {
   switch (action.type) {
-    case articuloConstantes.GETALL_REQUEST:
+    case articuloConstantes.GET_BY_FILTERS_REQUEST:
       return {
         cargando: true
       };
-    case articuloConstantes.GETALL_SUCCESS:
+    case articuloConstantes.GET_BY_FILTERS_SUCCESS:
       return {
         articulos: action.articulos
       };
-    case articuloConstantes.GETALL_FAILURE:
+    case articuloConstantes.GET_BY_FILTERS_FAILURE:
       return { 
         error: action.error
       };

@@ -10,9 +10,7 @@ namespace CarritoComprasD.Entities
 {
     public partial class CarritoComprasWebContext : DbContext
     {
-        public CarritoComprasWebContext()
-        {
-        }
+     
 
         public CarritoComprasWebContext(DbContextOptions<CarritoComprasWebContext> options)
             : base(options)
@@ -30,14 +28,7 @@ namespace CarritoComprasD.Entities
         public virtual DbSet<UsuarioPedidoDetalle> UsuarioPedidoDetalle { get; set; }
         public virtual DbSet<VArticulo> VArticulo { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-I7NMOJE;Database=CarritoComprasWeb;Integrated Security=True;");
-            }
-        }
+      
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,6 +46,12 @@ namespace CarritoComprasD.Entities
 
                 entity.HasIndex(e => e.DescripcionArticulo)
                     .HasName("IDX_DESCRIPCION_ARTICULO");
+
+                entity.HasIndex(e => new { e.CodigoArticulo, e.DescripcionArticulo, e.PrecioLista, e.IdTablaFamilia, e.SnOferta, e.FecBaja })
+                    .HasName("IDX_FEC_BAJA");
+
+                entity.HasIndex(e => new { e.CodigoArticulo, e.DescripcionArticulo, e.PrecioLista, e.SnOferta, e.FecBaja, e.IdTablaFamilia })
+                    .HasName("IDX_ID_TABLA_FAMILIA_FEC_BAJA");
 
                 entity.Property(e => e.IdArticulo).HasColumnName("id_articulo");
 
@@ -529,6 +526,8 @@ namespace CarritoComprasD.Entities
                     .HasColumnName("precioLista_por_coeficiente_por_medioIva")
                     .HasColumnType("numeric(18, 2)");
 
+                entity.Property(e => e.SnActivo).HasColumnName("sn_activo");
+
                 entity.Property(e => e.SnOferta).HasColumnName("sn_oferta");
 
                 entity.Property(e => e.TxtDescFamilia)
@@ -562,6 +561,8 @@ namespace CarritoComprasD.Entities
                     .HasColumnName("CodigoArticulo_DescripcionArticulo_MarcaArticulo_FamiliaArticulo")
                     .HasMaxLength(1258);
 
+                entity.Property(e => e.Coeficiente).HasColumnType("decimal(18, 8)");
+
                 entity.Property(e => e.DescripcionArticulo).HasMaxLength(400);
 
                 entity.Property(e => e.FamiliaArticulo)
@@ -569,6 +570,10 @@ namespace CarritoComprasD.Entities
                     .HasMaxLength(255);
 
                 entity.Property(e => e.MarcaArticulo).HasMaxLength(500);
+
+                entity.Property(e => e.PathImagenArticulo).HasMaxLength(200);
+
+                entity.Property(e => e.PrecioLista).HasColumnType("numeric(18, 4)");
 
                 entity.Property(e => e.PrecioListaPorCoeficientePorMedioIva).HasColumnType("numeric(38, 11)");
 

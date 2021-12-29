@@ -22,6 +22,7 @@ namespace CarritoComprasD.Entities
         public decimal Coeficiente { get; set; }
         public int Cantidad { get; set; }
         public long? IdArticulo { get; set; }
+        public int SnActivo { get; set; }
 
         public virtual UsuarioPedido IdUsuarioPedidoNavigation { get; set; }
     }

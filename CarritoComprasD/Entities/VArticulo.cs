@@ -11,12 +11,15 @@ namespace CarritoComprasD.Entities
     {
         public long Id { get; set; }
         public string CodigoArticulo { get; set; }
-        public decimal? PrecioListaPorCoeficientePorMedioIva { get; set; }
+        public decimal? PrecioLista { get; set; }
+        public decimal? Coeficiente { get; set; }
         public string DescripcionArticulo { get; set; }
         public string MarcaArticulo { get; set; }
         public string FamiliaArticulo { get; set; }
         public decimal UtilidadArticulo { get; set; }
         public int? SnOferta { get; set; }
+        public string PathImagenArticulo { get; set; }
+        public decimal? PrecioListaPorCoeficientePorMedioIva { get; set; }
         public string CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo { get; set; }
     }
 }

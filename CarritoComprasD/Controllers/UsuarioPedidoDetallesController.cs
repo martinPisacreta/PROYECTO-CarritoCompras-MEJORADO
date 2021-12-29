@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using CarritoComprasD.Services;
-using CarritoComprasD.Models.UsuarioPedidoDetalles;
+using CarritoComprasD.Models.UsuarioPedidos;
 using CarritoComprasD.Controllers;
+using CarritoComprasD.Entities;
 
 namespace Carrito_Compras_Core.Controllers
 {
@@ -27,40 +28,11 @@ namespace Carrito_Compras_Core.Controllers
 
 
 
-        [HttpPost]
-        public ActionResult<UsuarioPedidoDetalleResponse> Create(CreateUsuarioPedidoDetalleRequest model)
-        {
-            var usuarioPedido = _usuarioPedidoDetalleService.Create(model);
-
-
-
-            return Ok(usuarioPedido);
-        }
-
-
-        [Authorize]
-        [HttpPut("{id:int}")]
-        public ActionResult<UsuarioPedidoDetalleResponse> Update(int id, UpdateUsuarioPedidoDetalleRequest model)
-        {
-
-
-            var usuarioPedido = _usuarioPedidoDetalleService.Update(id, model);
-            return Ok(usuarioPedido);
-        }
-
-        [Authorize]
-        [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
-        {
-
-
-            _usuarioPedidoDetalleService.Delete(id);
-            return Ok(new { message = "Pedido eliminado exitosamente" });
-        }
+       
 
         [Authorize]
         [HttpGet]
-        public ActionResult<IEnumerable<UsuarioPedidoDetalleResponse>> GetAll()
+        public ActionResult<IEnumerable<UsuarioPedidoDetalle>> GetAll()
         {
             var pedidos = _usuarioPedidoDetalleService.GetAll();
             return Ok(pedidos);
@@ -68,7 +40,7 @@ namespace Carrito_Compras_Core.Controllers
 
         [Authorize]
         [HttpGet("{idPedido:int}")]
-        public ActionResult<UsuarioPedidoDetalleResponse> GetByIdPedido(int idPedidoDetalle)
+        public ActionResult<UsuarioPedidoDetalle> GetByIdPedido(int idPedidoDetalle)
         {
 
             var usuarioPedido = _usuarioPedidoDetalleService.GetByIdPedidoDetalle(idPedidoDetalle);
@@ -79,7 +51,7 @@ namespace Carrito_Compras_Core.Controllers
 
         [Authorize]
         [HttpGet("{idPedidoDetalle:int}")]
-        public ActionResult<IEnumerable<UsuarioPedidoDetalleResponse>> GetByIdPedidoDetalle(int idPedido)
+        public ActionResult<IEnumerable<UsuarioPedidoDetalle>> GetByIdPedidoDetalle(int idPedido)
         {
 
             var pedidos = _usuarioPedidoDetalleService.GetByIdPedido(idPedido);

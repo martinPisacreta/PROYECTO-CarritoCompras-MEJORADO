@@ -1,31 +1,36 @@
 
 import { usuarioPedidoDetalleConstantes } from './types';
-import { usuarioPedidosDetalleService} from '../services';
-import { toast } from 'react-toastify';
+import { usuarioPedidosService} from '../services';
+import {  alertService } from '../services';
 
 export const usuarioPedidoDetalleActions = {
-    agregarArticulo,
-    eliminarArticulo,
-    cambiarCantidadArticulo
+    agregarArticuloPedido,
+    eliminarArticuloPedido,
+    cambiarCantidadArticuloPedido
 };
 
 
 
 
-function agregarArticulo( articulo, cantidad) {
+function agregarArticuloPedido( articulo, cantidad , idUsuario , idEmpresa , utilidad) {
     const payload = {
         articulo,
-        cantidad
+        cantidad,
+        idUsuario,
+        idEmpresa,
+        utilidad
     };
 
+   
     return dispatch => {
 
     return new Promise((resolve, reject) => {
-        usuarioPedidosDetalleService.agregarArticulo(payload)
+        usuarioPedidosService.agregarArticuloPedido(payload)
                 .then(
                     articuloAgregado => { 
-                        dispatch( success(payload));
-                        toast.success( "Articulo agregado al carrito" );
+
+                        dispatch( success(articuloAgregado));
+                        alertService.success('Articulo agregado al carrito');
                         resolve(articuloAgregado); // respuesta correcta
                     },
                     error => {
@@ -34,20 +39,27 @@ function agregarArticulo( articulo, cantidad) {
         })
     };
 
-    function success(payload) { return { type: types.AGREGAR_ARTICULO_SUCCESS,  payload } }
+    function success(articuloAgregado) { return { type: usuarioPedidoDetalleConstantes.AGREGAR_ARTICULO_PEDIDO_SUCCESS,  articuloAgregado } }
 }
 
 
-function eliminarArticulo(articuloId) {
+function eliminarArticuloPedido(articuloId , idUsuario) {
+
+    const payload = {
+        articuloId,
+        idUsuario
+    };
+
+
     return dispatch => {
   
 
     return new Promise((resolve, reject) => {
-        usuarioPedidosDetalleService.eliminarArticulo(articuloId)
+        usuarioPedidosDetalleService.eliminarArticuloPedido(payload)
                 .then(
                     articuloEliminado => { 
-                        dispatch( success(articuloId));
-                        toast.error( "Articulo eliminado del carrito" );
+                        dispatch( success(payload));
+                        alertService.success('Articulo eliminado del carrito');
                         resolve(articuloEliminado); // respuesta correcta
                     },
                     error => {
@@ -57,22 +69,23 @@ function eliminarArticulo(articuloId) {
     };
 
 
-    function success(articuloId) { return { type: usuarioPedidoDetalleConstantes.ELIMINAR_ARTICULO_SUCCESS,  articuloId } }
+    function success(payload) { return { type: usuarioPedidoDetalleConstantes.ELIMINAR_ARTICULO_PEDIDO_SUCCESS,  payload } }
 
 }
 
 
-function cambiarCantidadArticulo( articulo, cantidad) {
+function cambiarCantidadArticuloPedido( articulo, cantidad , idUsuario) {
     const payload = {
         articulo,
-        cantidad
+        cantidad,
+        idUsuario
     };
 
     return dispatch => {
 
 
     return new Promise((resolve, reject) => {
-        usuarioPedidosDetalleService.cambiarCantidadArticulo(payload)
+        usuarioPedidosDetalleService.cambiarCantidadArticuloPedido(payload)
                 .then(
                     articuloModificado => { 
                         dispatch( success(articuloId));
@@ -86,7 +99,7 @@ function cambiarCantidadArticulo( articulo, cantidad) {
     };
 
   
-    function success(payload) { return { type: usuarioPedidoDetalleConstantes.CAMBIAR_CANTIDAD_ARTICULO_SUCCESS,  payload } }
+    function success(payload) { return { type: usuarioPedidoDetalleConstantes.CAMBIAR_CANTIDAD_ARTICULO_DE_UN_PEDIDO_SUCCESS,  payload } }
 
 }
 

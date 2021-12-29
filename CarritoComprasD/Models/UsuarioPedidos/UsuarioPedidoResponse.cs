@@ -1,16 +1,14 @@
-using System;
+﻿using CarritoComprasD.Entities;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CarritoComprasD.Models.UsuarioPedidos
 {
     public class UsuarioPedidoResponse
     {
-        public int IdUsuarioPedido { get; set; }
-
-        public DateTime FechaPedido { get; set; }
         public int IdUsuario { get; set; }
-        public int IdEmpresa { get; set; }
-        public decimal Total { get; set; }
 
-        public bool SnFinalizado { get; set; }
+        public UsuarioPedido UsuarioPedido { get; set; }
     }
 }

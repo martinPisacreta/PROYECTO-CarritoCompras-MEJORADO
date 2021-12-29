@@ -10,8 +10,6 @@ export const usuarioPedidosDetalleService = {
     getAll,
     getByIdPedidoDetalle,
     getByIdPedido,
-    create,
-    update,
     usuarioPedidoDetalleDetalles: usuarioPedidoDetalleDetallesSubject.asObservable(),
     get usuarioPedidoDetalleDetallesSubjectValue () { return usuarioPedidoDetalleDetallesSubject.value }
 };
@@ -27,22 +25,5 @@ function getByIdPedidoDetalle(idPedidoDetalle) {
 
 function getByIdPedido(idPedido) {
     return fetchWrapper.get(`${baseUrl}/${idPedido}`);
-}
-
-function create(params) {
-    return fetchWrapper.post(`${baseUrl}`, params);
-}
-
-function update(id, params) {
-    return fetchWrapper.put(`${baseUrl}/${id}`, params)
-        .then(upd => {
-            // update stored upd if the logged in upd updated their own record
-            if (upd.id === usuarioPedidoDetalleDetallesSubject.value.id) {
-                // publish updated upd to subscribers
-                upd = { ...usuarioPedidoDetalleDetallesSubject.value, ...upd };
-                usuarioPedidoDetalleDetallesSubject.next(upd);
-            }
-            return upd;
-        });
 }
 

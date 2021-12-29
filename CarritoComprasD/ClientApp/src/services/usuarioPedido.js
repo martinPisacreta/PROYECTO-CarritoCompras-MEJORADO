@@ -7,18 +7,20 @@ const baseUrl = `/usuarioPedidos`;
 
 
 export const usuarioPedidosService = {
+    agregarArticuloPedido,
     getAll,
     getByIdPedido,
     getByIdUsuario,
     getByIdUsuarioNotFinalized,
-    create,
-    update,
-    delete: _delete,
+    finalizarPedido, //tengo que hacer este metodo en vs 2019
     usuarioPedidos: usuarioPedidosSubject.asObservable(),
     get usuarioPedidosSubjectValue () { return usuarioPedidosSubject.value }
    
 };
 
+function agregarArticuloPedido(params) {
+    return fetchWrapper.post(`${baseUrl}/agregar-articulo-pedido`, params);
+}
 
 function getAll() {
     return fetchWrapper.get(`${baseUrl}`);
@@ -38,32 +40,15 @@ function getByIdUsuarioNotFinalized (idUsuario) {
     return fetchWrapper.get(`${baseUrl}/get-by-idUsuario-not-finalized/${idUsuario}`);
 }
 
-function create(params) {
+ //tengo que hacer este metodo en vs 2019
+function finalizarPedido(params) {
     return fetchWrapper.post(`${baseUrl}`, params);
 }
 
-function update(id, params) {
-    return fetchWrapper.put(`${baseUrl}/${id}`, params)
-        .then(up => {
-            // update stored up if the logged in up updated their own record
-            if (up.id === usuarioPedidosSubject.value.id) {
-                // publish updated up to subscribers
-                up = { ...usuarioPedidosSubject.value, ...up };
-                usuarioPedidosSubject.next(up);
-            }
-            return up;
-        });
-}
 
-function _delete(id) {
-    return fetchWrapper.delete(`${baseUrl}/${id}`)
-        .then(x => {
-            // auto logout if the logged in x deleted their own record
-            if (id === usuarioPedidosSubject.value.id) {
-                logout();
-            }
-            return x;
-        });
-}
+
+
+
+
 
 

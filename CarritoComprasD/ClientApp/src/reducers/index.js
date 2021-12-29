@@ -12,11 +12,11 @@ import resetPassword from "./usuarioReducer/resetPassword.reducers"
 import getByIdReducer from "./usuarioReducer/getById.reducers"
 import updateReducer from "./usuarioReducer/update.reducers"
 
-import usuarioPedidoDetalleReducers from "./usuarioPedidoDetalleReducer/usuarioPedidoDetalle.reducers"
-import usuarioPedidoReducers from "./usuarioPedidoReducer/usuarioPedido.reducers"
-import marcaReducers from "./marcaReducer/marca.reducers.js"
-import empresaReducers from "./empresaReducer/empresa.reducers.js"
-import articuloReducers from "./articuloReducer/articulo.reducers.js"
+import usuarioPedidoDetalleReducer from "./usuarioPedidoDetalleReducer/usuarioPedidoDetalle.reducers"
+import usuarioPedidoReducer from "./usuarioPedidoReducer/usuarioPedido.reducers"
+import marcaReducer from "./marcaReducer/marca.reducers.js"
+import empresaReducer from "./empresaReducer/empresa.reducers.js"
+import articuloReducer from "./articuloReducer/articulo.reducers.js"
 
 export default combineReducers({
     alertaReducer,
@@ -28,9 +28,9 @@ export default combineReducers({
     resetPassword,
     getByIdReducer,
     updateReducer,
-    usuarioPedidoReducers,
-    usuarioPedidoDetalleReducers,
-    marcaReducers,
-    empresaReducers,
-    articuloReducers
+    usuarioPedidoReducer,
+    usuarioPedidoDetalleReducer,
+    marcaReducer,
+    empresaReducer,
+    articuloReducer
 });

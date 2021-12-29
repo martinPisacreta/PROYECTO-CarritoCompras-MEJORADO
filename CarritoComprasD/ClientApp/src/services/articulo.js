@@ -6,7 +6,7 @@ const baseUrl = `/articulos`;
 
 
 export const articuloService = {
-    getAll,
+    getByFilters,
     getCount,
     articulo: articuloSubject.asObservable(),
     get articuloValue () { return articuloSubject.value }
@@ -14,14 +14,12 @@ export const articuloService = {
 
 
 
-function getAll(payload) {
+function getByFilters(payload) {
     const skip = parseInt(payload.skip);
     const take = parseInt(payload.take);
     const utilidad = parseInt(payload.utilidad);
     const filter = payload.filter;
     const oferta = payload.oferta;
-
-    console.log(oferta);
     return fetchWrapper.post(`${baseUrl}`, {
         skip,
         take,

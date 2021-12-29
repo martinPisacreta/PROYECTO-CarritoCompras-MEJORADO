@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef,useCallback} from 'react';
+import React, { useState, useEffect,useCallback} from 'react';
 
 import { usuarioService} from '../../../services';
 import FormControl from '@material-ui/core/FormControl';
@@ -31,7 +31,7 @@ import { connect } from 'react-redux';
 
 
 function ArticuloDevExpresList( props ) {
-    const {marcaSelected , agregarArticulo} = props
+    const {marcaSelected , agregarArticuloPedido} = props
     const [showArticuloInfo,setShowArticuloInfo] = useState(false);
     const [selectedRowArticulo,setSelectedRowArticulo] = useState('');
     const usuario = JSON.parse(localStorage.getItem('user'));
@@ -85,7 +85,7 @@ function ArticuloDevExpresList( props ) {
     function onClick_IconCart(selectedRowsData) //la funcion "onClick_IconCart" es llamada por el Children <DescripcionFila/>
     {
     if ( 0 !== selectedRowsData.stockArticulo )
-        agregarArticulo( selectedRowsData, cantidad );
+        agregarArticuloPedido( selectedRowsData, cantidad );
     }
  
     function handleChange_CantidadArticulos(newValue) { //la funcion "handleChange_CantidadArticulos" es llamada por el Children <DescripcionFila/>
@@ -108,8 +108,10 @@ function ArticuloDevExpresList( props ) {
         },
         textField: {
             width: '25ch',
-
         },
+        root: {
+            color: red
+        }
     }));
 
 
@@ -257,7 +259,7 @@ function useWindowSize() {
                     />
                     <Column 
                         editorOptions={{ format: 'currency', showClearButton: true }}
-                        dataField="precioLista_por_coeficiente_por_medioIva"
+                        dataField="precioListaPorCoeficientePorMedioIva"
                         dataType="number"
                         format="$0#.##"
                         caption="Precio Costo"
@@ -322,14 +324,14 @@ function useWindowSize() {
 
 const mapStateToProps = (state) => {
     return {
-        marcaSelected: state.marcaReducers.marcaSelected ? state.marcaReducers.marcaSelected : null
+        marcaSelected: state.marcaReducer.marcaSelected ? state.marcaReducer.marcaSelected : null
     }
   }
 
 const actionCreators = {
     getAllMarcas: marcaActions.getAll,
     selectedMarca: marcaActions.selectedMarca,
-    agregarArticulo : usuarioPedidoDetalleActions.agregarArticulo
+    agregarArticuloPedido : usuarioPedidoDetalleActions.agregarArticuloPedido
   }
 
   export default connect(mapStateToProps, actionCreators)(ArticuloDevExpresList);
