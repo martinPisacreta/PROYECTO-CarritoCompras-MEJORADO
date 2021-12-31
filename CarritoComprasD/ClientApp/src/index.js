@@ -7,15 +7,26 @@ import { history } from './components/helpers';
 import AppRoute from './routes';
 import { Provider } from 'react-redux';
 import store from './store';
+import { usuarioService } from './services';
 
 
+const usuario = JSON.parse(localStorage.getItem('user'));
 
-ReactDOM.render(
-    <Provider store={store}>
-        <Router history={history}>
-            <AppRoute />
-        </Router>
-    </Provider>,
-    document.getElementById('root')
-  );
-  
+
+//cuando el usuario esta logueado queda activo un temporizador 
+//que vence un minuto antes de que expire el token .Cuando vence el temporizador 
+//se llama a la funcion usuarioService.refreshToken() de forma silenciosa o en segundo plano.
+usuario ? usuarioService.refreshToken().finally(startApp)
+        : startApp();
+
+function startApp() { 
+    render(
+        <Provider store={store}>
+            <Router history={history}>
+                <AppRoute />
+            </Router>
+        </Provider>,
+        document.getElementById('root')
+    );
+}
+

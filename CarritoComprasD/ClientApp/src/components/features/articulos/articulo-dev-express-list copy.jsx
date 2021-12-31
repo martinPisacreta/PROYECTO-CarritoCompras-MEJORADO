@@ -23,7 +23,7 @@ import DataGrid, {
     Sorting
 } from 'devextreme-react/data-grid';
 import { createStore } from 'devextreme-aspnet-data-nojquery';
-import { usuarioPedidoDetalleActions } from '../../../actions/usuarioPedidoDetalle.actions';
+import { usuarioPedidoActions } from '../../../actions/usuarioPedido.actions';
 import { marcaActions } from '../../../actions/marca.actions';
 import { connect } from 'react-redux';
 
@@ -331,7 +331,7 @@ const mapStateToProps = (state) => {
 const actionCreators = {
     getAllMarcas: marcaActions.getAll,
     selectedMarca: marcaActions.selectedMarca,
-    agregarArticuloPedido : usuarioPedidoDetalleActions.agregarArticuloPedido
+    agregarArticuloPedido : usuarioPedidoActions.agregarArticuloPedido
   }
 
   export default connect(mapStateToProps, actionCreators)(ArticuloDevExpresList);

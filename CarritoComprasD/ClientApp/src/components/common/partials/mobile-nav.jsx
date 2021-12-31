@@ -4,22 +4,15 @@ import { usuarioService } from '../../../services';
 import { mobileMenu } from '../../../utils';
 import {rol} from '../../helpers'
 
-function MobileMainNav( props ) {
+function MobileMainNav( ) {
 
-    const [usuario, setUsuario] = useState({});
+    const usuario = JSON.parse(localStorage.getItem('user'));
 
     React.useEffect( () => {
         mobileMenu();
     } )
 
-    //voy a buscar los datos del usuario logueado y despues interrumpo el flujo "subscription.unsubscribe();""
-    useEffect( () => { 
-        const subscription = usuarioService.usuario.subscribe(x => setUsuario(x));
-        return subscription.unsubscribe();
-        
-    }, [] )
-
-
+   
     return (
         <nav className="mobile-nav">
             <ul className="mobile-menu">

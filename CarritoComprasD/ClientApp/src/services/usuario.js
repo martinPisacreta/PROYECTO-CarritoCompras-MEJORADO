@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { fetchWrapper, history } from '../components/helpers';
+import { fetchWrapper } from '../components/helpers';
 
 const userSubject = new BehaviorSubject(null);
 const baseUrl = `/usuarios`;
@@ -46,6 +46,7 @@ function logout() {
 }
 
 function refreshToken() {
+    
     return fetchWrapper.post(`${baseUrl}/refresh-token`, {})
         .then(usuario => {
             // publicar el usuario a los suscriptores e iniciar el temporizador para actualizar el token
@@ -115,9 +116,9 @@ function _delete(id) {
 }
 
 // helper functions
-
 let refreshTokenTimeout;
 
+//esta funcion activa un temporizador que vence un minuto antes de que expire el token
 function startRefreshTokenTimer() {
     // parse json object from base64 encoded token
     const token = JSON.parse(atob(userSubject.value.token.split('.')[1]));
@@ -125,9 +126,14 @@ function startRefreshTokenTimer() {
     // set a timeout to refresh the token a minute before it expires
     const expires = new Date(token.exp * 1000);
     const timeout = expires.getTime() - Date.now() - (60 * 1000);
+    
+  
     refreshTokenTimeout = setTimeout(refreshToken, timeout);
+
+
 }
 
+//esta funcion limpia el temporizador
 function stopRefreshTokenTimer() {
     clearTimeout(refreshTokenTimeout);
 }

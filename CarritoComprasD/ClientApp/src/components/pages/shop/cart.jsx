@@ -9,7 +9,7 @@ import Breadcrumb from '../../common/breadcrumb';
 import { quantityInputs} from '../../../utils';
 import {Alert} from '../../alert'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { usuarioPedidoDetalleActions , usuarioPedidoActions } from '../../../actions';
+import { usuarioPedidoActions } from '../../../actions';
 
 
 function Carrito( props ) {
@@ -203,15 +203,15 @@ function Carrito( props ) {
 
 const mapStateToProps = (state) => {
     return { //cualquier cosa que retorno aca , va a estar disponible como propiedad (props) en nuestro componente
-        usuarioPedido: state.usuarioPedidoDetalleReducer.usuarioPedido ? state.usuarioPedidoDetalleReducer.usuarioPedido : [] 
+        usuarioPedido: state.usuarioPedidoReducer.usuarioPedido ? state.usuarioPedidoReducer.usuarioPedido : [] 
     }
   }
 
 
 
 const actionCreators = {
-    eliminarArticuloPedido: usuarioPedidoDetalleActions.eliminarArticuloPedido,
-    cambiarCantidadArticuloPedido: usuarioPedidoDetalleActions.cambiarCantidadArticuloPedido,
+    eliminarArticuloPedido: usuarioPedidoActions.eliminarArticuloPedido,
+    cambiarCantidadArticuloPedido: usuarioPedidoActions.cambiarCantidadArticuloPedido,
     finalizarPedido: usuarioPedidoActions.finalizarPedido
 };
 

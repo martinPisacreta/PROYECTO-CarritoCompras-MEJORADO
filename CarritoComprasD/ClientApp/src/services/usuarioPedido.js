@@ -8,7 +8,8 @@ const baseUrl = `/usuarioPedidos`;
 
 export const usuarioPedidosService = {
     agregarArticuloPedido,
-    getAll,
+    eliminarArticuloPedido,
+    modificarArticuloPedido,
     getByIdPedido,
     getByIdUsuario,
     getByIdUsuarioNotFinalized,
@@ -22,9 +23,15 @@ function agregarArticuloPedido(params) {
     return fetchWrapper.post(`${baseUrl}/agregar-articulo-pedido`, params);
 }
 
-function getAll() {
-    return fetchWrapper.get(`${baseUrl}`);
+function eliminarArticuloPedido(params) {
+    return fetchWrapper.post(`${baseUrl}/eliminar-articulo-pedido`, params);
 }
+
+function modificarArticuloPedido(params) {
+    return fetchWrapper.post(`${baseUrl}/modificar-articulo-pedido`, params);
+}
+
+
 
 
 function getByIdPedido(id) {

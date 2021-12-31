@@ -322,7 +322,7 @@ namespace CarritoComprasD.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", usuario.IdUsuario.ToString()) }),
-                Expires = DateTime.UtcNow.AddMinutes(2880),
+                Expires = DateTime.UtcNow.AddMinutes(2880), //2 dias
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

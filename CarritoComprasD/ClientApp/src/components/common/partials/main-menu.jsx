@@ -3,23 +3,16 @@ import { Link } from 'react-router-dom';
 import { usuarioService } from '../../../services';
 import {rol} from '../../helpers'
 
-export default function MainMenu( props ) {
+export default function MainMenu(  ) {
     const [ path, setPath ] = useState( "" );
-    const [usuario, setUsuario] = useState({});
-
+   
+    const usuario = JSON.parse(localStorage.getItem('user'));
 
     useEffect( () => {
         setPath( window.location.href );
     } )
 
-    //voy a buscar los datos del usuario logueado y despues interrumpo el flujo "subscription.unsubscribe();""
-    useEffect( () => { 
-        const subscription = usuarioService.usuario.subscribe(x => setUsuario(x));
-        return subscription.unsubscribe();
-        
-    }, [] )
-
-
+  
     
 
     return (

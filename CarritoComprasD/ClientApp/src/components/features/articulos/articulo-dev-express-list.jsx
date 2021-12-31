@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid ,esES } from '@mui/x-data-grid';
 import { articuloActions } from '../../../actions';
-import { usuarioPedidoDetalleActions } from '../../../actions';
+import { usuarioPedidoActions } from '../../../actions';
 import { connect } from 'react-redux';
 import {  TextField, IconButton , Grid , Box} from '@material-ui/core';
 
@@ -52,7 +52,7 @@ const useStyles = makeStyles({
 
 function ArticuloDevExpresList(props) {
 
-  const {getByFilters, agregarArticuloPedido , empresa} = props
+  const {getArticulosByFilters, agregarArticuloPedido , empresa , marcaSelected} = props
   const usuario = JSON.parse(localStorage.getItem('user'));
   const [page, setPage] = useState(0);
   const [filas, setFilas] = useState([]);
@@ -178,7 +178,7 @@ function ArticuloDevExpresList(props) {
 
     (async () => {
       setLoading(true);
-      await getByFilters(_page,_filasPerPage,_utilidad,_filterValue,_snOferta)
+      await getArticulosByFilters(_page,_filasPerPage,_utilidad,_filterValue,_snOferta)
       .then(newRows => {
         if (!active) {
           return;
@@ -412,14 +412,15 @@ const handleClickBackspaceOutlined = () => {
 
 const mapStateToProps = (state) => {
   return { //cualquier cosa que retorno aca , va a estar disponible como propiedad (props) en nuestro componente
-      empresa: state.empresaReducer.empresa
+    marcaSelected: state.marcaReducer.marcaSelected ? state.marcaReducer.marcaSelected : null,
+    empresa: state.empresaReducer.empresa
   }
 }
 
 
 const actionCreators = {
-    getByFilters: articuloActions.getByFilters,
-    agregarArticuloPedido: usuarioPedidoDetalleActions.agregarArticuloPedido
+    getArticulosByFilters: articuloActions.getByFilters,
+    agregarArticuloPedido: usuarioPedidoActions.agregarArticuloPedido
   }
   
   export default connect(mapStateToProps, actionCreators)(ArticuloDevExpresList);

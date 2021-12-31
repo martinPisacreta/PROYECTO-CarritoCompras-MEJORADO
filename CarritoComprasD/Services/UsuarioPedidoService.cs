@@ -6,16 +6,22 @@ using System.Linq;
 using CarritoComprasD.Entities;
 using CarritoComprasD.Helpers.AppSettings;
 using CarritoComprasD.Models.UsuarioPedidos;
+using CarritoComprasD.Helpers;
 
 namespace CarritoComprasD.Services
 {
+
+    //NO ESTA CREADO UsuarioPedidoDetalleService PORQUE MANEJO TODO DESDE UsuarioPedidoService.cs
+
     public interface IUsuarioPedidoService
     {
-        IEnumerable<UsuarioPedido> GetAll();
+        UsuarioPedidoResponse AgregarArticuloPedido(UsuarioPedidoAgregarArticuloRequest model);
+        UsuarioPedidoResponse EliminarArticuloPedido(UsuarioPedidoEliminarArticuloRequest model);
+        UsuarioPedidoResponse ModificarArticuloPedido(UsuarioPedidoModificarArticuloRequest model);
         UsuarioPedido GetByIdPedido(int id);
         IEnumerable<UsuarioPedido> GetByIdUsuario(int idUsuario);
         UsuarioPedido GetByIdUsuarioNotFinalized(int idUsuario);
-        UsuarioPedidoResponse AgregarArticuloPedido(UsuarioPedidoRequest model);
+       
     }
 
     public class UsuarioPedidoService : IUsuarioPedidoService
@@ -40,9 +46,8 @@ namespace CarritoComprasD.Services
 
         }
 
-
-
-        public UsuarioPedidoResponse AgregarArticuloPedido(UsuarioPedidoRequest model)
+        #region ---------------------------------- AGREGAR ARTICULO - ELIMINAR ARTICULO - MODIFICACION ARTICULO -----------------------------------------------------
+        public UsuarioPedidoResponse AgregarArticuloPedido(UsuarioPedidoAgregarArticuloRequest model)
         {
             UsuarioPedido usuarioPedido = null;
             UsuarioPedidoResponse usuarioPedidoResponse = new UsuarioPedidoResponse();
@@ -50,10 +55,11 @@ namespace CarritoComprasD.Services
             {
                 try
                 {
+                    //voy a buscar el pedido del IdUsuario que no este finalizado
                     usuarioPedido = _context.UsuarioPedido.Where(up => up.IdUsuario == model.IdUsuario && up.SnFinalizado == false).FirstOrDefault();
-                 
-                   
-                    if (usuarioPedido == null)  //no existe pedido
+
+                    //no existe pedido
+                    if (usuarioPedido == null)  
                     {
                         //seteo el pedido
                         usuarioPedido = new UsuarioPedido();
@@ -67,7 +73,7 @@ namespace CarritoComprasD.Services
                         _context.UsuarioPedido.Add(usuarioPedido);
                         _context.SaveChanges();
 
-                        //seteo detalle del pedido
+                        //voy a buscar los detalles del pedido activos
                         UsuarioPedidoDetalle usuarioPedidoDetalle = new UsuarioPedidoDetalle();
 
                         //usuarioPedidoDetalle.IdUsuarioPedidoDetalle ->  ES AUTOINCREMENTABLE
@@ -86,8 +92,9 @@ namespace CarritoComprasD.Services
                         usuarioPedidoDetalle.Articulo = _context.VArticulo.Where(a => a.Id == usuarioPedidoDetalle.IdArticulo).FirstOrDefault();
                         usuarioPedidoDetalle.SnActivo = usuarioPedidoDetalle.Articulo != null ? -1 : 0;
 
+                        //preparo para generar el detalle del pedido en base de datos
                         usuarioPedido.UsuarioPedidoDetalle.Add(usuarioPedidoDetalle);
-                      
+
 
                         //genero el detalle del pedido en base de datos
                         _context.UsuarioPedidoDetalle.Add(usuarioPedidoDetalle);
@@ -95,13 +102,15 @@ namespace CarritoComprasD.Services
 
 
                     }
-                    else //existe pedido
+                    //existe pedido
+                    else
                     {
                         UsuarioPedidoDetalle usuarioPedidoDetalleBD = null;
 
-                        //seteo detalle del pedido
-                        usuarioPedido.UsuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido).ToList();
+                        //voy a buscar los detalles del pedido activos
+                        usuarioPedido.UsuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido && upd.SnActivo == -1).ToList();
 
+                        //recorro los detalles del pedido activos
                         foreach (UsuarioPedidoDetalle usuarioPedidoDetalle in usuarioPedido.UsuarioPedidoDetalle)
                         {
                             //VERIFICO SI EL ARTICULO QUE QUIERO INSERTAR AL PEDIDO EXISTE EN EL PEDIDO
@@ -114,55 +123,17 @@ namespace CarritoComprasD.Services
                             //MODIFICO ARTICULOS DEL PEDIDO CON LOS DATOS ACTUALIZADOS DE LA VISTA VARTICULO
                             //ESTO LO HAGO POR EJEMPLO SI HAY ARTICULOS CARGADOS DESDE EL LUNES Y HOY ES VIERNES...
                             //...ESOS ARTICULOS PUDIERON SUFRIR MODIFICACION DE PRECIOS
-                            VArticulo articulo = _context.VArticulo.Where(a => a.Id == usuarioPedidoDetalle.IdArticulo).FirstOrDefault();
-                            if (articulo != null)
-                            {
-                                //usuarioPedidoDetalle.IdUsuarioPedidoDetalle -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.IdUsuarioPedido -> NO HACE FALTA MODIFICARLO
-                                usuarioPedidoDetalle.CodigoArticulo = articulo.CodigoArticulo;
-                                usuarioPedidoDetalle.DescripcionArticulo = articulo.DescripcionArticulo;
-                                usuarioPedidoDetalle.TxtDescMarca = articulo.MarcaArticulo;
-                                usuarioPedidoDetalle.TxtDescFamilia = articulo.FamiliaArticulo;
-                                usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva = articulo.PrecioListaPorCoeficientePorMedioIva.Value;
-                                //usuarioPedidoDetalle.Utilidad -> NO HACE FALTA MODIFICARLO
-                                usuarioPedidoDetalle.SnOferta = articulo.SnOferta.Value;
-                                usuarioPedidoDetalle.PrecioLista = articulo.PrecioLista.Value;
-                                usuarioPedidoDetalle.Coeficiente = articulo.Coeficiente.Value;
-                                //usuarioPedidoDetalle.Cantidad -> NO HACE FALTA MODIFICARLO
-                                usuarioPedidoDetalle.IdArticulo = articulo.Id;
-                                usuarioPedidoDetalle.Articulo = articulo;
-                                usuarioPedidoDetalle.SnActivo = -1;
+                            UsuarioPedidoDetalle _usuarioPedidoDetalle = Setear_UsuarioPedidoDetalle_ACTIVOS_Con_Datos_De_VArticulo(usuarioPedidoDetalle);
 
-                                //update del detalle del pedido en base de datos
-                                _context.UsuarioPedidoDetalle.Update(usuarioPedidoDetalle);
-                                _context.SaveChanges();
-                            }
-                            else
-                            {
-                                //usuarioPedidoDetalle.IdUsuarioPedidoDetalle -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.IdUsuarioPedido -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.CodigoArticulo -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.DescripcionArticulo -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.TxtDescMarca -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.TxtDescFamilia -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.Utilidad -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.SnOferta -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.PrecioLista -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.Coeficiente -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.Cantidad -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.IdArticulo -> NO HACE FALTA MODIFICARLO
-                                //usuarioPedidoDetalle.Articulo -> NO HACE FALTA MODIFICARLO
-                                usuarioPedidoDetalle.SnActivo = 0;
+                            //voy a buscar el articulo asociado al detalle del pedido
+                            usuarioPedidoDetalle.Articulo = _usuarioPedidoDetalle.Articulo;
 
-                                //update del detalle del pedido en base de datos
-                                _context.UsuarioPedidoDetalle.Update(usuarioPedidoDetalle);
-                                _context.SaveChanges();
-                            }
-
-
+                            //update del detalle del pedido en base de datos
+                            _context.UsuarioPedidoDetalle.Update(_usuarioPedidoDetalle);
+                            _context.SaveChanges();
 
                         }
+                        //termina foreach
 
 
                         if (usuarioPedidoDetalleBD != null) //EXISTE ARTICULO EN EL PEDIDO , POR ENDE MODIFICO EL ARTICULO DEL PEDIDO
@@ -216,30 +187,23 @@ namespace CarritoComprasD.Services
                         }
 
 
-                        //modifico el Total del pedido , para los usuarioPedidoDetalle ACTIVOS
-                        decimal total = 0;
-                        foreach (UsuarioPedidoDetalle usuarioPedidoDetalle in usuarioPedido.UsuarioPedidoDetalle)
-                        {
-                            if(usuarioPedidoDetalle.SnActivo == -1)
-                            {
-                                total = total + (usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva * usuarioPedidoDetalle.Cantidad);
-                            }
-                        }
-                        usuarioPedido.Total = total;
+                        //modifico el Total del pedido , para los detalles del pedido activos
+                        usuarioPedido = SeteoTotalPedido_Con_UsuarioPedidoDetalle_ACTIVOS(usuarioPedido);
                         _context.UsuarioPedido.Update(usuarioPedido);
                         _context.SaveChanges();
 
                     }
 
 
-                   
+
                     transaction.Commit();
 
-                    
+
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
+                    throw new AppException(ex.Message);
                 }
             }
 
@@ -250,13 +214,147 @@ namespace CarritoComprasD.Services
 
         }
 
-     
 
-        public IEnumerable<UsuarioPedido> GetAll()
+        public UsuarioPedidoResponse EliminarArticuloPedido(UsuarioPedidoEliminarArticuloRequest model)
         {
-            var pedidos = _context.UsuarioPedido;
-            return pedidos.ToList();
+            UsuarioPedido usuarioPedido = null;
+            UsuarioPedidoResponse usuarioPedidoResponse = new UsuarioPedidoResponse();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    //voy a buscar el pedido del IdUsuario que no este finalizado
+                    usuarioPedido = _context.UsuarioPedido.Where(up => up.IdUsuario == model.IdUsuario && up.SnFinalizado == false).FirstOrDefault();
+                    
+                    //voy a buscar los detalles del pedido activos
+                    usuarioPedido.UsuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido && upd.SnActivo == -1).ToList();
+
+                    //recorro los detalles del pedido activos
+                    foreach (UsuarioPedidoDetalle usuarioPedidoDetalle in usuarioPedido.UsuarioPedidoDetalle)
+                    {
+                        //SI EL ARTICULO QUE QUIERO ELIMINAR AL PEDIDO EXISTE EN EL PEDIDO....
+                        if (usuarioPedidoDetalle.IdArticulo == model.IdArticulo)
+                        {
+                            //inactivo el articulo
+                            usuarioPedidoDetalle.SnActivo = 0;
+
+                            //update del detalle del pedido en base de datos
+                            _context.UsuarioPedidoDetalle.Update(usuarioPedidoDetalle);
+                            _context.SaveChanges();
+                        }
+
+                        //MODIFICO ARTICULOS DEL PEDIDO CON LOS DATOS ACTUALIZADOS DE LA VISTA VARTICULO
+                        //ESTO LO HAGO POR EJEMPLO SI HAY ARTICULOS CARGADOS DESDE EL LUNES Y HOY ES VIERNES...
+                        //...ESOS ARTICULOS PUDIERON SUFRIR MODIFICACION DE PRECIOS
+                        UsuarioPedidoDetalle _usuarioPedidoDetalle = Setear_UsuarioPedidoDetalle_ACTIVOS_Con_Datos_De_VArticulo(usuarioPedidoDetalle);
+
+                        //voy a buscar el articulo asociado al detalle del pedido
+                        usuarioPedidoDetalle.Articulo = _usuarioPedidoDetalle.Articulo;
+
+                        //update del detalle del pedido en base de datos
+                        _context.UsuarioPedidoDetalle.Update(_usuarioPedidoDetalle);
+                        _context.SaveChanges();
+
+                    }
+                    //termina foreach
+
+                    //modifico el Total del pedido , para los detalles del pedido activos
+                    usuarioPedido = SeteoTotalPedido_Con_UsuarioPedidoDetalle_ACTIVOS(usuarioPedido);
+                    _context.UsuarioPedido.Update(usuarioPedido);
+                    _context.SaveChanges();
+
+
+
+                    transaction.Commit();
+
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new AppException(ex.Message);
+                }
+            }
+
+            //RETORNO
+            usuarioPedidoResponse.UsuarioPedido = usuarioPedido;
+            usuarioPedidoResponse.IdUsuario = model.IdUsuario;
+            return usuarioPedidoResponse;
         }
+
+
+        public UsuarioPedidoResponse ModificarArticuloPedido(UsuarioPedidoModificarArticuloRequest model)
+        {
+            UsuarioPedido usuarioPedido = null;
+            UsuarioPedidoResponse usuarioPedidoResponse = new UsuarioPedidoResponse();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    //voy a buscar el pedido del IdUsuario que no este finalizado
+                    usuarioPedido = _context.UsuarioPedido.Where(up => up.IdUsuario == model.IdUsuario && up.SnFinalizado == false).FirstOrDefault();
+                   
+                    //voy a buscar los detalles del pedido activos
+                    usuarioPedido.UsuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido && upd.SnActivo == -1).ToList();
+
+                    //recorro los detalles del pedido activos
+                    foreach (UsuarioPedidoDetalle usuarioPedidoDetalle in usuarioPedido.UsuarioPedidoDetalle)
+                    {
+                        //SI EL ARTICULO QUE QUIERO MODIFICAR EN EL PEDIDO EXISTE EN EL PEDIDO....
+                        if (usuarioPedidoDetalle.IdArticulo == model.IdArticulo)
+                        {
+                            //modifico cantidad en articulo
+                            usuarioPedidoDetalle.Cantidad = usuarioPedidoDetalle.Cantidad + model.Cantidad;
+
+
+                            //update del detalle del pedido en base de datos
+                            _context.UsuarioPedidoDetalle.Update(usuarioPedidoDetalle);
+                            _context.SaveChanges();
+                        }
+
+                        //MODIFICO ARTICULOS DEL PEDIDO CON LOS DATOS ACTUALIZADOS DE LA VISTA VARTICULO
+                        //ESTO LO HAGO POR EJEMPLO SI HAY ARTICULOS CARGADOS DESDE EL LUNES Y HOY ES VIERNES...
+                        //...ESOS ARTICULOS PUDIERON SUFRIR MODIFICACION DE PRECIOS
+                        UsuarioPedidoDetalle _usuarioPedidoDetalle = Setear_UsuarioPedidoDetalle_ACTIVOS_Con_Datos_De_VArticulo(usuarioPedidoDetalle);
+
+                        //voy a buscar el articulo asociado al detalle del pedido
+                        usuarioPedidoDetalle.Articulo = _usuarioPedidoDetalle.Articulo;
+                        
+                        //update del detalle del pedido en base de datos
+                        _context.UsuarioPedidoDetalle.Update(_usuarioPedidoDetalle);
+                        _context.SaveChanges();
+
+                    }
+
+                    //modifico el Total del pedido , para los detalles del pedido activos
+                    usuarioPedido = SeteoTotalPedido_Con_UsuarioPedidoDetalle_ACTIVOS(usuarioPedido);
+                    _context.UsuarioPedido.Update(usuarioPedido);
+                    _context.SaveChanges();
+
+
+
+                    transaction.Commit();
+
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new AppException(ex.Message);
+                }
+            }
+
+            //RETORNO
+            usuarioPedidoResponse.UsuarioPedido = usuarioPedido;
+            usuarioPedidoResponse.IdUsuario = model.IdUsuario;
+            return usuarioPedidoResponse;
+        }
+
+        #endregion ---------------------------------- AGREGAR ARTICULO - ELIMINAR ARTICULO - MODIFICACION ARTICULO -----------------------------------------------------
+
+
+
+        #region ---------------------------------- METODOS GET ------------------------------------------------------------------------
 
         public UsuarioPedido GetByIdPedido(int idPedido)
         {
@@ -297,15 +395,139 @@ namespace CarritoComprasD.Services
 
         private UsuarioPedido getByIdUsuarioNotFinalized(int idUsuario)
         {
+            UsuarioPedido usuarioPedido = null;
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    //voy a buscar el pedido del IdUsuario que no este finalizado
+                    usuarioPedido = _context.UsuarioPedido
+                              .Where(up => up.IdUsuario == idUsuario && up.SnFinalizado == false)
+                              .OrderByDescending(up => up.IdUsuarioPedido)
+                              .FirstOrDefault();
 
-            var pedidos = _context.UsuarioPedido
-                                .Where(up => up.IdUsuario == idUsuario && up.SnFinalizado == false)
-                                .OrderByDescending(up => up.IdUsuarioPedido)
-                                .FirstOrDefault();
-            if (pedidos == null) throw new KeyNotFoundException("No hay pedidos por finalizar");
-            return pedidos;
+
+
+                    if (usuarioPedido == null) throw new KeyNotFoundException("No hay pedidos por finalizar");
+
+                    //voy a buscar los detalles del pedido activos
+                    usuarioPedido.UsuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido && upd.SnActivo == -1).ToList();
+
+                    //recorro los detalles del pedido activos
+                    foreach (UsuarioPedidoDetalle usuarioPedidoDetalle in usuarioPedido.UsuarioPedidoDetalle)
+                    {
+
+                        //MODIFICO ARTICULOS DEL PEDIDO CON LOS DATOS ACTUALIZADOS DE LA VISTA VARTICULO
+                        //ESTO LO HAGO POR EJEMPLO SI HAY ARTICULOS CARGADOS DESDE EL LUNES Y HOY ES VIERNES...
+                        //...ESOS ARTICULOS PUDIERON SUFRIR MODIFICACION DE PRECIOS
+                        UsuarioPedidoDetalle _usuarioPedidoDetalle = Setear_UsuarioPedidoDetalle_ACTIVOS_Con_Datos_De_VArticulo(usuarioPedidoDetalle);
+
+                        //voy a buscar el articulo asociado al detalle del pedido
+                        usuarioPedidoDetalle.Articulo = _usuarioPedidoDetalle.Articulo;
+
+                        //update del detalle del pedido en base de datos
+                        _context.UsuarioPedidoDetalle.Update(_usuarioPedidoDetalle);
+                        _context.SaveChanges();
+
+                    }
+                    //termina foreach
+
+                    //modifico el Total del pedido , para los detalles del pedido activos
+                    usuarioPedido = SeteoTotalPedido_Con_UsuarioPedidoDetalle_ACTIVOS(usuarioPedido);
+                    _context.UsuarioPedido.Update(usuarioPedido);
+                    _context.SaveChanges();
+
+
+
+                    transaction.Commit();
+
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new AppException(ex.Message);
+                }
+            }
+
+          
+
+
+            return usuarioPedido;
         }
 
+        #endregion ---------------------------------- METODOS GET ------------------------------------------------------------------------
+
+
+        #region ---------------------------------- HELPERS ------------------------------------------------------------------------
+
+        //SETEO ARTICULOS ACTIVOS DEL PEDIDO CON LOS DATOS ACTUALIZADOS DE LA VISTA VARTICULO
+        //ESTO LO HAGO POR EJEMPLO SI HAY ARTICULOS CARGADOS DESDE EL LUNES Y HOY ES VIERNES...
+        //...ESOS ARTICULOS PUDIERON SUFRIR MODIFICACION DE PRECIOS
+        public UsuarioPedidoDetalle Setear_UsuarioPedidoDetalle_ACTIVOS_Con_Datos_De_VArticulo(UsuarioPedidoDetalle usuarioPedidoDetalle)
+        {
+            //MODIFICO ARTICULOS ACTIVOS DEL PEDIDO CON LOS DATOS ACTUALIZADOS DE LA VISTA VARTICULO
+            //ESTO LO HAGO POR EJEMPLO SI HAY ARTICULOS CARGADOS DESDE EL LUNES Y HOY ES VIERNES...
+            //...ESOS ARTICULOS PUDIERON SUFRIR MODIFICACION DE PRECIOS
+            VArticulo articulo = _context.VArticulo.Where(a => a.Id == usuarioPedidoDetalle.IdArticulo && usuarioPedidoDetalle.SnActivo == -1).FirstOrDefault();
+            if (articulo != null)
+            {
+                //usuarioPedidoDetalle.IdUsuarioPedidoDetalle -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.IdUsuarioPedido -> NO HACE FALTA MODIFICARLO
+                usuarioPedidoDetalle.CodigoArticulo = articulo.CodigoArticulo;
+                usuarioPedidoDetalle.DescripcionArticulo = articulo.DescripcionArticulo;
+                usuarioPedidoDetalle.TxtDescMarca = articulo.MarcaArticulo;
+                usuarioPedidoDetalle.TxtDescFamilia = articulo.FamiliaArticulo;
+                usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva = articulo.PrecioListaPorCoeficientePorMedioIva.Value;
+                //usuarioPedidoDetalle.Utilidad -> NO HACE FALTA MODIFICARLO
+                usuarioPedidoDetalle.SnOferta = articulo.SnOferta.Value;
+                usuarioPedidoDetalle.PrecioLista = articulo.PrecioLista.Value;
+                usuarioPedidoDetalle.Coeficiente = articulo.Coeficiente.Value;
+                //usuarioPedidoDetalle.Cantidad -> NO HACE FALTA MODIFICARLO
+                usuarioPedidoDetalle.IdArticulo = articulo.Id;
+                usuarioPedidoDetalle.Articulo = articulo;
+                usuarioPedidoDetalle.SnActivo = -1;
+
+
+            }
+            else
+            {
+                //usuarioPedidoDetalle.IdUsuarioPedidoDetalle -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.IdUsuarioPedido -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.CodigoArticulo -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.DescripcionArticulo -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.TxtDescMarca -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.TxtDescFamilia -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.Utilidad -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.SnOferta -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.PrecioLista -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.Coeficiente -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.Cantidad -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.IdArticulo -> NO HACE FALTA MODIFICARLO
+                //usuarioPedidoDetalle.Articulo -> NO HACE FALTA MODIFICARLO
+                usuarioPedidoDetalle.SnActivo = 0;
+
+
+            }
+
+            return usuarioPedidoDetalle;
+        }
+
+        //modifico el Total del pedido , para los detalles del pedido activos
+        public UsuarioPedido SeteoTotalPedido_Con_UsuarioPedidoDetalle_ACTIVOS(UsuarioPedido usuarioPedido)
+        {
+            decimal total = 0;
+            foreach (UsuarioPedidoDetalle usuarioPedidoDetalle in usuarioPedido.UsuarioPedidoDetalle)
+            {
+                if (usuarioPedidoDetalle.SnActivo == -1)
+                {
+                    total = total + (usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva * usuarioPedidoDetalle.Cantidad);
+                }
+            }
+            usuarioPedido.Total = total;
+            return usuarioPedido;
+        }
 
         private void sendPedidoEmail(UsuarioPedido pedido)
         {
@@ -383,5 +605,7 @@ namespace CarritoComprasD.Services
                 html: $@"{message}"
             );
         }
+
+        #endregion ---------------------------------- HELPERS ------------------------------------------------------------------------
     }
 }

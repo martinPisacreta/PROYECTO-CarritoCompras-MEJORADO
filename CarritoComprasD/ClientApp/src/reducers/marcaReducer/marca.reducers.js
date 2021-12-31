@@ -1,6 +1,14 @@
 import {  marcaConstantes } from '../../actions/types';
 
-export default function marcaReducer(state = {}, action) {
+
+const initialState = {
+  cargando: false,
+  marcas: {},
+  marcaSelected: ''
+}
+
+
+export default function marcaReducer(state = initialState, action) {
   switch (action.type) {
     case marcaConstantes.GET_BY_FILTERS_REQUEST:
       return {
@@ -10,17 +18,13 @@ export default function marcaReducer(state = {}, action) {
       return {
         marcas: action.marcas
       };
-    case marcaConstantes.GET_BY_FILTERS_FAILURE:
-      return { 
-        error: action.error
-      };
     case marcaConstantes.SELECTED_MARCA_SUCCESS:
         return { 
           marcaSelected: action.pathImgMarca
         };
     case marcaConstantes.REMOVE_SELECTED_MARCA_SUCCESS:
       return { 
-        marcaSelected: null
+        marcaSelected: ''
       };
     default:
       return state

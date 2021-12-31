@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { safeContent } from '../../../utils';
-import { usuarioPedidoDetalleActions , usuarioPedidoActions } from '../../../actions';
+import { usuarioPedidoActions } from '../../../actions';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -11,10 +11,24 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 
 function CartMenu( props ) {
-    const { usuarioPedido, eliminarArticuloPedido  } = props;
+    const { usuarioPedido, eliminarArticuloPedido , getPedidoNotFinalizedByIdUsuario  } = props;
+   
     const existePedido = Object.entries(usuarioPedido).length === 0 ? false : true;
     const usuario = JSON.parse(localStorage.getItem('user'));
     
+    useEffect(() => {
+        
+        async function funcionAsync() {
+        
+            //voy a buscar los articulos del pedido del usuario
+            usuario && await getPedidoNotFinalizedByIdUsuario(usuario.idUsuario);
+ 
+        }
+
+        funcionAsync();
+    }, []);
+
+
     function Imagen  (props)  {
         const {item} = props;
         let existeImagenArticulo = item.articulo ? (item.articulo.pathImagenArticulo ? true  : false) : false;
@@ -78,11 +92,11 @@ function CartMenu( props ) {
                                                             </div>
 
 
-                                                           
+                                                  
                                                             <Imagen item = {item} />
 
 
-                                                            <button className="btn-remove"  title="Remove Articulo" onClick={ () => eliminarArticuloPedido( item.id ) }><i className="icon-close"></i></button>
+                                                            <button className="btn-remove"  title="Remove Articulo" onClick={ () => eliminarArticuloPedido( usuario.idUsuario,item.id ) }><i className="icon-close"></i></button>
                                                             
                                                         </div>)
                                                     } ) }
@@ -109,15 +123,17 @@ function CartMenu( props ) {
 
 
 const mapStateToProps = (state) => {
+    console.log(state)
     return { //cualquier cosa que retorno aca , va a estar disponible como propiedad (props) en nuestro componente
-        usuarioPedido: state.usuarioPedidoDetalleReducer.usuarioPedido ? state.usuarioPedidoDetalleReducer.usuarioPedido : [], 
+        usuarioPedido: state.usuarioPedidoReducer.usuarioPedido ? state.usuarioPedidoReducer.usuarioPedido : [], 
     }
   }
 
 
 
 const actionCreators = {
-    eliminarArticuloPedido: usuarioPedidoDetalleActions.eliminarArticuloPedido
+    eliminarArticuloPedido: usuarioPedidoActions.eliminarArticuloPedido,
+    getPedidoNotFinalizedByIdUsuario: usuarioPedidoActions.getByIdUsuarioNotFinalized
 };
 
 

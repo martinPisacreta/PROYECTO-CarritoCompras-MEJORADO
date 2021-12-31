@@ -16,7 +16,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { esES } from '@material-ui/core/locale';
-import {alertService , usuarioPedidosDetalleService} from '../../../services'
+import {alertService } from '../../../services'
 
 const styles = (theme) => ({
   root: {
@@ -168,11 +168,11 @@ function PedidoDetalle(props) {
 
   useEffect(() => {
 
-    usuarioPedidosDetalleService.getByIdPedido(props.selectedRow.id_usuario_pedido)
-    .then(x => setPedidoDetalle(x))
-    .catch(error => {
-      alertService.error(error);
-    });
+    // usuarioPedidosDetalleService.getByIdPedido(props.selectedRow.id_usuario_pedido)
+    // .then(x => setPedidoDetalle(x))
+    // .catch(error => {
+    //   alertService.error(error);
+    // });
     }, []);
 
 

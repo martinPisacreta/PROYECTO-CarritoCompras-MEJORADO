@@ -17,7 +17,9 @@ namespace Carrito_Compras_Core.Controllers
     [Route("[controller]")]
     public class UsuarioPedidosController : ControllerBase
     {
-      
+
+        //NO ESTA CREADO UsuarioPedidoDetalleController PORQUE MANEJO TODO DESDE UsuarioPedidosController.cs
+
 
         private readonly IUsuarioPedidoService _usuarioPedidoService;
         private readonly IMapper _mapper;
@@ -30,26 +32,36 @@ namespace Carrito_Compras_Core.Controllers
             _mapper = mapper;
         }
 
-
+        #region ---------------------------------- AGREGAR - ELIMINAR - MODIFICACION -----------------------------------------------------
         [Authorize]
         [HttpPost("agregar-articulo-pedido")]
-        public ActionResult<UsuarioPedidoResponse> AgregarArticuloPedido(UsuarioPedidoRequest model)
+        public ActionResult<UsuarioPedidoResponse> AgregarArticuloPedido(UsuarioPedidoAgregarArticuloRequest model)
         {
             var response = _usuarioPedidoService.AgregarArticuloPedido(model);
             return Ok(response);
         }
 
-
+        [Authorize]
+        [HttpPost("eliminar-articulo-pedido")]
+        public ActionResult<UsuarioPedidoResponse> EliminarArticuloPedido(UsuarioPedidoEliminarArticuloRequest model)
+        {
+            var response = _usuarioPedidoService.EliminarArticuloPedido(model);
+            return Ok(response);
+        }
 
 
         [Authorize]
-        [HttpGet]
-        public ActionResult<IEnumerable<UsuarioPedido>> GetAll()
+        [HttpPost("modificar-articulo-pedido")]
+        public ActionResult<UsuarioPedidoResponse> ModificarArticuloPedido(UsuarioPedidoModificarArticuloRequest model)
         {
-            var pedidos = _usuarioPedidoService.GetAll();
-            return Ok(pedidos);
+            var response = _usuarioPedidoService.ModificarArticuloPedido(model);
+            return Ok(response);
         }
 
+        #endregion ---------------------------------- ALTA - BAJA - MODIFICACION -----------------------------------------------------
+
+
+        #region ---------------------------------- METODOS GET ------------------------------------------------------------------------
         [Authorize]
         [HttpGet("{idPedido:int}")]
         public ActionResult<UsuarioPedido> GetByIdPedido(int idPedido)
@@ -79,6 +91,8 @@ namespace Carrito_Compras_Core.Controllers
 
             return Ok(usuarioPedido);
         }
+
+        #endregion ---------------------------------- METODOS GET ------------------------------------------------------------------------
 
 
     }

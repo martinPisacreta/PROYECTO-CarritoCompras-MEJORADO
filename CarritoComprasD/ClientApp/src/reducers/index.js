@@ -12,7 +12,6 @@ import resetPassword from "./usuarioReducer/resetPassword.reducers"
 import getByIdReducer from "./usuarioReducer/getById.reducers"
 import updateReducer from "./usuarioReducer/update.reducers"
 
-import usuarioPedidoDetalleReducer from "./usuarioPedidoDetalleReducer/usuarioPedidoDetalle.reducers"
 import usuarioPedidoReducer from "./usuarioPedidoReducer/usuarioPedido.reducers"
 import marcaReducer from "./marcaReducer/marca.reducers.js"
 import empresaReducer from "./empresaReducer/empresa.reducers.js"
@@ -29,7 +28,6 @@ export default combineReducers({
     getByIdReducer,
     updateReducer,
     usuarioPedidoReducer,
-    usuarioPedidoDetalleReducer,
     marcaReducer,
     empresaReducer,
     articuloReducer

@@ -15,33 +15,29 @@ import MainMenu from './partials/main-menu';
 import CartMenu from './partials/cart-menu';
 
 
-import { usuarioService } from '../../services';
-
-
 function Header( props ) {
     const { container = "container" ,  logout , getEmpresaById } = props;
-    const [usuario, setUsuario] = useState({});
     const [empresa,setEmpresa] = useState({});
+    const usuario = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        getEmpresaById(1).then(x => setEmpresa(x))
+        async function funcionAsync() {
+            await getEmpresaById(1)
+            .then(x => {
+                setEmpresa(x)
+            })
+        }
+        funcionAsync();
+
     }, []);
-
-    //voy a buscar los datos del usuario logueado y despues interrumpo el flujo "subscription.unsubscribe();""
-    useEffect( () => { 
-        const subscription = usuarioService.usuario.subscribe(x => setUsuario(x));
-        return subscription.unsubscribe();
-       
-    }, [] )
-
 
     function onDelete() {
         logout();
         window.location.href =  `${process.env.PUBLIC_URL}`;
     }
 
-
-
+    
+ 
     return (
         <header className="header header-10 header-intro-clearance">
             <div className="header-top">
@@ -158,6 +154,7 @@ const actionCreators = {
     logout: usuarioActions.logout,
     getEmpresaById: empresaActions.getById
 };
+
 
 
 

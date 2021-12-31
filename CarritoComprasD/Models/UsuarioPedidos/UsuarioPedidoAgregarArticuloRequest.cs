@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CarritoComprasD.Models.UsuarioPedidos
 {
-    public class UsuarioPedidoRequest
+    public class UsuarioPedidoAgregarArticuloRequest
     {
         public int IdUsuario { get; set; }
 

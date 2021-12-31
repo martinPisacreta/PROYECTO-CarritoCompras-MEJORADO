@@ -9,8 +9,6 @@ import Footer from './common/footer';
 import MobileMenu from './common/mobile-menu';
 
 function App( props ) {
-    let matchedCount = 0;
-    let overlayFlag = true;
     const [ container, setContainer ] = useState( "container" );
     const [ prevPath, setPrevPath ] = useState( '' );
 
