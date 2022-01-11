@@ -8,7 +8,6 @@ namespace CarritoComprasD.Helpers.AppSettings
     public class _Jwt
     {
 
-        public int RefreshTokenTTL { get; set; }
         public string Key { get; set; }
         public string Issuer { get; set; }
         public string Audience { get; set; }

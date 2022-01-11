@@ -1,6 +1,7 @@
 
 import { usuarioPedidoConstantes } from './types';
-import { usuarioPedidosService } from '../services';
+import { usuarioPedidosService , alertService } from '../services';
+
 
 export const usuarioPedidoActions = {
     finalizarPedido,
@@ -105,7 +106,7 @@ function modificarArticuloPedido( idUsuario,idArticulo, cantidad) {
 
 function finalizarPedido(pedido) {
     return dispatch => {
-        dispatch(request(pedido));
+        dispatch(request());
 
         return new Promise((resolve, reject) => {
             usuarioPedidosService.finalizarPedido(pedido)
@@ -113,11 +114,17 @@ function finalizarPedido(pedido) {
                         _pedido => { 
                             dispatch(success());
                             
-                            alertService.success('Pedido finalizado correctamente');
+                            if(_pedido.usuarioPedido.snEnvioMail) {
+                                alertService.success(_pedido.usuarioPedido.respuestaEnvioMail);
+                            }
+                            else {
+                                alertService.warn(_pedido.usuarioPedido.respuestaEnvioMail);
+                            }
+                            
                             setTimeout(() => {
-                                history.push('/');
-                              }, 3000);
-                            resolve(_pedido); // respuesta correcta
+                                resolve(_pedido); // respuesta correcta
+                              }, 6000);
+                            
                         },
                         error => {
                             dispatch(failure());
@@ -130,9 +137,9 @@ function finalizarPedido(pedido) {
         
       
 
-    function request(pedido) { return { type: usuarioPedidoConstantes.CREAR_PEDIDO_REQUEST,  pedido } }
-    function success() { return { type: usuarioPedidoConstantes.CREAR_PEDIDO_SUCCESS } }
-    function failure() { return { type: usuarioPedidoConstantes.CREAR_PEDIDO_FAILURE } }
+    function request() { return { type: usuarioPedidoConstantes.FINALIZAR_PEDIDO_REQUEST } }
+    function success() { return { type: usuarioPedidoConstantes.FINALIZAR_PEDIDO_SUCCESS } }
+    function failure() { return { type: usuarioPedidoConstantes.FINALIZAR_PEDIDO_FAILURE } }
 }
 
 

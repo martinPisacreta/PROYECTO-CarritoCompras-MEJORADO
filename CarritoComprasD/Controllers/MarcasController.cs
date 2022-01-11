@@ -11,6 +11,7 @@ using CarritoComprasD.Entities;
 using AutoMapper;
 using CarritoComprasD.Controllers;
 using CarritoComprasD.Services;
+using CarritoComprasD.Models.ComboBox;
 
 namespace Carrito_Compras_Core.Controllers
 {
@@ -30,13 +31,22 @@ namespace Carrito_Compras_Core.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Marca>> GetAll()
+        [Route("get-all-with-pathImg-and-active")]
+        public ActionResult<IEnumerable<Marca>> GetAllWithPathImgAndActive()
         {
-            var marcas = _marcaService.GetAll();
+            var marcas = _marcaService.GetAllWithPathImgAndActive();
             return Ok(marcas);
         }
 
-       
+        [HttpGet]
+        [Route("get-idTablaMarca-and-txtDescMarca-with-active")]
+        public ActionResult<IEnumerable<ComboBoxResponse>> GetIdTablaMarcaAndTxtDescMarcaWithActive()
+        {
+            var marcas = _marcaService.GetIdTablaMarcaAndTxtDescMarcaWithActive();
+            return Ok(marcas);
+        }
+
+
         [HttpGet("{id:int}")]
         public ActionResult<Marca> GetById(int id)
         {

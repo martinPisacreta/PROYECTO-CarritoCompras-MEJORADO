@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using CarritoComprasD.Entities;
-using CarritoComprasD.Models.Usuario;
+using CarritoComprasD.Models.Account;
 
 namespace WebApi.Controllers
 {
@@ -29,38 +29,20 @@ namespace WebApi.Controllers
         public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
         {
             var response = _usuarioService.Authenticate(model, ipAddress());
-            setTokenCookie(response.RefreshToken);
+            //setTokenCookie(response.RefreshToken);
             return Ok(response);
         }
 
         [HttpPost("refresh-token")]
-        public ActionResult<AuthenticateResponse> RefreshToken()
+        public ActionResult<AuthenticateResponse> RefreshToken(RefreshTokenRequest model)
         {
 
-           var refreshToken = Request.Cookies["refreshToken"];
-            var response = _usuarioService.RefreshToken(refreshToken, ipAddress());
-            setTokenCookie(response.RefreshToken);
+            var response = _usuarioService.RefreshToken(model.IdUsuario,ipAddress());
+            //setTokenCookie(response.RefreshToken);
             return Ok(response);
         }
 
-        [Authorize]
-        [HttpPost("revoke-token")]
-        public IActionResult RevokeToken()
-        {
-            // accept token from request body or cookie
-            var token = Request.Cookies["refreshToken"];
-
-            if (string.IsNullOrEmpty(token))
-                return BadRequest(new { message = "Token es requerido" });
-
-            // users can revoke their own tokens and admins can revoke any tokens
-            if (!Usuario.OwnsToken(token) && Usuario.Rol != "Admin")
-                return Unauthorized(new { message = "Sin Autorizacion" });
-
-            _usuarioService.RevokeToken(token, ipAddress());
-        
-            return Ok(new { message = "Token revocado" });
-        }
+       
 
         [HttpPost("register")]
         public IActionResult Register(RegisterRequest model)

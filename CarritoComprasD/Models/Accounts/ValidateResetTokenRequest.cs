@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CarritoComprasD.Models.Usuario
+namespace CarritoComprasD.Models.Account
 {
-    public class VerifyEmailRequest
+    public class ValidateResetTokenRequest
     {
         [Required]
         public string Token { get; set; }

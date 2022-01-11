@@ -3,20 +3,22 @@ import { articuloService , alertService} from '../services';
 
 
 export const articuloActions = {
-    getByFilters,
-    getCount
+    getByFilters
 };
 
 
-function getByFilters(page,rowsPerPage,utilidad,filterValue,snOferta) {
-
+function getByFilters(page,rowsPerPage,marcaSeleccionadaComboBox,familiaSeleccionadaComboBox,codigoArticulo,descripcionArticulo,utilidad,snOferta) {
     const payload = {
         skip: page,
         take: rowsPerPage,
+        idTablaMarca : marcaSeleccionadaComboBox ? marcaSeleccionadaComboBox.id : 0,
+        idTablaFamilia : familiaSeleccionadaComboBox ? familiaSeleccionadaComboBox.id : 0,
+        codigoArticulo : codigoArticulo ? codigoArticulo : "",
+        descripcionArticulo : descripcionArticulo ? descripcionArticulo : '',
         utilidad,
-        filter: filterValue,
         oferta: snOferta
     };
+
 
     
     return dispatch => {
@@ -45,29 +47,3 @@ function getByFilters(page,rowsPerPage,utilidad,filterValue,snOferta) {
     function failure(error) { return { type: articuloConstantes.GET_BY_FILTERS_FAILURE, error } }
 }
 
-function getCount() {
-    return dispatch => {
-        dispatch(request());
-
-        return new Promise((resolve, reject) => {
-            articuloService.getCount()
-            .then(
-                cantidad => { 
-                    dispatch(success(cantidad))
-                    resolve(cantidad); // respuesta correcta
-                },
-                error => {
-                    dispatch(failure(error.toString()))
-                    alertService.error(error);
-                    reject(error)
-                }
-            )
-        })
-
-        
-    };
-
-    function request() { return { type: articuloConstantes.GET_COUNT_REQUEST } }
-    function success(cantidad) { return { type: articuloConstantes.GET_COUNT_SUCCESS, cantidad } }
-    function failure(error) { return { type: articuloConstantes.GET_COUNT_FAILURE, error } }
-}

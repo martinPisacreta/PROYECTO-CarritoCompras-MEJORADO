@@ -1,6 +1,12 @@
 import {  usuarioConstantes } from '../../actions/types';
 
-export default function registerReducer(state = {}, action) {
+const initialState = {
+  registrando : false,
+  usuario: null
+}
+
+
+export default function registerReducer(state = initialState, action) {
   switch (action.type) {
     case usuarioConstantes.REGISTER_REQUEST:
       return {
@@ -9,11 +15,13 @@ export default function registerReducer(state = {}, action) {
       };
     case usuarioConstantes.REGISTER_SUCCESS:
       return {
-
+        registrando: false,
+        usuario: action.usuario
       };
     case usuarioConstantes.REGISTER_FAILURE:
       return {
-        
+        registrando: false,
+        usuario: null
       };
     default:
       return state

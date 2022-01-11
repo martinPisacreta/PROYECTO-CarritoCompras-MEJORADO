@@ -3,18 +3,45 @@ import { marcaService , alertService} from '../services';
 
 
 export const marcaActions = {
-    getAll,
+    getAllWithPathImgAndActive,
+    getIdTablaMarcaAndTxtDescMarcaWithActive,
     selectedMarca,
     removeSelectedMarca
 };
 
 
-function getAll() {
+function getAllWithPathImgAndActive() {
     return dispatch => {
         dispatch(request());
 
         return new Promise((resolve, reject) => {
-            marcaService.getAll()
+            marcaService.getAllWithPathImgAndActive()
+            .then(
+                marcas => { 
+                    dispatch(success(marcas))
+                    resolve(marcas); // respuesta correcta
+                },
+                error => {
+                    alertService.error(error);
+                    reject(error)
+                }
+            )
+        })
+
+        
+    };
+
+    function request() { return { type: marcaConstantes.GET_BY_FILTERS_REQUEST } }
+    function success(marcas) { return { type: marcaConstantes.GET_BY_FILTERS_SUCCESS, marcas } }
+
+}
+
+function getIdTablaMarcaAndTxtDescMarcaWithActive() {
+    return dispatch => {
+        dispatch(request());
+
+        return new Promise((resolve, reject) => {
+            marcaService.getIdTablaMarcaAndTxtDescMarcaWithActive()
             .then(
                 marcas => { 
                     dispatch(success(marcas))
@@ -36,11 +63,12 @@ function getAll() {
 }
 
 
-function selectedMarca(pathImgMarca) {
+
+function selectedMarca(marca) {
     return dispatch => {
-            dispatch(success(pathImgMarca));  
+            dispatch(success(marca));  
         }   
-    function success(pathImgMarca) { return { type: marcaConstantes.SELECTED_MARCA_SUCCESS, pathImgMarca } }
+    function success(marca) { return { type: marcaConstantes.SELECTED_MARCA_SUCCESS, marca } }
 }
 
 function removeSelectedMarca() {

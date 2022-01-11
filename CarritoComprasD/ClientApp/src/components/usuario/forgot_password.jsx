@@ -30,7 +30,7 @@ function ForgotPassword(props) {
         forgotPassword(email)
         .finally(() => 
             setSubmitting(false)
-        );
+        )
     }
 
 

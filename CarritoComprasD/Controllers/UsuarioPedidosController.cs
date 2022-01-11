@@ -60,6 +60,17 @@ namespace Carrito_Compras_Core.Controllers
 
         #endregion ---------------------------------- ALTA - BAJA - MODIFICACION -----------------------------------------------------
 
+        #region ----------------------------------      FINALIZAR PEDIDO        ------------------------------------------------------
+
+        [Authorize]
+        [HttpPost("finalizar-pedido")]
+        public ActionResult<UsuarioPedidoFinalizarResponse> FinalizarPedido(UsuarioPedidoFinalizarRequest model)
+        {
+
+            var response = _usuarioPedidoService.FinalizarPedido(model);
+            return Ok(response);
+        }
+        #endregion ---------------------------------- FINALIZAR PEDIDO -------------------------------------------------------------------
 
         #region ---------------------------------- METODOS GET ------------------------------------------------------------------------
         [Authorize]

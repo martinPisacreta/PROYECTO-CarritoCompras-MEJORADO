@@ -3,8 +3,8 @@ import {  marcaConstantes } from '../../actions/types';
 
 const initialState = {
   cargando: false,
-  marcas: {},
-  marcaSelected: ''
+  marcas: null,
+  marcaSelected: null
 }
 
 
@@ -20,11 +20,11 @@ export default function marcaReducer(state = initialState, action) {
       };
     case marcaConstantes.SELECTED_MARCA_SUCCESS:
         return { 
-          marcaSelected: action.pathImgMarca
+          marcaSelected: action.marca
         };
     case marcaConstantes.REMOVE_SELECTED_MARCA_SUCCESS:
       return { 
-        marcaSelected: ''
+        marcaSelected: null
       };
     default:
       return state

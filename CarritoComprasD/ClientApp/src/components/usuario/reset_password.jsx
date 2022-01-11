@@ -109,9 +109,9 @@ function ResetPassword(props) {
             };
 
             resetPassword(payload)
-            .catch(() => {
-                setSubmitting(false);
-            });
+            .finally(() => 
+                setSubmitting(false)
+            )
         }
 
 

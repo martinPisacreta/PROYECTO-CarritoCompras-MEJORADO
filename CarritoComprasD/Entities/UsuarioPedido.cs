@@ -20,6 +20,8 @@ namespace CarritoComprasD.Entities
         public int IdEmpresa { get; set; }
         public decimal Total { get; set; }
         public bool? SnFinalizado { get; set; }
+        public bool? SnEnvioMail { get; set; }
+        public string RespuestaEnvioMail { get; set; }
 
         public virtual Empresa IdEmpresaNavigation { get; set; }
         public virtual Usuario IdUsuarioNavigation { get; set; }

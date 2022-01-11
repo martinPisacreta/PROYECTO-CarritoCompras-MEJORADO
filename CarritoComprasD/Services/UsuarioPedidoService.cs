@@ -18,6 +18,7 @@ namespace CarritoComprasD.Services
         UsuarioPedidoResponse AgregarArticuloPedido(UsuarioPedidoAgregarArticuloRequest model);
         UsuarioPedidoResponse EliminarArticuloPedido(UsuarioPedidoEliminarArticuloRequest model);
         UsuarioPedidoResponse ModificarArticuloPedido(UsuarioPedidoModificarArticuloRequest model);
+        UsuarioPedidoFinalizarResponse FinalizarPedido(UsuarioPedidoFinalizarRequest model);
         UsuarioPedido GetByIdPedido(int id);
         IEnumerable<UsuarioPedido> GetByIdUsuario(int idUsuario);
         UsuarioPedido GetByIdUsuarioNotFinalized(int idUsuario);
@@ -68,6 +69,7 @@ namespace CarritoComprasD.Services
                         usuarioPedido.IdEmpresa = model.IdEmpresa;
                         usuarioPedido.Total = Convert.ToDecimal(model.Articulo.PrecioListaPorCoeficientePorMedioIva * model.Cantidad);
                         usuarioPedido.SnFinalizado = false;
+                        usuarioPedido.SnEnvioMail = false;
 
                         //genero el pedido en base de datos
                         _context.UsuarioPedido.Add(usuarioPedido);
@@ -241,6 +243,7 @@ namespace CarritoComprasD.Services
                             //update del detalle del pedido en base de datos
                             _context.UsuarioPedidoDetalle.Update(usuarioPedidoDetalle);
                             _context.SaveChanges();
+                            continue;
                         }
 
                         //MODIFICO ARTICULOS DEL PEDIDO CON LOS DATOS ACTUALIZADOS DE LA VISTA VARTICULO
@@ -257,6 +260,8 @@ namespace CarritoComprasD.Services
 
                     }
                     //termina foreach
+
+
 
                     //modifico el Total del pedido , para los detalles del pedido activos
                     usuarioPedido = SeteoTotalPedido_Con_UsuarioPedidoDetalle_ACTIVOS(usuarioPedido);
@@ -275,6 +280,11 @@ namespace CarritoComprasD.Services
                     throw new AppException(ex.Message);
                 }
             }
+
+            
+
+            //voy a buscar los detalles del pedido activos , ya que arriba elimine uno...
+            usuarioPedido.UsuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido && upd.SnActivo == -1).ToList();
 
             //RETORNO
             usuarioPedidoResponse.UsuarioPedido = usuarioPedido;
@@ -304,7 +314,7 @@ namespace CarritoComprasD.Services
                         if (usuarioPedidoDetalle.IdArticulo == model.IdArticulo)
                         {
                             //modifico cantidad en articulo
-                            usuarioPedidoDetalle.Cantidad = usuarioPedidoDetalle.Cantidad + model.Cantidad;
+                            usuarioPedidoDetalle.Cantidad = model.Cantidad;
 
 
                             //update del detalle del pedido en base de datos
@@ -353,6 +363,65 @@ namespace CarritoComprasD.Services
         #endregion ---------------------------------- AGREGAR ARTICULO - ELIMINAR ARTICULO - MODIFICACION ARTICULO -----------------------------------------------------
 
 
+        #region ---------------------------------- FINALIZAR PEDIDO -------------------------------------------------------------------
+
+        public UsuarioPedidoFinalizarResponse FinalizarPedido(UsuarioPedidoFinalizarRequest model)
+        {
+            Usuario usuario = null;
+            Empresa empresa = null;
+            UsuarioPedido usuarioPedido = null;
+            ICollection<UsuarioPedidoDetalle> usuarioPedidoDetalle = null;
+            UsuarioPedidoFinalizarResponse usuarioPedidoFinalizarResponse = new UsuarioPedidoFinalizarResponse();
+            string respuesta = "";
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    usuario = _context.Usuario.Where(u => u.IdUsuario == model.IdUsuario).FirstOrDefault();
+                    empresa = _context.Empresa.Where(e => e.IdEmpresa == model.IdEmpresa).FirstOrDefault();
+
+                    //voy a buscar el pedido del IdUsuario que no este finalizado
+                    usuarioPedido = _context.UsuarioPedido.Where(up => up.IdUsuario == model.IdUsuario && up.SnFinalizado == false).FirstOrDefault();
+                  
+
+                    //voy a buscar el detalle del pedido en base al IdUsuarioPedido
+                    usuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido).ToList();
+
+                   
+                    //finalizo el pedido
+                    usuarioPedido.SnFinalizado = true;
+
+                    //envio mail
+                    respuesta = sendPedidoEmail(usuario , usuarioPedido , usuarioPedidoDetalle);
+                    if (respuesta != "")
+                    {
+                        usuarioPedido.SnEnvioMail = false;
+                        usuarioPedido.RespuestaEnvioMail = "Se finalizo el pedido , pero no se pudo enviar el mail por la siguiente razon: " + respuesta;
+                    }
+                    else
+                    {
+                        usuarioPedido.SnEnvioMail = true;
+                        usuarioPedido.RespuestaEnvioMail = "Pedido finalizado correctamente";
+                    }
+
+                    _context.UsuarioPedido.Update(usuarioPedido);
+                    _context.SaveChanges();
+                    transaction.Commit(); 
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new AppException(ex.Message);
+                }
+
+                //RETORNO
+                usuarioPedidoFinalizarResponse.UsuarioPedido = usuarioPedido;
+                usuarioPedidoFinalizarResponse.IdUsuario = usuario.IdUsuario;
+                return usuarioPedidoFinalizarResponse;
+                
+            }
+        }
+        #endregion ---------------------------------- FINALIZAR PEDIDO -------------------------------------------------------------------
 
         #region ---------------------------------- METODOS GET ------------------------------------------------------------------------
 
@@ -408,7 +477,7 @@ namespace CarritoComprasD.Services
 
 
 
-                    if (usuarioPedido == null) throw new KeyNotFoundException("No hay pedidos por finalizar");
+                    if (usuarioPedido == null) return null;
 
                     //voy a buscar los detalles del pedido activos
                     usuarioPedido.UsuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido && upd.SnActivo == -1).ToList();
@@ -522,88 +591,100 @@ namespace CarritoComprasD.Services
             {
                 if (usuarioPedidoDetalle.SnActivo == -1)
                 {
-                    total = total + (usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva * usuarioPedidoDetalle.Cantidad);
+                    total = total + (Math.Round(usuarioPedidoDetalle.PrecioListaPorCoeficientePorMedioIva,2) * usuarioPedidoDetalle.Cantidad);
                 }
             }
             usuarioPedido.Total = total;
             return usuarioPedido;
         }
 
-        private void sendPedidoEmail(UsuarioPedido pedido)
+        private string sendPedidoEmail(Usuario usuario , UsuarioPedido usuarioPedido , ICollection<UsuarioPedidoDetalle> usuarioPedidoDetalle)
         {
-            string message;
-            message =
-                   "<html> " +
-                           "<head> " +
-                                   "<style> " +
-                                       "table, th, td " +
-                                       "{ " +
-                                               "border: 1px solid black; " +
-                                               "border - collapse: collapse; " +
-                                       "} " +
-                                   "</style> " +
-                           "</head> " +
-                           "<body> " +
-                               "<div style = 'margin: 25px 25px 25px 25px;'> " +
-                                   "<div> " +
-                                       "<div> " +
-                                           "<strong> Usuario : </strong> " +
-                                           "<span>" + pedido.IdUsuarioNavigation.RazonSocial + "</span> " +
-                                       "</div> " +
-
-                                       "<div> " +
-                                           "<strong> Telefono :</strong> " +
-                                           "<span>" + pedido.IdUsuarioNavigation.Telefono + "</span> " +
-                                       "</div> " +
-
-                                       "<div> " +
-                                           "<strong> Cuit :</strong> " +
-                                           "<span>" + pedido.IdUsuarioNavigation.Cuit + "</span> " +
-                                       "</div> " +
-
-                                       "&nbsp; " +
-
-                                       "<div> " +
-                                           "<table style = 'width:100%; border-collapse: collapse;'> " +
-                                               "<tr> " +
-                                                   "<th> Cantidad </th> " +
-                                                   "<th> Marca </th> " +
-                                                   "<th> C&oacute;digo</th> " +
-                                                   "<th> Precio Compra Usuario</th> " +
-                                               //"<th> Descripci&oacute;n</th> " +
-                                               "</tr>";
-            foreach (UsuarioPedidoDetalle upd in pedido.UsuarioPedidoDetalle)
+            string respuesta = "";
+            try
             {
+                string message;
+                message =
+                       "<html> " +
+                               "<head> " +
+                                       "<style> " +
+                                           "table, th, td " +
+                                           "{ " +
+                                                   "border: 1px solid black; " +
+                                                   "border - collapse: collapse; " +
+                                           "} " +
+                                       "</style> " +
+                               "</head> " +
+                               "<body> " +
+                                   "<div style = 'margin: 25px 25px 25px 25px;'> " +
+                                       "<div> " +
+                                           "<div> " +
+                                               "<strong> Usuario : </strong> " +
+                                               "<span>" + usuario.RazonSocial + "</span> " +
+                                           "</div> " +
+
+                                           "<div> " +
+                                               "<strong> Telefono :</strong> " +
+                                               "<span>" + usuario.Telefono + "</span> " +
+                                           "</div> " +
+
+                                           "<div> " +
+                                               "<strong> Cuit :</strong> " +
+                                               "<span>" + usuario.Cuit + "</span> " +
+                                           "</div> " +
+
+                                           "&nbsp; " +
+
+                                           "<div> " +
+                                               "<table style = 'width:100%; border-collapse: collapse;'> " +
+                                                   "<tr> " +
+                                                       "<th> Cantidad </th> " +
+                                                       "<th> Marca </th> " +
+                                                       "<th> C&oacute;digo</th> " +
+                                                       "<th> Precio Compra Usuario</th> " +
+                                                   //"<th> Descripci&oacute;n</th> " +
+                                                   "</tr>";
+                foreach (UsuarioPedidoDetalle upd in usuarioPedidoDetalle)
+                {
+                    message +=
+                        "<tr> " +
+                            "<td align='center'>" + upd.Cantidad + "</td> " +
+                            "<td align='center'>" + upd.TxtDescMarca + "</td> " +
+                            "<td align='center'>" + upd.CodigoArticulo + "</td> " +
+                            "<td align='center'>" + upd.PrecioListaPorCoeficientePorMedioIva.ToString("N2") + "</td> " +
+                        //"<td>" + upd.DescripcionArticulo + "</td> " +
+                        "</tr> ";
+                }
                 message +=
-                    "<tr> " +
-                        "<td align='center'>" + upd.Cantidad + "</td> " +
-                        "<td align='center'>" + upd.TxtDescMarca + "</td> " +
-                        "<td align='center'>" + upd.CodigoArticulo + "</td> " +
-                        "<td align='center'>" + upd.PrecioListaPorCoeficientePorMedioIva.ToString("N2") + "</td> " +
-                    //"<td>" + upd.DescripcionArticulo + "</td> " +
-                    "</tr> ";
-            }
-            message +=
 
 
-                        "</table> " +
+                            "</table> " +
 
-                         "<br/> <div> " +
-                            "<strong> Total :</strong> " +
-                            "<span>" + pedido.Total.ToString("N2") + "</span> " +
-                        "</div> " +
+                             "<br/> <div> " +
+                                "<strong> Total :</strong> " +
+                                "<span>" + usuarioPedido.Total.ToString("N2") + "</span> " +
+                            "</div> " +
 
+                                        "</div> " +
                                     "</div> " +
                                 "</div> " +
-                            "</div> " +
-                        "</body> " +
-                    "</html>";
+                            "</body> " +
+                        "</html>";
 
-            _emailService.Send(
-                to: _appSettings_emailDestinoPedido.Cuenta,
-                subject: "Ingreso de pedido : " + pedido.IdUsuarioNavigation.RazonSocial,
-                html: $@"{message}"
-            );
+                _emailService.Send(
+                    to: _appSettings_emailDestinoPedido.Cuenta,
+                    subject: "Ingreso de pedido : " + usuario.RazonSocial,
+                    html: $@"{message}"
+                );
+
+              
+                return respuesta;
+            }
+            catch(Exception ex)
+            {
+                respuesta = ex.Message.ToString();
+                return respuesta;
+            }
         }
 
         #endregion ---------------------------------- HELPERS ------------------------------------------------------------------------

@@ -9,3 +9,5 @@ export {marcaActions} from './marca.actions';
 export {empresaActions} from './empresa.actions';
 
 export {articuloActions} from './articulo.actions';
+
+export {familiaActions} from './familia.actions';

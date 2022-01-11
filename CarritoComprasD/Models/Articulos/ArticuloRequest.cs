@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using DevExtreme.AspNet.Mvc;
 
 namespace CarritoComprasD.Models.Articulo
 {
@@ -9,20 +8,31 @@ namespace CarritoComprasD.Models.Articulo
 
 
         [Required]
-        public int skip { get; set; }
+        public int Skip { get; set; }
         [Required]
-        public int take { get; set; }
+        public int Take { get; set; }
 
+       
+        public int IdTablaMarca { get; set; }
+
+       
+        public int IdTablaFamilia { get; set; }
+
+      
+        public string CodigoArticulo { get; set; }
+
+       
+        public string DescripcionArticulo { get; set; }
+
+           
         [Required]
-        public int utilidad { get; set; }
+        public int Utilidad { get; set; }
      
 
-        public string filter { get; set; }
-
         [Required]
-        public bool oferta { get; set; }
+        public bool Oferta { get; set; }
 
     }
 
-  
+ 
 }

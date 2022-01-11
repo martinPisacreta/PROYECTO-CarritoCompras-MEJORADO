@@ -10,7 +10,7 @@ namespace CarritoComprasD.Entities
 {
     public partial class CarritoComprasWebContext : DbContext
     {
-     
+      
 
         public CarritoComprasWebContext(DbContextOptions<CarritoComprasWebContext> options)
             : base(options)
@@ -28,7 +28,7 @@ namespace CarritoComprasD.Entities
         public virtual DbSet<UsuarioPedidoDetalle> UsuarioPedidoDetalle { get; set; }
         public virtual DbSet<VArticulo> VArticulo { get; set; }
 
-      
+     
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -471,6 +471,12 @@ namespace CarritoComprasD.Entities
 
                 entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
 
+                entity.Property(e => e.RespuestaEnvioMail)
+                    .HasColumnName("respuesta_envio_mail")
+                    .HasMaxLength(1000);
+
+                entity.Property(e => e.SnEnvioMail).HasColumnName("sn_envio_mail");
+
                 entity.Property(e => e.SnFinalizado).HasColumnName("sn_finalizado");
 
                 entity.Property(e => e.Total)
@@ -556,10 +562,6 @@ namespace CarritoComprasD.Entities
                 entity.ToView("v_articulo");
 
                 entity.Property(e => e.CodigoArticulo).HasMaxLength(100);
-
-                entity.Property(e => e.CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo)
-                    .HasColumnName("CodigoArticulo_DescripcionArticulo_MarcaArticulo_FamiliaArticulo")
-                    .HasMaxLength(1258);
 
                 entity.Property(e => e.Coeficiente).HasColumnType("decimal(18, 8)");
 

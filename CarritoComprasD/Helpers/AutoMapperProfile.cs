@@ -1,7 +1,7 @@
 using AutoMapper;
 using CarritoComprasD.Entities;
 using CarritoComprasD.Models.Articulo;
-using CarritoComprasD.Models.Usuario;
+using CarritoComprasD.Models.Account;
 
 namespace CarritoComprasD.Helpers
 {

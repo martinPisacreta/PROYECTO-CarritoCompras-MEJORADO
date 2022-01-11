@@ -154,9 +154,7 @@ function Dashboard_Update_User(props) {
         setStatus();
 
         updateUsuario(usuario.idUsuario, data)
-        .catch(() => {
-            setSubmitting(false);
-        });
+        .finally(setSubmitting(false))
     }
 
     const [isDeleting, setIsDeleting] = useState(false);

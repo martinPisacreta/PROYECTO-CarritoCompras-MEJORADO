@@ -18,7 +18,7 @@ export const usuarioActions = {
 function login(email, password) {
     return dispatch => {
         alertService.clear();
-        dispatch(request({ email }));
+        dispatch(request());
 
     return new Promise((resolve, reject) => {
             usuarioService.login(email, password)
@@ -28,31 +28,37 @@ function login(email, password) {
                         history.push('/');
                         resolve(usuario); // respuesta correcta
                     },
-                    error => {
-                        dispatch(failure());
+                    error => {    
                         alertService.error(error);
                         reject(error); // respuesta error
                     })
         })
     };
 
-    function request(email) { return { type: usuarioConstantes.LOGIN_REQUEST,  email } }
-    function success(email) { return { type: usuarioConstantes.LOGIN_SUCCESS,  email } }
-    function failure() { return { type: usuarioConstantes.LOGIN_FAILURE } }
+    function request() { return { type: usuarioConstantes.LOGIN_REQUEST } }
+    function success(usuario) { return { type: usuarioConstantes.LOGIN_SUCCESS,  usuario } }
+    
 }
+
 
 
 function logout() {
     return dispatch => {
-        usuarioService.logout()
-        .then(
-            mensaje => {
-                dispatch(success(mensaje));  
-            }
-        )
-    };
+        return new Promise((resolve, reject) => {
+            usuarioService.logout()
+                    .then(
+                        mensaje => { 
+                            dispatch(success());  
+                            resolve(mensaje); // respuesta correcta
+                        },
+                        error => {    
+                            reject(error); // respuesta error
+                        })
+            })
+        };
 
-    function success(mensaje) { return { type: usuarioConstantes.LOGOUT,  mensaje } } 
+
+    function success() { return { type: usuarioConstantes.LOGOUT_SUCCESS } } 
 }
 
 
@@ -65,7 +71,7 @@ function register(usuario) {
             usuarioService.register(usuario)
                     .then(
                         usuario => { 
-                            dispatch(success());
+                            dispatch(success(usuario));
                             
                             alertService.success('Registro exitoso, contáctese con el administrador para que active su cuenta');
                             setTimeout(() => {
@@ -85,7 +91,7 @@ function register(usuario) {
       
 
     function request(usuario) { return { type: usuarioConstantes.REGISTER_REQUEST,  usuario } }
-    function success() { return { type: usuarioConstantes.REGISTER_SUCCESS } }
+    function success(usuario) { return { type: usuarioConstantes.REGISTER_SUCCESS, usuario } }
     function failure() { return { type: usuarioConstantes.REGISTER_FAILURE } }
 }
 
@@ -250,7 +256,7 @@ function update(idUsuario,data) {
     };
 
     return dispatch => {
-        dispatch(request(payload));
+        dispatch(request());
 
 
         return new Promise((resolve, reject) => {
@@ -273,7 +279,7 @@ function update(idUsuario,data) {
                     })
                 };
        
-    function request(payload) { return { type: usuarioConstantes.UPDATE_REQUEST ,payload} }
+    function request() { return { type: usuarioConstantes.UPDATE_REQUEST} }
     function success(usuario) { return { type: usuarioConstantes.UPDATE_SUCCESS, usuario } }
-    function failure(error) { return { type: usuarioConstantes.UPDATE_FAILURE, error } }
+    function failure() { return { type: usuarioConstantes.UPDATE_FAILURE } }
  };

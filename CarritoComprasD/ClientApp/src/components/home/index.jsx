@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 
 
 function HomePage( props ) {
-    const {getAllMarcas , selectedMarca , removeSelectedMarca} = props
+    const {getAllMarcasWithPathImgAndActive , selectedMarca , removeSelectedMarca} = props
     const [marcas,setMarcas] = useState([]) 
     const { pathname } = useLocation();  
 
@@ -69,12 +69,15 @@ function HomePage( props ) {
     
 
     useEffect(() => {
-        getAllMarcas().then(x => setMarcas(x))
+        async function funcionAsync() {
+            await getAllMarcasWithPathImgAndActive().then(x => setMarcas(x))
+        }
+        funcionAsync();
       }, []);
 
 
-    function onLinkClick(pathImgMarca) {
-        selectedMarca(pathImgMarca);
+    function onLinkClick(_marca) {
+        selectedMarca(_marca);
     }
 
 
@@ -117,7 +120,7 @@ function HomePage( props ) {
                                             
                                             <Link  
                                                 to={{pathname: `${process.env.PUBLIC_URL}/catalogo/list`}}
-                                                onClick={() => onLinkClick(_marca.pathImg)}
+                                                onClick={() => onLinkClick(_marca)}
                                             >
                                                 <LazyLoadImage
                                                     src={ `${process.env.PUBLIC_URL}/assets/images/home/cats/${_marca.pathImg}.jpg` + '?' + Date.now() }
@@ -150,7 +153,7 @@ function HomePage( props ) {
 
 
 const actionCreators = {
-    getAllMarcas: marcaActions.getAll,
+    getAllMarcasWithPathImgAndActive: marcaActions.getAllWithPathImgAndActive,
     selectedMarca: marcaActions.selectedMarca,
     removeSelectedMarca: marcaActions.removeSelectedMarca
   }

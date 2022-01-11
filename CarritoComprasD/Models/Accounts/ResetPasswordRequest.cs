@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CarritoComprasD.Models.Usuario
+namespace CarritoComprasD.Models.Account
 {
     public class ResetPasswordRequest
     {

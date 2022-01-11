@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using CarritoComprasD.Entities;
 
-namespace CarritoComprasD.Models.Usuario
+namespace CarritoComprasD.Models.Account
 {
-    public class UpdateUsuarioRequest
+    public class RegisterRequest
     {
-    
         [Required]
         public string Email { get; set; }
 
@@ -13,20 +12,16 @@ namespace CarritoComprasD.Models.Usuario
         [MinLength(6)]
         public string Password { get; set; }
 
-        [Required]
-        [Compare("Password")]
-        public string ConfirmPassword { get; set; }
 
         [Required]
         public string RazonSocial { get; set; }
 
         [Required]
+       
         public string Cuit { get; set; }
 
 
-        [Required]
-        [EnumDataType(typeof(Role))]
-        public string Role { get; set; }
+        
 
         [Required]
         public string Telefono { get; set; }
@@ -51,6 +46,5 @@ namespace CarritoComprasD.Models.Usuario
 
         [Required]
         public int Utilidad { get; set; }
-
     }
 }

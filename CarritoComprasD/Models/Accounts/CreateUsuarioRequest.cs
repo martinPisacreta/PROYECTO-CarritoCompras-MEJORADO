@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using CarritoComprasD.Entities;
 
-namespace CarritoComprasD.Models.Usuario
+namespace CarritoComprasD.Models.Account
 {
     public class CreateUsuarioRequest
     {

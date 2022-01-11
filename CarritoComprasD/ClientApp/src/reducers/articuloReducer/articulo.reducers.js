@@ -1,31 +1,31 @@
 import {   articuloConstantes } from '../../actions/types';
 
-export default function articuloReducer(state = {}, action) {
+
+const initialState = {
+  cargando: false,
+  articulos: null,
+  error : ''
+}
+
+
+export default function articuloReducer(state = initialState, action) {
   switch (action.type) {
     case articuloConstantes.GET_BY_FILTERS_REQUEST:
       return {
-        cargando: true
+        cargando: true,
+        articulos: null,
+        error: ''
       };
     case articuloConstantes.GET_BY_FILTERS_SUCCESS:
       return {
-        articulos: action.articulos
+        cargando: false,
+        articulos: action.articulos,
+        error: ''
       };
     case articuloConstantes.GET_BY_FILTERS_FAILURE:
       return { 
-        error: action.error
-      };
-
-      
-    case articuloConstantes.GET_COUNT_REQUEST:
-      return {
-        cargando: true
-      };
-    case articuloConstantes.GET_COUNT_REQUEST:
-      return {
-        cantidad: action.cantidad
-      };
-    case articuloConstantes.GET_COUNT_FAILURE:
-      return { 
+        cargando: false,
+        articulos: null,
         error: action.error
       };
     default:

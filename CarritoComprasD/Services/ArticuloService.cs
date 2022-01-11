@@ -6,12 +6,9 @@ using System.Linq;
 using CarritoComprasD.Entities;
 using CarritoComprasD.Helpers.AppSettings;
 using CarritoComprasD.Models.UsuarioPedidos;
-using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json.Linq;
-using DevExtreme.AspNet.Data;
 using Microsoft.EntityFrameworkCore;
 using CarritoComprasD.Controllers;
-using DevExtreme.AspNet.Data.ResponseModel;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using CarritoComprasD.Models.Articulo;
@@ -50,37 +47,36 @@ namespace CarritoComprasD.Services
      
         public async Task<ArticuloResponse> GetByFilters(ArticuloRequest model)
         {
-            decimal _utilidad = Convert.ToDecimal(model.utilidad);
+            decimal _utilidad = Convert.ToDecimal(model.Utilidad);
             decimal _cien = Convert.ToDecimal(100);
             decimal _uno = Convert.ToDecimal(1);
-            int _skip = model.skip * model.take;
+            int _skip = model.Skip * model.Take;
             ArticuloResponse articuloResponse = new ArticuloResponse();
-            int oferta = (model.oferta == true ? -1 : 0);
+            int oferta = (model.Oferta == true ? -1 : 0);
+
+            string descripcionArticulo = model.DescripcionArticulo;
+            var descripcionArticulo_separado = descripcionArticulo.Split(' ').ToList();
+
+            string codigoArticulo = model.CodigoArticulo;
+            var codigoArticulo_separado = codigoArticulo.Split(' ').ToList();
 
 
-            string filter = model.filter;
-            var filter_separado = filter.Split(' ').ToList();
 
-          
 
-        
 
             try
             {
-                if (filter == "" && oferta == 0)
-                {
 
-                    articuloResponse = null;
-                }
-                else
-                {
 
-                    articuloResponse.Articulos = await _context.VArticulo.AsNoTracking().ToListAsync();
+                articuloResponse.Articulos = await _context.VArticulo.AsNoTracking().ToListAsync();
 
-                    articuloResponse.Articulos = articuloResponse.Articulos
+                articuloResponse.Articulos = articuloResponse.Articulos
                                                  .Where(a =>
-                                                                ((filter != "" &&  filter_separado.All(p => a.CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo.Contains(p))) || filter == "")
-                                                                && ((a.SnOferta == oferta && oferta == -1) || oferta == 0)
+                                                                ((model.IdTablaMarca > 0 && a.IdTablaMarca == model.IdTablaMarca) || (model.IdTablaMarca == 0))
+                                                                && ((model.IdTablaFamilia > 0 && a.IdTablaFamilia == model.IdTablaFamilia) || (model.IdTablaFamilia == 0))
+                                                                && ((codigoArticulo != "" && codigoArticulo_separado.All(p => a.CodigoArticulo.ToUpper().Contains(p.ToUpper()))) || codigoArticulo == "")
+                                                                && ((descripcionArticulo != "" &&  descripcionArticulo_separado.All(p => a.DescripcionArticulo.ToUpper().Contains(p.ToUpper()))) || descripcionArticulo == "")
+                                                                && ((oferta == -1 && a.SnOferta == oferta) || oferta == 0)
                                                        )
                                                  .Select(a => new VArticulo
                                                  {
@@ -89,11 +85,12 @@ namespace CarritoComprasD.Services
                                                       PrecioListaPorCoeficientePorMedioIva = a.PrecioListaPorCoeficientePorMedioIva,
                                                       DescripcionArticulo = a.DescripcionArticulo,
                                                       MarcaArticulo = a.MarcaArticulo,
+                                                      IdTablaMarca = a.IdTablaMarca,
                                                       FamiliaArticulo = a.FamiliaArticulo,
+                                                      IdTablaFamilia = a.IdTablaFamilia,
                                                       UtilidadArticulo = a.PrecioListaPorCoeficientePorMedioIva.Value * ((_utilidad / _cien) + _uno),
                                                       SnOferta = a.SnOferta,
                                                       PathImagenArticulo = a.PathImagenArticulo,
-                                                      CodigoArticuloDescripcionArticuloMarcaArticuloFamiliaArticulo = "", //no me interesa traer toda la info al dataGrid
                                                       PrecioLista = a.PrecioLista,
                                                       Coeficiente = a.Coeficiente
                                                         
@@ -103,11 +100,11 @@ namespace CarritoComprasD.Services
 
 
                     articuloResponse.Total = articuloResponse.Articulos.Count();
-                    articuloResponse.Articulos = articuloResponse.Articulos.Skip(_skip).Take(model.take).ToList();
+                    articuloResponse.Articulos = articuloResponse.Articulos.Skip(_skip).Take(model.Take).ToList();
 
 
 
-                }
+                
 
                 return  articuloResponse;
 

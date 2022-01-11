@@ -8,6 +8,7 @@ import { faWhatsapp } from '@fortawesome/fontawesome-free-brands'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { usuarioActions , empresaActions } from '../../actions';
+import {usuarioService , usuarioPedidosService} from '../../services'
 import { connect } from 'react-redux';
 
 // Common Header Components
@@ -31,8 +32,10 @@ function Header( props ) {
 
     }, []);
 
+
+ 
     function onDelete() {
-        logout();
+        logout(usuario.idUsuario);
         window.location.href =  `${process.env.PUBLIC_URL}`;
     }
 
@@ -145,8 +148,6 @@ function Header( props ) {
 
     );
 }
-
-
 
 
 

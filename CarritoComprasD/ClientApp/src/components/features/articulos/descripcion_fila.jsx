@@ -12,8 +12,8 @@ function DescripcionFila(props) {
     const [imagenCargadaDialog, setImagenCargadaDialog] = useState(false);
 
     function onClick_IconCart() {
-        //selectedRowArticulo -> viene de <ArticuloDevExpresList/>
-        //onClick -> viene de <ArticuloDevExpresList/> , y llama a onClick_IconCart de <ArticuloDevExpresList/>
+        //selectedRowArticulo -> viene de <ArticuloList/>
+        //onClick -> viene de <ArticuloList/> , y llama a onClick_IconCart de <ArticuloList/>
         onClick(selectedRowArticulo)
     }
 
@@ -31,7 +31,7 @@ function DescripcionFila(props) {
             return;
         }
 
-        //onChange -> viene de <ArticuloDevExpresList/> , y llama a handleChange_CantidadArticulos de <ArticuloDevExpresList/>
+        //onChange -> viene de <ArticuloList/> , y llama a handleChange_CantidadArticulos de <ArticuloList/>
         onChange(valor)
     }
 
@@ -40,8 +40,8 @@ function DescripcionFila(props) {
         e.target.select();
       };
 
-    // imagenCargada viene del <ArticuloDevExpresList/>
-    // setImagenCargada viene del <ArticuloDevExpresList/>
+    // imagenCargada viene del <ArticuloList/>
+    // setImagenCargada viene del <ArticuloList/>
     function  handleImageLoaded() {
         if (!imagenCargada) { 
             setImagenCargada(true)
@@ -71,13 +71,15 @@ function DescripcionFila(props) {
             <div>    
                 <div className="articulo-photo">
                     <img
-                        src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} //selectedRowArticulo -> viene de <ArticuloDevExpresList/>
+                        src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} //selectedRowArticulo -> viene de <ArticuloList/>
                         onLoad={handleImageLoaded}
-                        height={!imagenCargada ? 0 : '150px'} //si no esta cargada la imagen , pongo el height en 0
-                        width={!imagenCargada  ? 0  : '150px'}  //si no esta cargada la imagen , pongo el width en 0
                         onClick={handleShowDialog}
                         loading="lazy"
-                        
+                        style= {{
+                            height: !imagenCargada ? '0' : '100%', //si no esta cargada la imagen , pongo el height en 0
+                            width: !imagenCargada ? '0' : '100%',  //si no esta cargada la imagen , pongo el width en 0
+                            objectFit: 'contain'
+                        }} 
                     />
                     {!imagenCargada && ( //si no esta cargada la imagen muestro esto....
                         <div className="image-container-overlay" style={{display: 'flex', justifyContent: 'center'}}>
@@ -92,13 +94,14 @@ function DescripcionFila(props) {
                         onClick={handleShowDialog}
                     >   
                         <img
-                            src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} //selectedRowArticulo -> viene de <ArticuloDevExpresList/>
+                            src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} //selectedRowArticulo -> viene de <ArticuloList/>
                             onLoad={handleImageLoadedDialog}
-                            height={!imagenCargadaDialog && 0} //si no esta cargada la imagen , pongo el height en 0
-                            width={!imagenCargadaDialog && 0}  //si no esta cargada la imagen , pongo el width en 0
                             onClick={handleShowDialog}
                             loading="lazy"
-                            style={{height: '500px' , widht: '500px'}}
+                            style=  {{
+                                        height: !imagenCargadaDialog ? 0 : '500px', //si no esta cargada la imagen , pongo el height en 0
+                                        width:  !imagenCargadaDialog && 0          //si no esta cargada la imagen , pongo el width en 0
+                                    }}
                         />
                         {!imagenCargadaDialog && ( //si no esta cargada la imagen muestro esto....
                                 <Stack gap={1} justifyContent="center" alignItems="center">
@@ -111,12 +114,12 @@ function DescripcionFila(props) {
             <p 
                 className="articulo-descripcion"
             >
-                {/* selectedRowArticulo -> viene de <ArticuloDevExpresList/> */}
+                {/* selectedRowArticulo -> viene de <ArticuloList/> */}
                 {selectedRowArticulo.codigoArticulo + ' --- '}  {selectedRowArticulo.descripcionArticulo} 
             </p>
             {
                 
-                usuario && //usuario -> viene de <ArticuloDevExpresList/> 
+                usuario && //usuario -> viene de <ArticuloList/> 
                 <p 
                     className="articulo-descripcion"
                 >
@@ -125,7 +128,7 @@ function DescripcionFila(props) {
                     </IconButton>
                         <input 
                             type="number" 
-                            value={ cantidad  }  // cantidad -> viene de <ArticuloDevExpresList/> 
+                            value={ cantidad  }  // cantidad -> viene de <ArticuloList/> 
                             onChange={ e => handleChange_CantidadArticulos(e)} 
                             min="1"
                             max="5000"

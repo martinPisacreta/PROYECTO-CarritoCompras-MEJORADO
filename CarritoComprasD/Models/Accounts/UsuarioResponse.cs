@@ -1,12 +1,10 @@
-using CarritoComprasD.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
-namespace CarritoComprasD.Models.Usuario
+namespace CarritoComprasD.Models.Account
 {
-    public class AuthenticateResponse
+    public class UsuarioResponse
     {
+
 
         public int IdUsuario { get; set; }
         public string Email { get; set; }
@@ -25,12 +23,6 @@ namespace CarritoComprasD.Models.Usuario
         public string Lat { get; set; }
         public string Lng { get; set; }
         public int Utilidad { get; set; }
-
-        public string Token { get; set; }
-
-        [JsonIgnore] // refresh token is returned in http only cookie
-        public string RefreshToken { get; set; }
-
-        public virtual ICollection<UsuarioPedido> UsuarioPedido { get; set; }
+  
     }
 }

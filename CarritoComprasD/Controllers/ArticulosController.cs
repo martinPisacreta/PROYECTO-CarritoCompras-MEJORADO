@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AutoMapper;
 using CarritoComprasD.Models.Articulo;
 using CarritoComprasD.Services;
-using DevExtreme.AspNet.Data.ResponseModel;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -32,13 +31,6 @@ namespace CarritoComprasD.Controllers
         {
             var articuloResponse =  await _articuloService.GetByFilters(model);
             return Ok(articuloResponse);
-        }
-
-        [HttpGet]
-        public ActionResult<int> GetCount()
-        {
-            var cantidadArticulos = _articuloService.GetCount();
-            return Ok(cantidadArticulos);
         }
 
 

@@ -1,6 +1,12 @@
 import {  usuarioConstantes } from '../../actions/types';
 
-export default function verifyEmailReducer(state = {}, action) {
+const initialState = {
+  reseteando: false,
+  payload: null
+}
+
+
+export default function verifyEmailReducer(state = initialState, action) {
   switch (action.type) {
     case usuarioConstantes.RESET_PASSWORD_REQUEST:
       return {
@@ -13,6 +19,7 @@ export default function verifyEmailReducer(state = {}, action) {
       };
     case usuarioConstantes.RESET_PASSWORD_SUCCESS:
       return {
+        reseteando: false,
         payload: [
           action.payload.token,
           action.payload.password,
@@ -20,7 +27,10 @@ export default function verifyEmailReducer(state = {}, action) {
         ]
       };
     case usuarioConstantes.RESET_PASSWORD_FAILURE:
-      return {};
+      return {
+        reseteando: false,
+        payload: []
+      };
     default:
       return state
   }

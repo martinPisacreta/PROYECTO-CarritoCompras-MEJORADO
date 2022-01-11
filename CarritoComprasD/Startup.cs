@@ -54,6 +54,7 @@ namespace CarritoComprasD
             services.AddScoped<IArticulosUploadImageService, ArticulosUploadImageService>();
             services.AddScoped<IEmpresaService, EmpresaService>();
             services.AddScoped<IMarcaService, MarcaService>();
+            services.AddScoped<IFamiliaService, FamiliaService>();
             services.AddScoped<IArticuloService,ArticuloService>();
             
 

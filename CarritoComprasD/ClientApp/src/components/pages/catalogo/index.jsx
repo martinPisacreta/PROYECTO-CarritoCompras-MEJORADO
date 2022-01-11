@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 // import Custom Components
 import PageHeader from '../../common/page-header';
 import Breadcrumb from '../../common/breadcrumb';
-import ArticuloDevExpresList from '../../features/articulos/articulo-dev-express-list';
+import ArticuloList from '../../features/articulos/articulo-list';
 
 function Catalogo( props ) {
     let grid = props.match.params.grid; //esta prop viene de components\home\index.jsx
@@ -27,9 +27,8 @@ function Catalogo( props ) {
                 <div className="page-content">
                     <div className="container">
                         <div>
-                            {/* esta opcion usa Dev Express */}
                             <div>
-                                <ArticuloDevExpresList 
+                                <ArticuloList 
                                     column={ grid } />
                             </div>
 

@@ -59,9 +59,9 @@ function Register(props) {
         setStatus();
 
         registerUsuario(usuario)
-        .catch(() => {
-            setSubmitting(false);
-        });
+        .finally(() => 
+            setSubmitting(false)
+        )
     }
 
 

@@ -1,17 +1,31 @@
 import {  usuarioConstantes } from '../../actions/types';
 
-export default function getByIdReducer(state = {}, action) {
+
+const initialState = {
+  loading: false,
+  usuario: null,
+  error: ''
+}
+
+
+export default function getByIdReducer(state = initialState, action) {
   switch (action.type) {
     case usuarioConstantes.GET_BY_ID_REQUEST:
       return {
-        loading: true
+        loading: true,
+        usuario: null,
+        error: ''
       };
     case usuarioConstantes.GET_BY_ID_SUCCESS:
       return {
-        usuario: action.usuario
+        loading: false,
+        usuario: action.usuario,
+        error: ''
       };
     case usuarioConstantes.GET_BY_ID_FAILURE:
       return { 
+        loading: false,
+        usuario: null,
         error: action.error
       };
     default:

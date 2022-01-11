@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using CarritoComprasD.Entities;
-using CarritoComprasD.Models.Usuario;
+using CarritoComprasD.Models.Account;
 using CarritoComprasD.Helpers;
 using CarritoComprasD.Helpers.AppSettings;
 
@@ -19,8 +19,8 @@ namespace CarritoComprasD.Services
     public interface IUsuarioService
     {
         AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress);
-        AuthenticateResponse RefreshToken(string token, string ipAddress);
-        void RevokeToken(string token, string ipAddress);
+        AuthenticateResponse RefreshToken(int idUsuario,string ipAddress);
+     
         void Register(RegisterRequest model, string origin);
         void VerifyEmail(string token);
         void ForgotPassword(ForgotPasswordRequest model, string origin);
@@ -58,19 +58,26 @@ namespace CarritoComprasD.Services
         public AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress)
         {
             var usuario = _context.Usuario.SingleOrDefault(x => x.Email == model.Email);
-
+            
             if (usuario == null || !usuario.IsVerified || !BC.Verify(model.Password, usuario.Password))
                 throw new AppException("Email o contraseña incorrectos");
 
-            // authentication successful so generate jwt and refresh tokens
+            //voy a buscar el refresh_token activo del usuario
+            RefreshToken refreshToken = _context.RefreshToken.Where(rt => rt.IdUsuario == usuario.IdUsuario && rt.Revoked == null).FirstOrDefault();
+           
+         
+
+            //si el usuario no tiene un refresh_token activo , lo genero
+            if (refreshToken == null)
+            {
+                refreshToken = generateRefreshToken(ipAddress);
+                usuario.RefreshToken.Add(refreshToken);
+            }
+
+            //genero el token del usuario
             var token = generateToken(usuario);
-            var refreshToken = generateRefreshToken(ipAddress);
-            usuario.RefreshToken.Add(refreshToken);
 
-            // remove old refresh tokens from usuario
-            removeOldRefreshTokens(usuario);
-
-            // save changes to db
+            // grabo en la base
             _context.Update(usuario);
             _context.SaveChanges();
 
@@ -80,41 +87,35 @@ namespace CarritoComprasD.Services
             return response;
         }
 
-        public AuthenticateResponse RefreshToken(string _token, string ipAddress)
+        public AuthenticateResponse RefreshToken(int idUsuario,string ipAddress)
         {
-            var (refreshToken, usuario) = getRefreshToken(_token);
 
-            // replace old refresh token with a new one and save
-            var newRefreshToken = generateRefreshToken(ipAddress);
-            refreshToken.Revoked = DateTime.UtcNow;
-            refreshToken.RevokedByIp = ipAddress;
-            refreshToken.ReplacedByToken = newRefreshToken.Token;
-            usuario.RefreshToken.Add(newRefreshToken);
+            var usuario = getUsuario(idUsuario);
 
-            removeOldRefreshTokens(usuario);
+            //voy a buscar el refresh_token activo del usuario
+            var refreshToken = _context.RefreshToken.Where(rt => rt.IdUsuario == usuario.IdUsuario && rt.Revoked == null).FirstOrDefault();
 
+            //si el usuario no tiene refresh_token activo , genero uno
+            if (refreshToken == null)
+            {
+                refreshToken = generateRefreshToken(ipAddress);
+                usuario.RefreshToken.Add(refreshToken);
+            }
+
+
+            //genero el token del usuario
+            var token = generateToken(usuario);
+
+            // grabo en la base
             _context.Update(usuario);
             _context.SaveChanges();
-
-            // generate new jwt
-            var token = generateToken(usuario);
 
             var response = _mapper.Map<AuthenticateResponse>(usuario);
             response.Token = token;
-            response.RefreshToken = newRefreshToken.Token;
+            response.RefreshToken = refreshToken.Token;
             return response;
         }
 
-        public void RevokeToken(string token, string ipAddress)
-        {
-            var (refreshToken, usuario) = getRefreshToken(token);
-
-            // revoke token and save
-            refreshToken.Revoked = DateTime.UtcNow;
-            refreshToken.RevokedByIp = ipAddress;
-            _context.Update(usuario);
-            _context.SaveChanges();
-        }
 
         public void Register(RegisterRequest model, string origin)
         {
@@ -304,16 +305,6 @@ namespace CarritoComprasD.Services
             return usuario;
         }
 
-        private (RefreshToken, Usuario) getRefreshToken(string token)
-        {
-            var usuario = _context.Usuario.SingleOrDefault(u => u.RefreshToken.Any(t => t.Token == token));
-            if (usuario == null) throw new AppException("Token invalido");
-            var refresh_token = _context.RefreshToken.Where(rt => rt.IdUsuario == usuario.IdUsuario).ToList();
-        
-            var refreshToken = refresh_token.Single(x => x.Token == token);
-            if (!refreshToken.IsActive) throw new AppException("Token invalido");
-            return (refreshToken, usuario);
-        }
 
         private string generateToken(Usuario usuario)
         {
@@ -322,7 +313,7 @@ namespace CarritoComprasD.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", usuario.IdUsuario.ToString()) }),
-                Expires = DateTime.UtcNow.AddMinutes(2880), //2 dias
+                Expires = DateTime.UtcNow.AddMinutes(15), 
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -334,18 +325,13 @@ namespace CarritoComprasD.Services
             return new RefreshToken
             {
                 Token = randomTokenString(),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = null,
                 Created = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };
         }
 
-        private void removeOldRefreshTokens(Usuario usuario)
-        {
-            usuario.RefreshToken.ToList().RemoveAll(x => 
-                !x.IsActive && 
-                x.Created.AddDays(_appSettings_jwt.RefreshTokenTTL) <= DateTime.UtcNow);
-        }
+      
 
         private string randomTokenString()
         {

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { safeContent } from '../../../utils';
 import { usuarioPedidoActions } from '../../../actions';
 
-import CircularProgress from '@mui/material/CircularProgress';
+import LoadMultipleImg from '../load-multiple-img'
 
 
 
@@ -26,36 +26,10 @@ function CartMenu( props ) {
         }
 
         funcionAsync();
-    }, []);
+    }, [getPedidoNotFinalizedByIdUsuario]);
 
 
-    function Imagen  (props)  {
-        const {item} = props;
-        let existeImagenArticulo = item.articulo ? (item.articulo.pathImagenArticulo ? true  : false) : false;
-        const [cargandoImagen, setCargandoImagen] = useState(true);
-    
-        const handleImageLoaded = () => {
-              setCargandoImagen(false);
-            }
-            
-        return (
-                <div className="articulo-image-container">
-                <img
-                    src={process.env.PUBLIC_URL +  existeImagenArticulo ? item.articulo.pathImagenArticulo  + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'}
-                    onLoad={handleImageLoaded}
-                    height={cargandoImagen ? 0 : 'auto'} //si se esta cargando la imagen , pongo el height en 0
-                    width={cargandoImagen ? 0 : 'auto'}  //si se esta cargando la imagen , pongo el width en 0
-                    loading="lazy"
-                    
-                />
-                {cargandoImagen && ( //si se esta cargando la imagen , muestro esto....
-                    <div className="image-container-overlay" style={{display: 'flex', justifyContent: 'center'}}>
-                        <CircularProgress />
-                    </div>
-                )}
-            </div>
-        )
-    }
+ 
    
   
     
@@ -93,10 +67,14 @@ function CartMenu( props ) {
 
 
                                                   
-                                                            <Imagen item = {item} />
+                                                            <LoadMultipleImg 
+                                                                item = {item}
+                                                                widthProp = '50px'
+                                                                heightProp = '50px' 
+                                                            />
+                                                           
 
-
-                                                            <button className="btn-remove"  title="Remove Articulo" onClick={ () => eliminarArticuloPedido( usuario.idUsuario,item.id ) }><i className="icon-close"></i></button>
+                                                            <button className="btn-remove"  title="Remove Articulo" onClick={ () => eliminarArticuloPedido( usuario.idUsuario,item.articulo.id ) }><i className="icon-close"></i></button>
                                                             
                                                         </div>)
                                                     } ) }
@@ -123,7 +101,6 @@ function CartMenu( props ) {
 
 
 const mapStateToProps = (state) => {
-    console.log(state)
     return { //cualquier cosa que retorno aca , va a estar disponible como propiedad (props) en nuestro componente
         usuarioPedido: state.usuarioPedidoReducer.usuarioPedido ? state.usuarioPedidoReducer.usuarioPedido : [], 
     }

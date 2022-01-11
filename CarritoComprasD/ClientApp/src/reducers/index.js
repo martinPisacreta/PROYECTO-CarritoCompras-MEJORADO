@@ -13,7 +13,9 @@ import getByIdReducer from "./usuarioReducer/getById.reducers"
 import updateReducer from "./usuarioReducer/update.reducers"
 
 import usuarioPedidoReducer from "./usuarioPedidoReducer/usuarioPedido.reducers"
+import finalizarPedidoReducer from "./usuarioPedidoReducer/finalizarPedido.reducers"
 import marcaReducer from "./marcaReducer/marca.reducers.js"
+import familiaReducer from "./familiaReducer/familia.reducers.js"
 import empresaReducer from "./empresaReducer/empresa.reducers.js"
 import articuloReducer from "./articuloReducer/articulo.reducers.js"
 
@@ -28,7 +30,9 @@ export default combineReducers({
     getByIdReducer,
     updateReducer,
     usuarioPedidoReducer,
+    finalizarPedidoReducer,
     marcaReducer,
+    familiaReducer,
     empresaReducer,
     articuloReducer
 });

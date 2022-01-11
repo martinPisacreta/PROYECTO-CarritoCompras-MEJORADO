@@ -83,9 +83,9 @@ function InicioSesion(props) {
    
     function onSubmit({ email, password }, { setSubmitting }) {    
         login(email, password)
-        .catch(() => {
-            setSubmitting(false);
-        });
+        .finally(() => 
+            setSubmitting(false)
+        )
 
     
     }

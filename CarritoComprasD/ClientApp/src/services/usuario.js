@@ -34,28 +34,38 @@ function login(email, password) {
 }
 
 function logout() {
-    // revocar el token, detener el temporizador de actualización, publicar nulo para los suscriptores de los usuarios y redirigir a la página de inicio de sesión
-    return fetchWrapper.post(`${baseUrl}/revoke-token`,{})
-    .then ( mensaje => {
         stopRefreshTokenTimer();
         userSubject.next(null);
         localStorage.removeItem('user');
-        return mensaje;
-    })
-  
+        return 'logout() correcto';
 }
 
 function refreshToken() {
-    
-    return fetchWrapper.post(`${baseUrl}/refresh-token`, {})
-        .then(usuario => {
-            // publicar el usuario a los suscriptores e iniciar el temporizador para actualizar el token
-            userSubject.next(usuario);
-            startRefreshTokenTimer();
-            localStorage.setItem('user', JSON.stringify(usuario));
-            return usuario;
-        });
+    const usuario = JSON.parse(localStorage.getItem('user'));
+    const idUsuario = usuario && usuario.idUsuario;
+
+
+    if(idUsuario)
+    {
+        return fetchWrapper.post(`${baseUrl}/refresh-token`, {idUsuario})
+            .then(usuario => {
+                // publicar el usuario a los suscriptores e iniciar el temporizador para actualizar el token
+                userSubject.next(usuario);
+                startRefreshTokenTimer();
+                localStorage.setItem('user', JSON.stringify(usuario));
+                return usuario;
+            })
+    }
+    else { //si no hay usuario , algo tengo que devolver debido a que src/index.js tiene finally
+        return Promise.resolve('..no hay idUsuario..')
+            .then(
+                    function(value){
+                            console.log(value);
+                    }
+                )
+    }
 }
+
 
 function register(params) {
     return fetchWrapper.post(`${baseUrl}/register`, params);
@@ -109,7 +119,7 @@ function _delete(id) {
         .then(x => {
             // auto logout if the logged in usuario deleted their own record
             if (id === userSubject.value.id) {
-                logout();
+                logout(idUsuario);
             }
             return x;
         });
@@ -121,6 +131,7 @@ let refreshTokenTimeout;
 //esta funcion activa un temporizador que vence un minuto antes de que expire el token
 function startRefreshTokenTimer() {
     // parse json object from base64 encoded token
+
     const token = JSON.parse(atob(userSubject.value.token.split('.')[1]));
 
     // set a timeout to refresh the token a minute before it expires

@@ -7,44 +7,55 @@ import PageHeader from '../../common/page-header';
 import Breadcrumb from '../../common/breadcrumb';
 
 import { quantityInputs} from '../../../utils';
-import {Alert} from '../../alert'
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { usuarioPedidoActions } from '../../../actions';
-
+import { connect } from 'react-redux';
+import LoadMultipleImg from '../../common/load-multiple-img'
+import { history } from '../../helpers';
 
 function Carrito( props ) {
-    const { usuarioPedido , cambiarCantidadArticuloPedido , finalizarPedido , eliminarArticuloPedido} = props;
-    let pedidoDetalle = usuarioPedido ? usuarioPedido.usuarioPedidoDetalle : [];
-  
+    const { usuarioPedido , modificarArticuloPedido , finalizarPedido , eliminarArticuloPedido , empresa} = props;
     const [loading,setLoading] = useState(false);
-
-    const empresa = JSON.parse(localStorage.getItem('empresa'));
+    const [modificandoArticulo , setModificandoArticulo] = useState(false);
+    const [eliminandoArticulo , setEliminandoArticulo] = useState(false);
     const usuario = JSON.parse(localStorage.getItem('user'));
+
+
+   
+
 
     useEffect( () => {  
         quantityInputs();
     } )
 
  
-    function onChangeQty( e, articuloId ) {
-        cambiarCantidadArticuloPedido( articuloId, e.currentTarget.querySelector( 'input[type="number"]' ).value );
+     //modifico la cantidad de un articulo
+    function onModificarArticulo( idUsuario, e , idArticulo ) {
+        setModificandoArticulo(true)
+        
+        modificarArticuloPedido(idUsuario,idArticulo,e.currentTarget.querySelector( 'input[type="number"]' ).value )
+        .finally(setModificandoArticulo(false))
     }
 
-    function goToCheckout() {
+    function onEliminarArticulo(idUsuario,idArticulo ) {
+        setEliminandoArticulo(true)
+        
+        eliminarArticuloPedido( idUsuario,idArticulo )
+        .finally(setEliminandoArticulo(false))
+    }
+
+    
+
+    async function goToCheckout() {
         setLoading(true)
        
-        const _usuarioPedidoDetalles = pedidoDetalle.map(function(cl) {
+        const _usuarioPedidoDetalles = usuarioPedido.usuarioPedidoDetalle.map(function(cl) {
             return {
-                codigoArticulo: cl.codigoArticulo,
-                descripcionArticulo: cl.descripcionArticulo,
+                cantidad : parseInt(cl.cantidad),
                 txtDescMarca: cl.marcaArticulo,
-                txtDescFamilia: cl.familiaArticulo,
+                codigoArticulo: cl.codigoArticulo,
                 precioListaPorCoeficientePorMedioIva: cl.precioListaPorCoeficientePorMedioIva,
-                utilidad: usuario.utilidad,
-                snOferta: cl.ofertaArticulo,
-                precioLista: cl.precioListaArticulo,
-                coeficiente: cl.coeficienteArticulo,
-                cantidad : parseInt(cl.qty),
+                
+                
                 
             }
          })
@@ -52,15 +63,25 @@ function Carrito( props ) {
 
 
         const pedido = {
-            idUsuario: usuario.id,
-            idUsuarioNavigation: usuario,
-            usuarioPedidoDetalles: _usuarioPedidoDetalles,
-            idEmpresaNavigation : empresa,
-            total
+            idUsuario: usuario.idUsuario,
+            usuarioPedidoDetalle: _usuarioPedidoDetalles,
+            idEmpresa : empresa.idEmpresa,
+            total: usuarioPedido.total
         }
 
 
-        finalizarPedido(pedido);
+
+        
+
+        await finalizarPedido(pedido)
+        .then(() => {
+            setLoading (false);
+            history.push('/'); 
+        })
+        .catch(() => {
+            setLoading (false);
+        });
+
     }
 
     
@@ -75,16 +96,15 @@ function Carrito( props ) {
 
             <h1 className="d-none">Encendido Alsina</h1>
 
-            <div className="main">
+            <div className="main" style={loading ? {pointerEvents: "none", opacity: "0.4"} : {}}>
                 <PageHeader  subTitle="Carrito de Compras" />
                 <Breadcrumb title="Carrito de Compras" parent1={ [ "Catalogo", "catalogo/list" ] } />
 
-                <div className="page-content">
+                <div className="page-content" >
                     <div className="cart">
                         <div className="container">
                             <div className="row">
-                                 <div className="col-lg-9" style={ loading ? { pointerEvents:'none'} : {}}> {/*cuando se aprieta FINALIZAR PEDIDO se bloquea todo el div hasta que se finalize el pedido */}
-                                    <Alert/>
+                                 <div className="col-lg-9"> {/*cuando se aprieta FINALIZAR PEDIDO se bloquea todo el div hasta que se finalize el pedido */}
                                     <table className="table table-cart table-mobile">
                                         <thead>
                                             <tr>
@@ -97,52 +117,73 @@ function Carrito( props ) {
                                         </thead>
 
                                         <tbody>
-                                            { pedidoDetalle.length > 0 ?
-                                                pedidoDetalle.map( ( item, index ) =>
-                                                    <tr key={ index }>
-                                                        <td className="articulo-col">
-                                                            <div className="articulo">
-                                                                <figure style={{width:'60px',height:'60px'}}>
-                                                                        <LazyLoadImage src={ process.env.PUBLIC_URL  + item.pathImagenArticulo ? item.pathImagenArticulo + '?' + Date.now()  : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} alt="Articulo" />
-                                                                </figure>
-                                                                
-                                                                <span>  </span>
+                                            { usuarioPedido && usuarioPedido.usuarioPedidoDetalle
+                                                ?
+                                                    usuarioPedido.usuarioPedidoDetalle.map( ( item, index ) =>
+                                                        <tr key={ index }>
+                                                            <td className="articulo-col">
+                                                                <div className="articulo">
+                                                                    <figure style={{width:'60px',height:'60px'}}>
+                                                                        <LoadMultipleImg 
+                                                                            item = {item}
+                                                                            widthProp = '60px'
+                                                                            heightProp = '60px' 
+                                                                        />
+                                                                    </figure>
+                                                                    
+                                                                    <span>  </span>
 
-                                                                <h3 className="articulo-title">
-                                                                    <Link to="#">{ item.codigoArticulo }</Link>
-                                                                </h3>
-                                                            </div>
-                                                        </td>
+                                                                    <h3 className="articulo-title">
+                                                                        <Link to="#">{ item.codigoArticulo }</Link>
+                                                                    </h3>
+                                                                </div>
+                                                            </td>
 
-                                                        <td className="price-col">
-                                                            ${
-                                                                item.precioListaPorCoeficientePorMedioIva.toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } )
-                                                            }
-                                                        </td>
+                                                            <td className="price-col">
+                                                                ${
+                                                                    item.precioListaPorCoeficientePorMedioIva.toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } )
+                                                                }
+                                                            </td>
 
-                                                        <td className="quantity-col">
-                                                            <div className="cart-articulo-quantity" onClick={ ( e ) => onChangeQty( e, item.id ) }>
-                                                                <input 
-                                                                    type="number"
-                                                                    className="form-control"
-                                                                    defaultValue={ item.qty }
-                                                                    min="1"
-                                                                    max={ item.stockArticulo }
-                                                                    step="1"
-                                                                    data-decimals="0"
-                                                                    required
-                                                                />
-                                                            </div>
-                                                        </td>
+                                                            <td className="quantity-col">
+                                                                <div 
+                                                                    className='cart-articulo-quantity'  
+                                                                    onClick={ ( e ) => onModificarArticulo(usuario.idUsuario, e , item.articulo.id ) }   //modifico la cantidad de un articulo
+                                                                    style={modificandoArticulo ? {pointerEvents: "none", opacity: "0.4"} : {}}
+                                                                >
+                                                                    <input 
+                                                                        type="number"
+                                                                        className="form-control"
+                                                                        defaultValue={ item.cantidad }
+                                                                        min="1"
+                                                                        max={ 9999 }
+                                                                        step="1"
+                                                                        data-decimals="0"
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </td>
 
-                                                        <td className="total-col">
-                                                            ${ item.sum.toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } ) }
-                                                        </td>
+                                                            <td className="total-col">
+                                                                ${ 
+                                                                    (
+                                                                        item.precioListaPorCoeficientePorMedioIva.toFixed(2) 
+                                                                        *
+                                                                        item.cantidad  
+                                                                    ).toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                                                }
+                                                            </td>
 
-                                                        <td className="remove-col">
-                                                            <button className="btn-remove" onClick={ ( e ) => eliminarArticuloPedido( item.id ) }><i className="icon-close"></i></button>
-                                                        </td>
-                                                    </tr>
+                                                            <td className="remove-col">
+                                                                <button 
+                                                                    className="btn-remove" 
+                                                                    onClick={ ( e ) => onEliminarArticulo(usuario.idUsuario,item.articulo.id) }    
+                                                                    style={eliminandoArticulo ? {pointerEvents: "none", opacity: "0.4"} : {}}
+                                                                >
+                                                                    <i className="icon-close"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
                                                 ) :
                                                 <tr>
                                                     <td>
@@ -168,25 +209,26 @@ function Carrito( props ) {
                                             <tbody>
                                                 <tr className="summary-subtotal">
                                                     <td>Subtotal:</td>
-                                                    <td>${ total.toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } ) }</td>
+                                                    <td>${usuarioPedido && usuarioPedido.total && usuarioPedido.total.toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } )}</td>
                                                 </tr>
                                                
 
                                                 <tr className="summary-total">
                                                     <td>Total:</td>
                                                     <td>
-                                                        ${ (total).toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } ) }
+                                                        ${usuarioPedido && usuarioPedido.total && usuarioPedido.total.toLocaleString( undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 } )}
                                                     </td>
                                                 </tr>
                                             </tbody>
                                         </table>
 
 
-                                        {pedidoDetalle.length > 0 &&
-                                        <button className="btn btn-outline-primary-2 btn-order btn-block" onClick={goToCheckout} disabled={loading}>
-                                            {loading && <span className="spinner-border spinner-border-sm mr-1"></span>}
-                                            FINALIZAR PEDIDO
-                                        </button>}
+                                        {usuarioPedido && usuarioPedido.usuarioPedidoDetalle &&
+                                            <button className="btn btn-outline-primary-2 btn-order btn-block" onClick={goToCheckout} disabled={loading}>
+                                                {loading && <span className="spinner-border spinner-border-sm mr-1"></span>}
+                                                FINALIZAR PEDIDO
+                                            </button>
+                                        }
                                     </div>
 
                                     <Link to={ `${process.env.PUBLIC_URL}/catalogo/list` } className="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUAR COMPRANDO</span><i className="icon-refresh"></i></Link>
@@ -203,7 +245,8 @@ function Carrito( props ) {
 
 const mapStateToProps = (state) => {
     return { //cualquier cosa que retorno aca , va a estar disponible como propiedad (props) en nuestro componente
-        usuarioPedido: state.usuarioPedidoReducer.usuarioPedido ? state.usuarioPedidoReducer.usuarioPedido : [] 
+        usuarioPedido: state.usuarioPedidoReducer.usuarioPedido ? state.usuarioPedidoReducer.usuarioPedido : [],
+        empresa: state.empresaReducer.empresa
     }
   }
 
@@ -211,7 +254,7 @@ const mapStateToProps = (state) => {
 
 const actionCreators = {
     eliminarArticuloPedido: usuarioPedidoActions.eliminarArticuloPedido,
-    cambiarCantidadArticuloPedido: usuarioPedidoActions.cambiarCantidadArticuloPedido,
+    modificarArticuloPedido: usuarioPedidoActions.modificarArticuloPedido, //modifico la cantidad de un articulo
     finalizarPedido: usuarioPedidoActions.finalizarPedido
 };
 

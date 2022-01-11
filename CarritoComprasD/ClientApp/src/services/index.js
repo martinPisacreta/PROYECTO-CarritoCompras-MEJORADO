@@ -9,3 +9,5 @@ export * from './usuario';
 export * from './usuarioPedido';
 
 export * from './articulo';
+
+export * from './familia';

@@ -49,7 +49,7 @@ function getByIdUsuarioNotFinalized (idUsuario) {
 
  //tengo que hacer este metodo en vs 2019
 function finalizarPedido(params) {
-    return fetchWrapper.post(`${baseUrl}`, params);
+    return fetchWrapper.post(`${baseUrl}/finalizar-pedido`, params);
 }
 
 

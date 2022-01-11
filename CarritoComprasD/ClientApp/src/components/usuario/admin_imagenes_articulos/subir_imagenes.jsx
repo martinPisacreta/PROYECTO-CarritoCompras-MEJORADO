@@ -48,7 +48,6 @@ export default function SubirImagenes ()  {
             if(tamañoConjuntoImagenes >= 30000000)
             {
                 setError("El conjunto de imagenes es igual o mayor a 28.61 MB");
-                setSubmitting(false);
             }
             else
             {
@@ -56,18 +55,18 @@ export default function SubirImagenes ()  {
                 .then(res => {
                     setRespuesta(res);
                     setError(null);
-                    setSubmitting(false);
                 })
                 .catch(err => {
                     setError(err);
-                    setSubmitting(false);
                 });
             }
         }
         catch (error) {
             setError(error);
-            setSubmitting(false);
           }
+        finally {
+            setSubmitting(false)
+        }
 
 
     }
