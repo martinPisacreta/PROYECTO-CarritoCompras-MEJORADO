@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { alertService } from '../../services';
 import { history } from '../helpers';
 import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from '@mui/material/Alert';
 
 
 const propTypes = {

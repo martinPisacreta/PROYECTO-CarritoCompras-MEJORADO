@@ -13,7 +13,7 @@ function Catalogo( props ) {
     }
 
     return (
-        <>
+        <div>
             <Helmet>
                 <title>Encendido Alsina - Catalogo</title>
             </Helmet>
@@ -39,7 +39,7 @@ function Catalogo( props ) {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 

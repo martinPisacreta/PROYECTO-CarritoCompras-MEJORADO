@@ -23,7 +23,7 @@ function App( props ) {
     } )
 
     return (
-        <>
+        <div>
             <div className="page-wrapper">               
                 <Header container={ container } urls={ prevPath } />
 
@@ -40,7 +40,7 @@ function App( props ) {
 
             <MobileMenu />
 
-        </>
+        </div>
     );
 }
 

@@ -45,7 +45,7 @@ function VerifyEmail(props) {
 
     return (
 
-        <>
+        <div>
             <Helmet>
                 <title>Encendido Alsina - Verificar email</title>
             </Helmet>
@@ -66,7 +66,7 @@ function VerifyEmail(props) {
                         </div>
                     </div>
                 </div>
-        </>
+        </div>
     )
 }
 

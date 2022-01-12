@@ -100,6 +100,7 @@ function getById(id) {
 
 
 function update(payload) {
+    console.log(payload)
     const {idUsuario , data} = payload;
     return fetchWrapper.put(`${baseUrl}/${idUsuario}`, data)
         .then(usuario => {
@@ -108,6 +109,7 @@ function update(payload) {
                 // publish updated usuario to subscribers
                 usuario = { ...userSubject.value, ...usuario };
                 userSubject.next(usuario);
+                localStorage.setItem('user', JSON.stringify(usuario));
             }
             return usuario;
         });

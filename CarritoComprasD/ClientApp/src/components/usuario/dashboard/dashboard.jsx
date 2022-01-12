@@ -18,7 +18,7 @@ function Dashboard() {
 
 
     return (
-        <>
+        <div>
             <Helmet>
                 <title>Encendido Alsina | Mi Cuenta</title>
             </Helmet>
@@ -54,7 +54,12 @@ function Dashboard() {
                                                 </Tab>
 
                                                 <Tab className="nav-item">
-                                                    <Link to={`${process.env.PUBLIC_URL}/usuario/dashboard_update_user`}>
+                                                    <Link to={{
+                                                            pathname: `${process.env.PUBLIC_URL}/usuario/dashboard_update_user`,
+                                                            state: {
+                                                                deDondeVengo: 2
+                                                            }
+                                                        }}>
                                                         <span className="nav-link">Detalle cuenta</span>
                                                     </Link>
                                                 </Tab>
@@ -117,7 +122,7 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

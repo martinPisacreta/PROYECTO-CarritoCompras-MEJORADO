@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { articuloActions } from '../../../actions';
 import { marcaActions , familiaActions } from '../../../actions';
 import { connect } from 'react-redux';
-import {  TextField  , Box} from '@material-ui/core';
+import {  TextField  , Box} from '@mui/material';
 
-import Switch from '@material-ui/core/Switch';
-import {  makeStyles } from '@material-ui/core/styles';
+import Switch from '@mui/material/Switch';
+import {  makeStyles } from '@mui/styles';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextFieldAutocomplete from '@mui/material/TextField';
 import List from '@mui/material/List';
@@ -372,7 +372,7 @@ function MenuFilter(props) {
 
 //====================================================  RENDER  =========================================================      
   return (
-    <>
+    <div>
           <div >
 
               <div className={classes.button}>
@@ -396,7 +396,7 @@ function MenuFilter(props) {
 
 
        
-    </>
+    </div>
   );
 
 }

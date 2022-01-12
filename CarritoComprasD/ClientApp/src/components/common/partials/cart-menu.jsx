@@ -48,7 +48,7 @@ function CartMenu( props ) {
                                 {
                                     !existePedido //si no existe el pedido
                                         ? <p>No hay articulos en el carrito</p> 
-                                        :   <>
+                                        :   <div>
                                                 <div className="dropdown-cart-articulos">
                                                     { usuarioPedido.usuarioPedidoDetalle.map( ( item, index ) => {
                                                        
@@ -89,7 +89,7 @@ function CartMenu( props ) {
                                                     <Link to={ `${process.env.PUBLIC_URL}/shop/cart` } className="btn btn-primary">Ver carrito</Link>
                                                     {/* <Link to={ `${process.env.PUBLIC_URL}/shop/checkout` } className="btn btn-outline-primary-2"><span>Pagar</span><i className="icon-long-arrow-right"></i></Link> */}
                                                 </div>
-                                            </>
+                                            </div>
                                 }
                             </div>
                     :

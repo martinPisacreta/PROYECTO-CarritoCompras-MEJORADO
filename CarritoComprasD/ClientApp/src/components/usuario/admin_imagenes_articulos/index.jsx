@@ -11,7 +11,7 @@ export default function AdminImagenesArticulos ()  {
 
    
     return (
-        <>
+        <div>
             <Helmet>
                 <title>Encendido Alsina - Administrador Imagenes Articulos</title>
             </Helmet>
@@ -77,7 +77,7 @@ export default function AdminImagenesArticulos ()  {
                         </div>
                     </div>
                 </div>
-        </>
+        </div>
     )
     
 }

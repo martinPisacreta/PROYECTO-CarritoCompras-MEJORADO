@@ -22,14 +22,7 @@ function MobileMainNav( ) {
                     </Link>
                 </li>
 
-                {
-                    usuario && 
-                    <li>
-                        <Link to={ `${process.env.PUBLIC_URL}/usuario/dashboard` }>
-                            Mi Cuenta
-                        </Link>
-                    </li>
-                } 
+                
 
                 <li>
                     <Link to={ `${process.env.PUBLIC_URL}/catalogo/list` }>

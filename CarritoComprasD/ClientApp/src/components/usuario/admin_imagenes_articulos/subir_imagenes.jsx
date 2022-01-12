@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { articulosUploadImageService}  from '../../../services';
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
 import { Formik, Form } from 'formik';
 
 
@@ -75,7 +75,7 @@ export default function SubirImagenes ()  {
     const classes = useStyles();
 
     return (
-        <>
+        <div>
             <div className="container">
                 <div className="row">
                     
@@ -165,7 +165,7 @@ export default function SubirImagenes ()  {
             }
             </div>
           
-        </>
+        </div>
     )
     
 }

@@ -6,7 +6,7 @@ import PlacesAutocomplete, {
 import { ErrorMessage} from "formik";
 import './map.css';
 import { usuarioService , alertService} from '../../services';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { usuarioActions } from '../../actions';
 import { connect } from 'react-redux';
 

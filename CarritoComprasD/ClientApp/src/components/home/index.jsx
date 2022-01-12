@@ -82,7 +82,7 @@ function HomePage( props ) {
 
 
     return (
-        <>
+        <div>
           
 
             <Helmet>
@@ -146,7 +146,7 @@ function HomePage( props ) {
             </div>
 
 
-        </>
+        </div>
     )
 }
 

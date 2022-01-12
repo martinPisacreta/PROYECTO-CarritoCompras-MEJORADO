@@ -11,10 +11,10 @@ import { Helmet } from 'react-helmet';
 import PageHeader from '../common/page-header';
 import Breadcrumb from '../common/breadcrumb';
 import './form-control.css'
-import IconButton from '@material-ui/core/IconButton';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { makeStyles } from "@material-ui/core/styles";
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { makeStyles } from "@mui/styles";
 import { usuarioActions } from '../../actions';
 import { connect } from 'react-redux';
 
@@ -96,7 +96,7 @@ function InicioSesion(props) {
     return (
 
         
-        <>
+        <div>
 
         <Helmet>
             <title>Encendido Alsina - Iniciar Sesión</title>
@@ -183,7 +183,12 @@ function InicioSesion(props) {
                                                     Iniciar Sesión
         
                                                 </button>
-                                                <Link to="register" className="btn btn-link">Registrar</Link>
+                                                <Link to={{
+                                                            pathname: "register",
+                                                            state: {
+                                                                deDondeVengo: 1
+                                                            }
+                                                        }} className="btn btn-link">Registrar</Link>
                                             </div>
                                             <div className="form-group col text-right">
                                                 <Link to="forgot-password" className="btn btn-link pr-0">Olvide mi contraseña?</Link>
@@ -196,7 +201,7 @@ function InicioSesion(props) {
                     </div>
                 </div>
             </div>
-      </>
+      </div>
     )
 }
 

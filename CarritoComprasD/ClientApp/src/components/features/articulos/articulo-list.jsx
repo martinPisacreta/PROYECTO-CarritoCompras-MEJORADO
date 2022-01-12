@@ -3,7 +3,7 @@ import { DataGrid ,esES } from '@mui/x-data-grid';
 import { articuloActions, usuarioPedidoActions , marcaActions} from '../../../actions';
 import { connect } from 'react-redux';
 
-import {  makeStyles } from '@material-ui/core/styles';
+import {  makeStyles } from '@mui/styles';
 import DescripcionFila from './descripcion_fila'
 import columns from './columns'
 import MenuFilter from './menu-filter'
@@ -129,7 +129,7 @@ function ArticuloList(props) {
 
 
   return (
-    <>
+    <div>
    
     <MenuFilter
       marcas = {marcas}
@@ -197,7 +197,7 @@ function ArticuloList(props) {
             />
     }
 
-    </>
+    </div>
   );
 
 }

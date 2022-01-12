@@ -24,12 +24,7 @@ export default function MainMenu(  ) {
                 <Link  to={ `${process.env.PUBLIC_URL}` } className="sf-with">Inicio</Link>
             </li>
 
-            {
-                usuario && 
-                <li className={ `megamenu-container` } id="menu-home">
-                    <Link to={ `${process.env.PUBLIC_URL}/usuario/dashboard` } className="sf-with">Mi Cuenta</Link>
-                </li>
-            } 
+           
 
 
             <li className={ `megamenu-container` } id="menu-home">

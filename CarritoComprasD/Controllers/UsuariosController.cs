@@ -111,9 +111,7 @@ namespace WebApi.Controllers
         {
            
 
-            // only admins can update role
-            if (Usuario.Rol != "Admin")
-                model.Role = null;
+           
 
             var usuario = _usuarioService.Update(id, model);
             return Ok(usuario);

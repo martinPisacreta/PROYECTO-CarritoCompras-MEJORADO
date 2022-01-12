@@ -86,7 +86,7 @@ function Carrito( props ) {
 
     
     return (
-        <>
+        <div>
 
 
             
@@ -238,7 +238,7 @@ function Carrito( props ) {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

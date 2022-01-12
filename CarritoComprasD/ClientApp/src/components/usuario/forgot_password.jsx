@@ -7,7 +7,7 @@ import PageHeader from '../common/page-header';
 import Breadcrumb from '../common/breadcrumb';
 import { usuarioService , alertService} from '../../services';
 import {Alert} from '../alert'
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
 import './form-control.css'
 import { usuarioActions } from '../../actions';
 import { connect } from 'react-redux';
@@ -55,7 +55,7 @@ function ForgotPassword(props) {
  
 
     return (
-        <>
+        <div>
             <Helmet>
                 <title>Encendido Alsina - Olvide mi contraseña</title>
             </Helmet>
@@ -95,7 +95,7 @@ function ForgotPassword(props) {
                         </div>
                     </div>
                 </div>
-        </>        
+        </div>        
     )
 }
 

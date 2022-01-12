@@ -8,10 +8,10 @@ import PageHeader from '../common/page-header';
 import Breadcrumb from '../common/breadcrumb';
 import {Alert} from '../alert'
 
-import IconButton from '@material-ui/core/IconButton';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { makeStyles } from "@material-ui/core/styles";
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { makeStyles } from "@mui/styles";
 import './form-control.css'
 import { usuarioActions } from '../../actions';
 import { connect } from 'react-redux';
@@ -119,7 +119,7 @@ function ResetPassword(props) {
 
         return (
 
-            <>
+            <div>
                 <Helmet>
                     <title>Encendido Alsina - Reestablecer contraseña</title>
                 </Helmet>
@@ -193,7 +193,7 @@ function ResetPassword(props) {
                             </div>
                         </div>
                     </div>
-            </>
+            </div>
         );
     }
 
