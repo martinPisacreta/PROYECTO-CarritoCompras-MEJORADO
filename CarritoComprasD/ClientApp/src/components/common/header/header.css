@@ -1,0 +1,29 @@
+.top-menu-custom {
+    text-transform: uppercase;
+    letter-spacing: -.01em;
+    margin: 0; }
+    .top-menu-custom > li {
+      position: relative; }
+      .top-menu-custom > li > a {
+        display: none; }
+    .top-menu-custom ul {
+      display: flex;
+      align-items: center; }
+    .top-menu-custom li + li {
+      margin-left: 3rem; }
+    .top-menu-custom a {
+      display: inline-flex;
+      align-items: center; }
+    .top-menu-custom i {
+      font-size: 1.5rem;
+      margin-right: .8rem;
+      line-height: 1; }
+      .top-menu-custom i.icon-heart-o {
+        margin-top: -.2rem; }
+    .top-menu-custom span {
+      color: #3399ff;
+      margin-left: .3rem; }
+
+.header-top {
+  background-color : #dddddd !important
+}

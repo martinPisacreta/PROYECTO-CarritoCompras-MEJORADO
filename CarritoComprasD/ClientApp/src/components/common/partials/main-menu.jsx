@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { usuarioService } from '../../../services';
-import {rol} from '../../helpers'
+import {rol} from '@helpers'
 
 export default function MainMenu(  ) {
     const [ path, setPath ] = useState( "" );

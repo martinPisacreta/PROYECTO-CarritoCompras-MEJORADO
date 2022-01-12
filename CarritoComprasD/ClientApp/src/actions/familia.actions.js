@@ -1,5 +1,5 @@
 import { familiaConstantes } from './types';
-import { familiaService , alertService} from '../services';
+import { familiaService , alertService} from '@services';
 
 
 export const familiaActions = {

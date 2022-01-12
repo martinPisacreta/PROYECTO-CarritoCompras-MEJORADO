@@ -12,7 +12,7 @@ export const usuarioConstantes = {
     LOGIN_REQUEST: 'LOGIN_REQUEST',
     LOGIN_SUCCESS: 'LOGIN_SUCCESS',
 
-    LOGOUT_SUCCESS: 'LOGOUT_SUCCESS',
+
 
     
    

@@ -3,7 +3,7 @@ import { combineReducers } from "redux";
 
 import alertaReducer from "./alertReducer/alert.reducers";
 
-import loginLogoutReducer from "./usuarioReducer/loginLogout.reducers";
+import loginReducer from "./usuarioReducer/loginReducer.reducers";
 import registerReducer from "./usuarioReducer/register.reducers";
 import verifyEmailReducer from "./usuarioReducer/verifyEmail.reducers";
 import forgotPasswordReducer from "./usuarioReducer/forgotPassword.reducers"
@@ -21,7 +21,7 @@ import articuloReducer from "./articuloReducer/articulo.reducers.js"
 
 export default combineReducers({
     alertaReducer,
-    loginLogoutReducer,
+    loginReducer,
     registerReducer,
     verifyEmailReducer,
     forgotPasswordReducer,

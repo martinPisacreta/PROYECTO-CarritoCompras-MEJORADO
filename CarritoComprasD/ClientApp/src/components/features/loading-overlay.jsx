@@ -1,6 +1,6 @@
 import React from 'react';
 
-function LandingOverlay( props ) {
+function LandingOverlay(  ) {
     return (
         <div className="loading-overlay">
             <div className="bounce-loader">

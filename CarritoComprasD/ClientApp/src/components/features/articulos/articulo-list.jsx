@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid ,esES } from '@mui/x-data-grid';
-import { articuloActions, usuarioPedidoActions , marcaActions} from '../../../actions';
+import { articuloActions, usuarioPedidoActions , marcaActions} from '@actions';
 import { connect } from 'react-redux';
 
 import {  makeStyles } from '@mui/styles';
@@ -96,7 +96,7 @@ function ArticuloList(props) {
           setFilas(newRows);
           setLoadingDataGrid(false)
         })
-        .catch(error => {
+        .catch(() => {
           setFilas(null);
           setLoadingDataGrid(false)
         })

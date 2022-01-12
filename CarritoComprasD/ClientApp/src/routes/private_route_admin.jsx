@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import {rol} from '../components/helpers'
+import {rol} from '@helpers'
 
 // El componente PrivateRoute representa un componente de ruta si el usuario ha iniciado sesión  y tiene un rol autorizado para la ruta,
 // si el usuario no ha iniciado sesión, se le redirige a la /login página, 
@@ -9,7 +9,7 @@ import {rol} from '../components/helpers'
 
 
 
-function PrivateRouteAdmin({ component: Component, roles, ...rest }) {
+function PrivateRouteAdmin({ component: Component, ...rest }) {
     return (
         <Route {...rest} render={props => {
             const usuario = localStorage.getItem('user');

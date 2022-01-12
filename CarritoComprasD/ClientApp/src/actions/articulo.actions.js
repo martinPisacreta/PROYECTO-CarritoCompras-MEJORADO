@@ -1,5 +1,5 @@
 import { articuloConstantes } from './types';
-import { articuloService , alertService} from '../services';
+import { articuloService , alertService} from '@services';
 
 
 export const articuloActions = {

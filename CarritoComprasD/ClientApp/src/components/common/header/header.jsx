@@ -1,32 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPhoneAlt } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { faWhatsapp } from '@fortawesome/fontawesome-free-brands'
-import { usuarioActions , empresaActions } from '../../actions';
+
+import {   empresaActions } from '@actions';
+import { usuarioService } from '@services'
+
 import { connect } from 'react-redux';
 
-// Common Header Components
-import MainMenu from './partials/main-menu';
-import CartMenu from './partials/cart-menu';
 
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import LogoutIcon from '@mui/icons-material/Logout';
-import LoginIcon from '@mui/icons-material/Login';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import HomeIcon from '@mui/icons-material/Home';
-import { blue } from '@mui/material/colors';
+import MainMenu from '../partials/main-menu';
+import CartMenu from '../partials/cart-menu';
+
+import {
+    Box,
+    Avatar,
+    Menu,
+    MenuItem,
+    ListItemIcon,
+    Divider,
+    IconButton
+} from '@mui/material';
+
+import {
+    Logout as LogoutIcon,
+    Login as LoginIcon,
+    AccountCircle as AccountCircleIcon,
+    Home as HomeIcon,
+    AppRegistration as AppRegistrationIcon
+} from '@mui/icons-material';
+
+
+import { green } from '@mui/material/colors';
+import './header.css'
+
 
 function Header( props ) {
-    const { container = "container" ,  logout , getEmpresaById } = props;
+    const { container = "container"  , getEmpresaById } = props;
     const [empresa,setEmpresa] = useState({});
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -56,7 +68,7 @@ function Header( props ) {
 
  
     function onDelete() {
-        logout(usuario.idUsuario);
+        usuarioService.logout(usuario.idUsuario);
         window.location.href =  `${process.env.PUBLIC_URL}`;
     }
 
@@ -65,7 +77,7 @@ function Header( props ) {
     return (
         <header className="header header-10 header-intro-clearance">
             <div className="header-top">
-                <div className={ container }>
+                <div className={ container } >
                     <div className="header-left">
                         <ul className="top-menu">
                                 <li>
@@ -88,7 +100,7 @@ function Header( props ) {
                     </div>
 
                     <div className="header-right">
-                        <ul>
+                        <ul className="top-menu-custom">
                             <li>
                                
                                  <ul>
@@ -104,7 +116,7 @@ function Header( props ) {
                                                 aria-haspopup="true"
                                                 aria-expanded={open ? 'true' : undefined}
                                             >
-                                               <Avatar sx={{ bgcolor: blue[500] , width: 40, height: 40 }}>
+                                               <Avatar sx={{ bgcolor: green[500] , width: 30, height: 30 }}>
                                                     <HomeIcon fontSize="large" />
                                                 </Avatar>
                                             </IconButton>
@@ -171,6 +183,7 @@ function Header( props ) {
                                                 </div>
                                                      :
                                                 <div>
+
                                                     <MenuItem
                                                         component={Link}
                                                         to={ `${process.env.PUBLIC_URL}/usuario/login` }
@@ -178,7 +191,22 @@ function Header( props ) {
                                                         <ListItemIcon>
                                                             <LoginIcon fontSize="large" />
                                                         </ListItemIcon>
-                                                        <span style={{fontSize: '1.4rem'}}>Iniciar Sesión / Registrarse</span>
+                                                        <span style={{fontSize: '1.4rem'}}>Iniciar Sesión</span>
+                                                    </MenuItem>
+                                                    <Divider />
+                                                    <MenuItem
+                                                        component={Link}
+                                                        to={{
+                                                            pathname: "register",
+                                                            state: {
+                                                                deDondeVengo: 1
+                                                            }
+                                                        }}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <AppRegistrationIcon fontSize="large" />
+                                                        </ListItemIcon>
+                                                        <span style={{fontSize: '1.4rem'}}>Registrarse</span>
                                                     </MenuItem>
                                                 </div>
 
@@ -239,7 +267,6 @@ function Header( props ) {
 
 
 const actionCreators = {
-    logout: usuarioActions.logout,
     getEmpresaById: empresaActions.getById
 };
 

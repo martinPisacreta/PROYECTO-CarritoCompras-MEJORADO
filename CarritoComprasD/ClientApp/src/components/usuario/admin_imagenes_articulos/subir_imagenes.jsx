@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { articulosUploadImageService}  from '../../../services';
+import React, { useState } from 'react';
+import { articulosUploadImageService}  from '@services';
 import { makeStyles } from "@mui/styles";
 import { Formik, Form } from 'formik';
 
@@ -10,7 +10,7 @@ export default function SubirImagenes ()  {
     const [error,setError] = useState(null);
    
     //color del boton UPLOAD
-    const useStyles = makeStyles(theme => ({
+    const useStyles = makeStyles(() => ({
         customHoverFocus: {
           "&:hover, &.Mui-focusVisible": { backgroundColor: "transparent" }
         },

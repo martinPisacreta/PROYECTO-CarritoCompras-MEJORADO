@@ -6,11 +6,11 @@ import { Helmet } from 'react-helmet';
 import PageHeader from '../../common/page-header';
 import Breadcrumb from '../../common/breadcrumb';
 
-import { quantityInputs} from '../../../utils';
-import { usuarioPedidoActions } from '../../../actions';
+import { quantityInputs} from '@utils';
+import { usuarioPedidoActions } from '@actions';
 import { connect } from 'react-redux';
 import LoadMultipleImg from '../../common/load-multiple-img'
-import { history } from '../../helpers';
+import { history } from '@helpers';
 
 function Carrito( props ) {
     const { usuarioPedido , modificarArticuloPedido , finalizarPedido , eliminarArticuloPedido , empresa} = props;
@@ -177,7 +177,7 @@ function Carrito( props ) {
                                                             <td className="remove-col">
                                                                 <button 
                                                                     className="btn-remove" 
-                                                                    onClick={ ( e ) => onEliminarArticulo(usuario.idUsuario,item.articulo.id) }    
+                                                                    onClick={ (  ) => onEliminarArticulo(usuario.idUsuario,item.articulo.id) }    
                                                                     style={eliminandoArticulo ? {pointerEvents: "none", opacity: "0.4"} : {}}
                                                                 >
                                                                     <i className="icon-close"></i>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 
-import { usuarioService} from '../../../services';
+import { usuarioService} from '@services';
 
 
 // import Custom Components

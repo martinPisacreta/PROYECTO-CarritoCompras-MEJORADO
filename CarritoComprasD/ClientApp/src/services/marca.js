@@ -1,6 +1,6 @@
 
 import { BehaviorSubject } from 'rxjs';
-import { fetchWrapper, history } from '../components/helpers';
+import { fetchWrapper } from '@helpers';
 const marcaSubject = new BehaviorSubject(null);
 const baseUrl = `/marcas`;
 

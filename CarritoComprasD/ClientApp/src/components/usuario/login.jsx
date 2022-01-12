@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -15,7 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { makeStyles } from "@mui/styles";
-import { usuarioActions } from '../../actions';
+import { usuarioActions } from '@actions';
 import { connect } from 'react-redux';
 
 //El componente Login contiene un formulario de inicio de sesión bastante estándar creado con la biblioteca Formik que contiene campos para emaily password.
@@ -31,9 +31,12 @@ function InicioSesion(props) {
         password: ''
     };
 
+
+    
     const [values, setValues] = React.useState({
         showPassword: false,
       });
+
 
    
     
@@ -59,7 +62,7 @@ function InicioSesion(props) {
     });
 
 
-    const useStyles = makeStyles(theme => ({
+    const useStyles = makeStyles(() => ({
         customHoverFocus: {
           "&:hover, &.Mui-focusVisible": { backgroundColor: "transparent" }
         },
@@ -83,7 +86,7 @@ function InicioSesion(props) {
    
     function onSubmit({ email, password }, { setSubmitting }) {    
         login(email, password)
-        .finally(() => 
+        .catch(() => 
             setSubmitting(false)
         )
 

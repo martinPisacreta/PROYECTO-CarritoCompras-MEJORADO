@@ -1,4 +1,4 @@
-import {  empresaConstantes } from '../../actions/types';
+import {  empresaConstantes } from '@actions/types';
 
 const initialState = {
   loading: false,

@@ -1,18 +1,22 @@
 
 import React, { useState, useEffect } from 'react';
-import { articuloActions } from '../../../actions';
-import { marcaActions , familiaActions } from '../../../actions';
+import { marcaActions , familiaActions } from '@actions';
 import { connect } from 'react-redux';
-import {  TextField  , Box} from '@mui/material';
 
-import Switch from '@mui/material/Switch';
+import {
+  TextField,
+  Box,
+  Switch,
+  Autocomplete,
+  List,
+  ListItem,
+  Drawer
+} from '@mui/material';
+  
+
 import {  makeStyles } from '@mui/styles';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextFieldAutocomplete from '@mui/material/TextField';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import {alertService} from '../../../services';
-import Drawer from '@mui/material/Drawer';
+import {alertService} from '@services';
+
 
 //estilos personalizados del componente
 const useStyles = makeStyles({
@@ -214,7 +218,7 @@ function MenuFilter(props) {
                     }
                   }}
                   renderInput={(params) => 
-                    <TextFieldAutocomplete  
+                    <TextField  
                       style={{fontSize: '1.4rem' , backgroundColor: 'white' }}  
                       {...params} 
                       label="Marcas" 
@@ -241,7 +245,7 @@ function MenuFilter(props) {
                   }}
                   style={{fontSize: '1.4rem' , backgroundColor: 'white' }}  
                   renderInput={(params) => 
-                    <TextFieldAutocomplete  
+                    <TextField  
                       style={{fontSize: '1.4rem' }}  
                       {...params} 
                       label="Familias" 

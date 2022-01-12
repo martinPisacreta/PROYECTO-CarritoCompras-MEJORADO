@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles, makeStyles } from '@mui/styles';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import {  ThemeProvider } from '@mui/styles';
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow
+} from '@mui/material';
+
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
 import PedidoDetalle from './pedido_detalle';
-import {alertService , usuarioPedidosService , usuarioService} from '../../../services'
+import {alertService , usuarioPedidosService , usuarioService} from '@services'
 
-function Pedidos(props) {
+function Pedidos() {
   const [pedidos,setPedidos] = useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -43,7 +46,7 @@ function Pedidos(props) {
 
 
  //#region STYLES
-  const useStyles = makeStyles((theme) => ({
+  const useStyles = makeStyles(() => ({
     root: {
       width: '100%',
       overflowX: "auto"
@@ -56,7 +59,7 @@ function Pedidos(props) {
     }
   }));
   
-  const EstiloCelda = withStyles((theme) => ({
+  const EstiloCelda = withStyles(() => ({
     head: {
       // backgroundColor: theme.palette.common.black,
       // color: theme.palette.common.white,

@@ -5,11 +5,10 @@ import * as Yup from 'yup';
 import { Helmet } from 'react-helmet';
 import PageHeader from '../common/page-header';
 import Breadcrumb from '../common/breadcrumb';
-import { usuarioService , alertService} from '../../services';
 import {Alert} from '../alert'
 import { makeStyles } from "@mui/styles";
 import './form-control.css'
-import { usuarioActions } from '../../actions';
+import { usuarioActions } from '@actions';
 import { connect } from 'react-redux';
 
 
@@ -28,13 +27,13 @@ function ForgotPassword(props) {
 
     function onSubmit({ email }, { setSubmitting }) {
         forgotPassword(email)
-        .finally(() => 
+        .catch(() => 
             setSubmitting(false)
         )
     }
 
 
-    const useStyles = makeStyles(theme => ({
+    const useStyles = makeStyles(() => ({
         style_button: {
             "&.btn-primary" : {
                 backgroundColor: "#094293 !important", /*agregar !importantpara anular los estados */

@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { usuarioService } from '../../../services';
-import { mobileMenu } from '../../../utils';
-import {rol} from '../../helpers'
+import { mobileMenu } from '@utils';
+import {rol} from '@helpers'
 
 function MobileMainNav( ) {
 

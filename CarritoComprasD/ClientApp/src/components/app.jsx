@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { matchPath } from 'react-router-dom';
 
 // import Custom Components
-import Header from './common/header';
+import Header from './common/header/header';
 import Footer from './common/footer';
 
 import MobileMenu from './common/mobile-menu';

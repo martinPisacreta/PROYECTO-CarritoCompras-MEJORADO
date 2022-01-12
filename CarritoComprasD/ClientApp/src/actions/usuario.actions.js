@@ -1,11 +1,11 @@
 import { usuarioConstantes } from './types';
-import { usuarioService , alertService } from '../services';
-import { history } from '../components/helpers';
+import { usuarioService , alertService } from '@services';
+import { history } from '@helpers';
 
 
 export const usuarioActions = {
     login,
-    logout,
+    //logout, NO VA , PORQUE NO DISPARA NINGUN DISPATCH
     register,
     verifyEmail,
     forgotPassword,
@@ -42,24 +42,6 @@ function login(email, password) {
 
 
 
-function logout() {
-    return dispatch => {
-        return new Promise((resolve, reject) => {
-            usuarioService.logout()
-                    .then(
-                        mensaje => { 
-                            dispatch(success());  
-                            resolve(mensaje); // respuesta correcta
-                        },
-                        error => {    
-                            reject(error); // respuesta error
-                        })
-            })
-        };
-
-
-    function success() { return { type: usuarioConstantes.LOGOUT_SUCCESS } } 
-}
 
 
 

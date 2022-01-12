@@ -6,7 +6,7 @@ import PageHeader from '../common/page-header';
 import Breadcrumb from '../common/breadcrumb';
 import {Alert} from '../alert'
 import './form-control.css'
-import { usuarioActions } from '../../actions';
+import { usuarioActions } from '@actions';
 import { connect } from 'react-redux';
 
 

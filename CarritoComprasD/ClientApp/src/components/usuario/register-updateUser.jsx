@@ -5,14 +5,13 @@ import * as Yup from 'yup';
 import { Helmet } from 'react-helmet';
 import PageHeader from '../common/page-header';
 import Breadcrumb from '../common/breadcrumb';
-import { usuarioService ,alertService} from '../../services';
 import LocationSearchInput from "../location_search_input/index";
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { makeStyles } from "@mui/styles";
 import './form-control.css'
-import { usuarioActions } from '../../actions';
+import { usuarioActions } from '@actions';
 import { connect } from 'react-redux';
 
 function Register_UpdateUser(props) {
@@ -20,11 +19,10 @@ function Register_UpdateUser(props) {
 
     //deDondeVengo -> si es 1 voy a registrar un usuario , si es 2 voy a updetear un usuario
     const { deDondeVengo} = props.location.state;
-    console.log(deDondeVengo)
     const usuario = JSON.parse(localStorage.getItem('user'));
     const {  registerUsuario , updateUsuario } = props;
 
-    console.log(usuario)
+  
    
     const initialValues = {      
         email: deDondeVengo === 1 ? '' : usuario.email,
@@ -70,7 +68,7 @@ function Register_UpdateUser(props) {
                 setStatus();
 
                 registerUsuario(usuario)
-                .finally(() => 
+                .catch(() => 
                     setSubmitting(false)
                 )
         }
@@ -94,7 +92,7 @@ function Register_UpdateUser(props) {
             setStatus();
     
             updateUsuario(usuario.idUsuario, data)
-            .finally(() => 
+            .catch(() => 
                     setSubmitting(false)
                 )
         }
@@ -106,7 +104,7 @@ function Register_UpdateUser(props) {
 
     
 
-    const useStyles = makeStyles(theme => ({
+    const useStyles = makeStyles(() => ({
         customHoverFocus: {
             "&:hover, &.Mui-focusVisible": { backgroundColor: "transparent" }
         },

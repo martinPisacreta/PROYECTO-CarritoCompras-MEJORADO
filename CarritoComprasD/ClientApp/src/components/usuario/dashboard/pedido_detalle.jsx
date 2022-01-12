@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles, makeStyles } from '@mui/styles';
-import Dialog from '@mui/material/Dialog';
-import MuiDialogTitle from '@mui/material/DialogTitle';
-import MuiDialogContent from '@mui/material/DialogContent';
-import MuiDialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
+import {
+  Dialog,
+  DialogTitle as MuiDialogTitle,
+  DialogContent as MuiDialogContent,
+  IconButton,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
+} from '@mui/material';
+
 import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import { ThemeProvider } from '@mui/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
 
-const styles = (theme) => ({
+const styles = () => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
@@ -44,7 +46,7 @@ const DialogTitle = withStyles(styles)((props) => {
   );
 });
 
-const DialogContent = withStyles((theme) => ({
+const DialogContent = withStyles(() => ({
   root: {
     padding: theme.spacing(2),
   },
@@ -54,7 +56,7 @@ const DialogContent = withStyles((theme) => ({
 function PedidoDetalle(props) {
 
 //#region STYLES
-  const useStyles = makeStyles((theme) => ({
+  const useStyles = makeStyles(() => ({
     root: {
       width: '100%',
       overflowX: "auto"
@@ -67,7 +69,7 @@ function PedidoDetalle(props) {
     }
   }));
   
-  const EstiloCelda = withStyles((theme) => ({
+  const EstiloCelda = withStyles(() => ({
     head: {
       // backgroundColor: theme.palette.common.black,
       // color: theme.palette.common.white,

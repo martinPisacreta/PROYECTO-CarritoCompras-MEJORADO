@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import LoadingOverlay from '../components/features/loading-overlay';
 import { PrivateRouteUser } from './private_route_user';
-import { scrollTop } from '../utils';
+import { scrollTop } from '@utils';
 import {Alert} from '../components/alert'
 
 const ShopPages = React.lazy( () => import( './shop-route.js' ) );

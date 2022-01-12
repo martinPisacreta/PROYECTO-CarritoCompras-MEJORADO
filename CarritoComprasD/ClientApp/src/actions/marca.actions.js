@@ -1,5 +1,5 @@
 import { marcaConstantes } from './types';
-import { marcaService , alertService} from '../services';
+import { marcaService , alertService} from '@services';
 
 
 export const marcaActions = {

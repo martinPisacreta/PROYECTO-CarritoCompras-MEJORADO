@@ -13,7 +13,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { makeStyles } from "@mui/styles";
 import './form-control.css'
-import { usuarioActions } from '../../actions';
+import { usuarioActions } from '@actions';
 import { connect } from 'react-redux';
 
 function ResetPassword(props) {
@@ -33,7 +33,7 @@ function ResetPassword(props) {
 
     
     
-    const useStyles = makeStyles(theme => ({
+    const useStyles = makeStyles(() => ({
         customHoverFocus: {
             "&:hover, &.Mui-focusVisible": { backgroundColor: "transparent" }
         },
@@ -109,7 +109,7 @@ function ResetPassword(props) {
             };
 
             resetPassword(payload)
-            .finally(() => 
+            .catch(() => 
                 setSubmitting(false)
             )
         }

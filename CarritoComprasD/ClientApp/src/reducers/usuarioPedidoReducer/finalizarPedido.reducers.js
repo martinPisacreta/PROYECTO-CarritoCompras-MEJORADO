@@ -1,4 +1,4 @@
-import {  usuarioPedidoConstantes } from '../../actions/types';
+import {  usuarioPedidoConstantes } from '@actions/types';
 
 
 const initialState = {

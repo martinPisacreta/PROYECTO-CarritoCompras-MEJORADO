@@ -1,4 +1,4 @@
-import {   familiaConstantes } from '../../actions/types';
+import {   familiaConstantes } from '@actions/types';
 
 
 const initialState = {

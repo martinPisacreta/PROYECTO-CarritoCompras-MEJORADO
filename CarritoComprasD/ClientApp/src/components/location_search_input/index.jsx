@@ -1,13 +1,13 @@
-import React,{useEffect} from 'react';
+import React from 'react';
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from 'react-places-autocomplete';
 import { ErrorMessage} from "formik";
 import './map.css';
-import { usuarioService , alertService} from '../../services';
+import {  alertService} from '@services';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { usuarioActions } from '../../actions';
+import { usuarioActions } from '@actions';
 import { connect } from 'react-redux';
 
 class LocationSearchInput extends React.Component {
@@ -105,10 +105,8 @@ class LocationSearchInput extends React.Component {
 
   render() {
     const {
-      field: { name, ...field }, // { name, value, onChange, onBlur }
+      field: { name,  }, // { name, value, onChange, onBlur }
       form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-      classes,
-      label,
       ...props
     } = this.props;
 
@@ -142,9 +140,7 @@ class LocationSearchInput extends React.Component {
               {loading && <div>Loading...</div>}
               {suggestions.map((suggestion,index) => {
                 
-                const className = suggestion.active
-                  ? "suggestion-item--active"
-                  : "suggestion-item";
+                
                 // inline style for demonstration purpose
                 const style = suggestion.active
                 ? { backgroundColor: '#42a5f5', cursor: 'pointer' }

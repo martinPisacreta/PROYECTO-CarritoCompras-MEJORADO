@@ -1,4 +1,4 @@
-import {  marcaConstantes } from '../../actions/types';
+import {  marcaConstantes } from '@actions/types';
 
 
 const initialState = {

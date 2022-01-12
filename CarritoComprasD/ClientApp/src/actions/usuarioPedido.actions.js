@@ -1,6 +1,6 @@
 
 import { usuarioPedidoConstantes } from './types';
-import { usuarioPedidosService , alertService } from '../services';
+import { usuarioPedidosService , alertService } from '@services';
 
 
 export const usuarioPedidoActions = {

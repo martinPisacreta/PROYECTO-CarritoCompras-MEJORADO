@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { fetchWrapper } from '../components/helpers';
+import { fetchWrapper } from '@helpers';
 
 const userSubject = new BehaviorSubject(null);
 const baseUrl = `/usuarios`;
@@ -100,7 +100,6 @@ function getById(id) {
 
 
 function update(payload) {
-    console.log(payload)
     const {idUsuario , data} = payload;
     return fetchWrapper.put(`${baseUrl}/${idUsuario}`, data)
         .then(usuario => {

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Router } from 'react-router-dom';
 import { render } from 'react-dom';
-import { history } from './components/helpers';
+import { history } from '@helpers';
 
 import AppRoute from './routes';
 import { Provider } from 'react-redux';
 import store from './store';
-import { usuarioService } from './services';
+import { usuarioService } from '@services';
 
 
 

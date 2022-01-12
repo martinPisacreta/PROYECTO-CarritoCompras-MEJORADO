@@ -42,7 +42,7 @@ export const definePolyfills = () => {
     }
 
     if ( !Element.prototype.index ) {
-        Element.prototype.index = function ( s ) {
+        Element.prototype.index = function (  ) {
             let self = this;
             let children = self.parentElement.children;
             for ( let i = 0; i < children.length; i++ ) {
@@ -259,21 +259,21 @@ export const scrollToElement = ( e ) => {
 /**
  * utils to make mobile menu
  */
-export const mobileMenu = function ( e ) {
+export const mobileMenu = function (  ) {
     let showMobile = document.querySelector( '.mobile-menu-toggler' );
     let mobileMenu = document.querySelector( 'body' );
 
-    showMobile.addEventListener( "click", function ( e ) {
+    showMobile.addEventListener( "click", function (  ) {
         mobileMenu.classList.add( 'mmenu-active' );
     } );
 
     let mobileClose = document.querySelector( '.mobile-menu-close' );
-    mobileClose.addEventListener( "click", function ( e ) {
+    mobileClose.addEventListener( "click", function (  ) {
         mobileMenu.classList.remove( 'mmenu-active' );
     } );
 
     let overLay = document.querySelector( '.mobile-menu-overlay' );
-    overLay.addEventListener( "click", function ( e ) {
+    overLay.addEventListener( "click", function (  ) {
         mobileMenu.classList.remove( 'mmenu-active' );
     } );
 
@@ -576,7 +576,7 @@ export function isotopeLoad( isotope, imagesLoaded, container, selector, filterN
         } );
 
         let imgLoad = imagesLoaded( item, { background: true } );
-        imgLoad.on( 'done', function ( instance, image ) {
+        imgLoad.on( 'done', function ( ) {
             iso.layout();
         } );
 

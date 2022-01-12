@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import './descripcion_fila.css'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import IconButton from '@mui/material/IconButton';
-import CircularProgress from '@mui/material/CircularProgress';
-import Stack from '@mui/material/Stack';
-import Backdrop from '@mui/material/Backdrop';
+import {
+    IconButton,
+    CircularProgress,
+    Stack,
+    Backdrop
+} from '@mui/material';
+
 
 function DescripcionFila(props) {
     let { selectedRowArticulo , imagenCargada , setImagenCargada , onClick , onChange , usuario , cantidad} = props;

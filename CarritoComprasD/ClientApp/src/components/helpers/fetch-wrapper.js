@@ -1,7 +1,3 @@
-import { usuarioService } from '../../services';
-import React, { useState, useEffect } from 'react';
-import { Route, Redirect } from 'react-router-dom';
-
 export  const fetchWrapper = {
     get,
     post,

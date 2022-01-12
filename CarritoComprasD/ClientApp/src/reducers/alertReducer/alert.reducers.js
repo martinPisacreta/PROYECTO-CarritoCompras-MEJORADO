@@ -1,4 +1,4 @@
-import {  alertConstantes } from '../../actions/types';
+import {  alertConstantes } from '@actions/types';
 
 export default function alertaReducer(state = {}, action) {
   switch (action.type) {

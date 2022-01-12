@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link,useLocation,Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { Helmet } from 'react-helmet';
 
@@ -9,7 +9,7 @@ import IntroSlider from './intro_slider';
 import { introSlider } from '../settings';
 import style from './style.scss';
 
-import { marcaActions } from '../../actions';
+import { marcaActions } from '@actions';
 import { connect } from 'react-redux';
 
 
@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 function HomePage( props ) {
     const {getAllMarcasWithPathImgAndActive , selectedMarca , removeSelectedMarca} = props
     const [marcas,setMarcas] = useState([]) 
-    const { pathname } = useLocation();  
+    
 
    
 

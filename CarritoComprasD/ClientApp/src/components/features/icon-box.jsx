@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { safeContent } from '../../utils';
+import { safeContent } from '@utils';
 
 function IconBox( props ) {
     const { boxStyle, iconClass, title, text } = props;

@@ -1,5 +1,5 @@
 import { empresaConstantes } from './types';
-import { empresaService , alertService  } from '../services';
+import { empresaService , alertService  } from '@services';
 
 
 

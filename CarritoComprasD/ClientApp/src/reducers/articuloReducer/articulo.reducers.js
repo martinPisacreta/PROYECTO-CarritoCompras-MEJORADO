@@ -1,4 +1,4 @@
-import {   articuloConstantes } from '../../actions/types';
+import {   articuloConstantes } from '@actions/types';
 
 
 const initialState = {
