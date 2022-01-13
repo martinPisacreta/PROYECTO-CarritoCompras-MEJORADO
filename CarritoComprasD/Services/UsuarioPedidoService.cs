@@ -7,6 +7,8 @@ using CarritoComprasD.Entities;
 using CarritoComprasD.Helpers.AppSettings;
 using CarritoComprasD.Models.UsuarioPedidos;
 using CarritoComprasD.Helpers;
+using System.Threading.Tasks;
+using CarritoComprasD.Models.UsuarioPedidos.UsuarioPedidoDetalles;
 
 namespace CarritoComprasD.Services
 {
@@ -19,10 +21,11 @@ namespace CarritoComprasD.Services
         UsuarioPedidoResponse EliminarArticuloPedido(UsuarioPedidoEliminarArticuloRequest model);
         UsuarioPedidoResponse ModificarArticuloPedido(UsuarioPedidoModificarArticuloRequest model);
         UsuarioPedidoFinalizarResponse FinalizarPedido(UsuarioPedidoFinalizarRequest model);
-        UsuarioPedido GetByIdPedido(int id);
-        IEnumerable<UsuarioPedido> GetByIdUsuario(int idUsuario);
+    
+        UsuarioPedidoResponseGetByIdUsuario GetPedidosByIdUsuario(UsuarioPedidoGetByIdUsuarioRequest model);
         UsuarioPedido GetByIdUsuarioNotFinalized(int idUsuario);
-       
+        UsuarioPedidoDetalleResponse GetPedidoDetallesByIdUsuarioPedido(UsuarioPedidoDetalleRequest model);
+
     }
 
     public class UsuarioPedidoService : IUsuarioPedidoService
@@ -425,16 +428,42 @@ namespace CarritoComprasD.Services
 
         #region ---------------------------------- METODOS GET ------------------------------------------------------------------------
 
-        public UsuarioPedido GetByIdPedido(int idPedido)
+      
+        public UsuarioPedidoResponseGetByIdUsuario GetPedidosByIdUsuario(UsuarioPedidoGetByIdUsuarioRequest model)
         {
-            var pedido = getByIdPedido(idPedido);
-            return pedido;
-        }
+           
+            int _skip = model.Skip * model.Take;
+            UsuarioPedidoResponseGetByIdUsuario usuarioPedidoResponseGetByIdUsuario = new UsuarioPedidoResponseGetByIdUsuario();
+            try
+            {
 
-        public IEnumerable<UsuarioPedido> GetByIdUsuario(int idUsuario)
-        {
-            var pedidos = getByIdUsuario(idUsuario);
-            return pedidos.ToList();
+
+
+                usuarioPedidoResponseGetByIdUsuario.UsuarioPedidos =   getByIdUsuario(model.IdUsuario)
+                                                                       .Select(up => new VUsuarioPedido
+                                                                        {
+                                                                            Id = up.IdUsuarioPedido,
+                                                                            FechaPedido = up.FechaPedido.ToShortDateString(),
+                                                                            Total = up.Total,
+                                                                            SnFinalizado = up.SnFinalizado == true ? "SI" : "NO"
+                                                                        })
+                                                                        .ToList();
+
+
+
+                usuarioPedidoResponseGetByIdUsuario.Total = usuarioPedidoResponseGetByIdUsuario.UsuarioPedidos.Count();
+                usuarioPedidoResponseGetByIdUsuario.UsuarioPedidos = usuarioPedidoResponseGetByIdUsuario.UsuarioPedidos.Skip(_skip).Take(model.Take).ToList();
+
+                return usuarioPedidoResponseGetByIdUsuario;
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public UsuarioPedido GetByIdUsuarioNotFinalized(int idUsuario)
@@ -443,14 +472,7 @@ namespace CarritoComprasD.Services
             return pedido;
         }
 
-       
-
-        private UsuarioPedido getByIdPedido(int idPedido)
-        {
-            var usuarioPedido = _context.UsuarioPedido.Find(idPedido);
-            if (usuarioPedido == null) throw new KeyNotFoundException("Pedido no encontrado");
-            return usuarioPedido;
-        }
+    
 
         private IEnumerable<UsuarioPedido> getByIdUsuario(int idUsuario)
         {
@@ -688,5 +710,59 @@ namespace CarritoComprasD.Services
         }
 
         #endregion ---------------------------------- HELPERS ------------------------------------------------------------------------
+
+
+
+
+        #region ---------------------------------- PEDIDO DETALLES ------------------------------------------------------------------------
+        public UsuarioPedidoDetalleResponse GetPedidoDetallesByIdUsuarioPedido(UsuarioPedidoDetalleRequest model)
+        {
+
+            int _skip = model.Skip * model.Take;
+            UsuarioPedidoDetalleResponse usuarioPedidoDetalleResponse = new UsuarioPedidoDetalleResponse();
+            try
+            {
+
+
+
+
+                usuarioPedidoDetalleResponse.UsuarioPedidoDetalles = getPedidoDetalles_Activos_ByIdUsuarioPedido(model.IdUsuarioPedido)
+                                                                               .Select(upd => new VUsuarioPedidoDetalle
+                                                                               {
+                                                                                   Id = upd.IdUsuarioPedidoDetalle,
+                                                                                   CodigoArticulo = upd.CodigoArticulo,
+                                                                                   Cantidad = upd.Cantidad,
+                                                                                   DescripcionArticulo = upd.DescripcionArticulo,
+                                                                                   TxtDescMarca = upd.TxtDescMarca,
+                                                                                   TxtDescFamilia = upd.TxtDescFamilia,
+                                                                                   PrecioListaPorCoeficientePorMedioIva = upd.PrecioListaPorCoeficientePorMedioIva,
+                                                                                   
+                                                                               })
+                                                                                .ToList();
+
+
+
+                usuarioPedidoDetalleResponse.Total = usuarioPedidoDetalleResponse.UsuarioPedidoDetalles.Count();
+                usuarioPedidoDetalleResponse.UsuarioPedidoDetalles = usuarioPedidoDetalleResponse.UsuarioPedidoDetalles.Skip(_skip).Take(model.Take).ToList();
+
+                return usuarioPedidoDetalleResponse;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private IEnumerable<UsuarioPedidoDetalle> getPedidoDetalles_Activos_ByIdUsuarioPedido(int idUsuarioPedido)
+        {
+
+            var pedidoDetalles = _context.UsuarioPedidoDetalle
+                                .Where(upd => upd.IdUsuarioPedido == idUsuarioPedido && upd.SnActivo == -1)
+                                .OrderByDescending(up => up.IdUsuarioPedidoDetalle);
+            if (pedidoDetalles == null) throw new KeyNotFoundException("Pedido Detalles no encontrados");
+            return pedidoDetalles;
+        }
+        #endregion ---------------------------------- PEDIDO DETALLES ------------------------------------------------------------------------
     }
 }

@@ -10,10 +10,10 @@ export const usuarioPedidosService = {
     agregarArticuloPedido,
     eliminarArticuloPedido,
     modificarArticuloPedido,
-    getByIdPedido,
-    getByIdUsuario,
-    getByIdUsuarioNotFinalized,
-    finalizarPedido, //tengo que hacer este metodo en vs 2019
+    getPedidoByIdUsuarioNotFinalized,
+    finalizarPedido,
+    getPedidosByIdUsuario,
+    getPedidoDetallesByIdUsuarioPedido,
     usuarioPedidos: usuarioPedidosSubject.asObservable(),
     get usuarioPedidosSubjectValue () { return usuarioPedidosSubject.value }
    
@@ -34,22 +34,24 @@ function modificarArticuloPedido(params) {
 
 
 
-function getByIdPedido(id) {
-    return fetchWrapper.get(`${baseUrl}/${id}`);
-}
 
-
-function getByIdUsuario(idUsuario) {
-    return fetchWrapper.get(`${baseUrl}/${idUsuario}`);
-}
-
-function getByIdUsuarioNotFinalized (idUsuario) {
+function getPedidoByIdUsuarioNotFinalized (idUsuario) {
     return fetchWrapper.get(`${baseUrl}/get-by-idUsuario-not-finalized/${idUsuario}`);
 }
 
  //tengo que hacer este metodo en vs 2019
 function finalizarPedido(params) {
     return fetchWrapper.post(`${baseUrl}/finalizar-pedido`, params);
+}
+
+function getPedidosByIdUsuario(params) {
+    console.log(params)
+    return fetchWrapper.post(`${baseUrl}/get-pedidos-by-idUsuario`, params );
+}
+
+function getPedidoDetallesByIdUsuarioPedido(params) {
+    console.log(params)
+    return fetchWrapper.post(`${baseUrl}/get-pedidoDetalles-by-idUsuarioPedido`, params );
 }
 
 

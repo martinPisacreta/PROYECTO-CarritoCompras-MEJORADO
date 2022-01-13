@@ -10,6 +10,7 @@ using CarritoComprasD.Entities;
 using CarritoComprasD.Services;
 using AutoMapper;
 using CarritoComprasD.Models.UsuarioPedidos;
+using CarritoComprasD.Models.UsuarioPedidos.UsuarioPedidoDetalles;
 
 namespace Carrito_Compras_Core.Controllers
 {
@@ -73,25 +74,8 @@ namespace Carrito_Compras_Core.Controllers
         #endregion ---------------------------------- FINALIZAR PEDIDO -------------------------------------------------------------------
 
         #region ---------------------------------- METODOS GET ------------------------------------------------------------------------
-        [Authorize]
-        [HttpGet("{idPedido:int}")]
-        public ActionResult<UsuarioPedido> GetByIdPedido(int idPedido)
-        {
-          
-            var pedidos = _usuarioPedidoService.GetByIdPedido(idPedido);
-            return Ok(pedidos);
-        }
 
-        [Authorize]
-        [HttpGet("{idUsuario:int}")]
-        public ActionResult<IEnumerable<UsuarioPedido>> GetByIdUsuario(int idUsuario)
-        {
-
-            var usuarioPedido = _usuarioPedidoService.GetByIdUsuario(idUsuario);
-            return Ok(usuarioPedido);
-        }
-
-
+       
         [Authorize]
         [HttpGet("{idUsuario:int}")]
         [Route("get-by-idUsuario-not-finalized/{idUsuario}")]
@@ -105,6 +89,29 @@ namespace Carrito_Compras_Core.Controllers
 
         #endregion ---------------------------------- METODOS GET ------------------------------------------------------------------------
 
+        #region ---------------------------------- METODOS POST ------------------------------------------------------------------------
+
+        [Authorize]
+        [HttpPost("get-pedidos-by-idUsuario")]
+        public ActionResult<UsuarioPedidoResponseGetByIdUsuario> GetPedidosByIdUsuario(UsuarioPedidoGetByIdUsuarioRequest model)
+        {
+
+            var usuarioPedidoResponse = _usuarioPedidoService.GetPedidosByIdUsuario(model);
+            return Ok(usuarioPedidoResponse);
+        }
+        #endregion ---------------------------------- METODOS POST ------------------------------------------------------------------------
+
+
+        #region ---------------------------------- PEDIDO DETALLES ------------------------------------------------------------------------
+        [Authorize]
+        [HttpPost("get-pedidoDetalles-by-idUsuarioPedido")]
+        public ActionResult<UsuarioPedidoDetalleResponse> GetPedidoDetallesByIdUsuarioPedido(UsuarioPedidoDetalleRequest model)
+        {
+
+            var usuarioPedidoDetalleResponse = _usuarioPedidoService.GetPedidoDetallesByIdUsuarioPedido(model);
+            return Ok(usuarioPedidoDetalleResponse);
+        }
+        #endregion ---------------------------------- PEDIDO DETALLES ------------------------------------------------------------------------
 
     }
 }

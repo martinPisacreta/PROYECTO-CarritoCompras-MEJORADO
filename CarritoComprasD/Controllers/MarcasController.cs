@@ -30,16 +30,14 @@ namespace Carrito_Compras_Core.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        [Route("get-all-with-pathImg-and-active")]
+        [HttpGet("get-all-with-pathImg-and-active")]
         public ActionResult<IEnumerable<Marca>> GetAllWithPathImgAndActive()
         {
             var marcas = _marcaService.GetAllWithPathImgAndActive();
             return Ok(marcas);
         }
 
-        [HttpGet]
-        [Route("get-idTablaMarca-and-txtDescMarca-with-active")]
+        [HttpGet("get-idTablaMarca-and-txtDescMarca-with-active")]
         public ActionResult<IEnumerable<ComboBoxResponse>> GetIdTablaMarcaAndTxtDescMarcaWithActive()
         {
             var marcas = _marcaService.GetIdTablaMarcaAndTxtDescMarcaWithActive();

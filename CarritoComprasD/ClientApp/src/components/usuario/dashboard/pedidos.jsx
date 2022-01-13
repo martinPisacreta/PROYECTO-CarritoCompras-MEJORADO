@@ -1,145 +1,131 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles, makeStyles } from '@mui/styles';
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow
-} from '@mui/material';
+import { DataGrid ,esES } from '@mui/x-data-grid';
+import {  usuarioPedidoActions } from '@actions';
+import { connect } from 'react-redux';
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { esES } from '@mui/material/locale';
-import PedidoDetalle from './pedido_detalle';
-import {alertService , usuarioPedidosService , usuarioService} from '@services'
+import {  makeStyles } from '@mui/styles';
+import PedidoDetalle from './pedido_detalle'
 
-function Pedidos() {
-  const [pedidos,setPedidos] = useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const usuario = usuarioService.userValue;
+const useStyles = makeStyles({
+  dataGrid: {
+           "&.MuiDataGrid-root":{
+             fontSize: '1.4rem'
+           },
+           "& .MuiTablePagination-displayedRows":{
+             fontSize: '1.4rem'
+           },
+           "& .MuiInputBase-root":{
+             fontSize: '1.4rem'
+           },
+           '& .MuiDataGrid-cell:hover': {
+             color: 'black',
+           },
+           '& .super-app-theme--header': {
+             backgroundColor: '#39f',
+           },
+           '& .MuiDataGrid-columnHeaderTitle': {
+             fontWeight: 'bold'
+           }
+        }
+ });
 
- 
-  const  columnas = [
-    { 
-        id: 'id_usuario_pedido', 
-        label: '#', 
-        minWidth: 170 , 
-        visible: 'true'
+
+function Pedidos(props) {
+  
+  const {
+    getPedidosByIdUsuario
+  } = props
+
+  const usuario = JSON.parse(localStorage.getItem('user'));
+
+//data-grid
+  const [page, setPage] = useState(0);
+  const [filas, setFilas] = useState([]);
+  const [loadingDataGrid, setLoadingDataGrid] = useState(false);
+  const filasPerPage = 6;
+//data-grid
+
+  const [open, setOpen] = React.useState(false);
+  const [idUsuarioPedidoSeleccionado,setIdUsuarioPedidoSeleccionado] = useState(0);
+
+  useEffect( () => {
+
+    const payload = {
+      idUsuario: usuario.idUsuario,
+      take: filasPerPage,
+      skip : page
+    }
+
+
+    loadDataGrid(payload); 
+  }, [page]);
+
+
+  const valueFormatter = new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+  });
+
+  const columns = [
+    {
+        field : "id", //este campo es el IdUsuarioPedido
+        headerName: '#',
+        type: 'string',
+        flex: 1,
+        headerClassName: 'super-app-theme--header',
+        sortable: false
     },
     { 
-        id: 'fecha_pedido', 
-        label: 'Fecha', 
-        minWidth: 100 , 
-        visible: 'true' 
+        field : "fechaPedido", //va
+        headerName: 'Fecha Pedido',
+        type: 'string',
+        flex: 1,
+        headerClassName: 'super-app-theme--header',
+        sortable: false
     },
-    { 
-        id: 'total', 
-        label: 'Total', 
-        minWidth: 100, 
-        visible: 'true'
+    {
+        field : "total", //va
+        headerName: 'Total',
+        type: 'number',
+        valueFormatter: ({ value }) => valueFormatter.format(Number(value)),
+        flex: 1,
+        headerClassName: 'super-app-theme--header',
+        sortable: false
+    },
+    {
+      field : "snFinalizado", //va
+      headerName: 'Finalizado',
+      type: 'string',
+      flex: 1,
+      headerClassName: 'super-app-theme--header',
+      sortable: false
     }
   ];
 
 
- //#region STYLES
-  const useStyles = makeStyles(() => ({
-    root: {
-      width: '100%',
-      overflowX: "auto"
-    },
-    container: {
-      maxHeight: 600
-    },
-    pagination: {
-      fontSize: '14px',
-    }
-  }));
-  
-  const EstiloCelda = withStyles(() => ({
-    head: {
-      // backgroundColor: theme.palette.common.black,
-      // color: theme.palette.common.white,
-      color: '#959595',
-      fontWeight: 400,
-      fontSize: '14px',
-      fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif'
-    },
-    body: {
-      fontSize: '14px',
-      fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif'
-    },
-    footer: {
-      fontSize: '14px',
-      fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif'
-    },
-  }))(TableCell);
+  async function loadDataGrid (payload) {
+    let active = true;
+      (async () => {
+        setLoadingDataGrid(true);
+        await getPedidosByIdUsuario(payload)
+        .then(newRows => {
+          if (!active) {
+            return;
+          }
+    
+          setFilas(newRows);
+          setLoadingDataGrid(false)
+        })
+        .catch(() => {
+          setFilas(null);
+          setLoadingDataGrid(false)
+        })
+      })();
 
-
-  const EstiloFila = withStyles((theme) => ({
-    root: {
-      '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-    hover: {
-      "&:hover": {
-        backgroundColor: "#949ac9 !important",
-        color: " #fff !important",
-      },
-    },
-  }))(TableRow);
-
-  const theme = createTheme({
-    typography: {
-      body2: {
-        fontSize: '14px',
-        fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif'
-      }
-    }
-  }, esES);
-//#endregion STYLES
-
-
-//#region LLAMADAS PARENT - CHILDREN
-const [open, setOpen] = React.useState(false);
-const [selectedRow,setSelectedRow] = useState('');
-function handleClose_Dialog(newValue) { //la funcion "handleClose_Dialog" es llamada por el Children <PedidoDetalle/>
-    setOpen(newValue)
-}
-//#endregion LLAMADAS PARENT - CHILDREN 
-
-
-//#region CONSTANTES-FUNCIONES ESTE JSX
-
-  useEffect(() => {
-    usuarioPedidosService.getByIdUsuario(usuario.id)
-    .then(x => setPedidos(x))
-    .catch(error => {
-      alertService.error(error);
-    });
-    }, []);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  function seleccionar_row (selectedRowsData) { 
-    setOpen(true);
-    setSelectedRow(selectedRowsData);
-}
-
-
-//#endregion CONSTANTES-FUNCIONES ESTE JSX
-
+      return () => {
+        active = false;
+      };
+  }
 
 
 
@@ -147,80 +133,49 @@ function handleClose_Dialog(newValue) { //la funcion "handleClose_Dialog" es lla
 
   return (
 
-    <div>  
-    <div className='p5'>
+    <div>
       {
-            open &&
-            <PedidoDetalle 
-                          selectedRow = {selectedRow}
-                          handleClose_Dialog = {handleClose_Dialog}
-                          open = {open}
-            />
+        open &&
+        <PedidoDetalle 
+            idUsuarioPedidoSeleccionado = {idUsuarioPedidoSeleccionado}
+            open = {open}
+            setOpen = {setOpen}
+        />
       }
-        <ThemeProvider theme={theme}>  {/* lo que este dentro de ThemeProvider , va es estar en ESPAÑOL */}
-            <Paper className={classes.root}>
-                <TableContainer className={classes.container}>
-                  <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                      <TableRow>
-                        {columnas.map((column) => (
-                            column.visible === 'true' &&
-                                            <EstiloCelda
-                                              key={column.id}
-                                              align={column.align}
-                                              style={{ minWidth: column.minWidth}}
-                                              visible = {column.visible}     
-                                            >
-                                              {column.label}
-                                            </EstiloCelda>
-                                          
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {
-                        pedidos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((pedido,i) => {
-                        return (
-                          
-                          <EstiloFila  hover role="checkbox" tabIndex={-1} key={i}  >
-                            {columnas.map((column) => {
-                              const value = pedido[column.id];
-                              return (
-                                
-                                column.visible === 'true' &&
-                                                  <EstiloCelda key={column.id} align={column.align} onClick={() => seleccionar_row(pedido)}>
-                                                    { 
-                                                        value
-                                                    }
-                                                  </EstiloCelda>
-                              );
-                            })}
-                          </EstiloFila>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Paper>
-              
-              <TablePagination
-                  rowsPerPageOptions={[10, 25, 100]}
-                  component="div"
-                  count={pedidos.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
-                  className={classes.pagination}
-              />
-      </ThemeProvider>
-
+      <p class="text-danger">* Al hacer click sobre una fila , vera el detalle del pedido</p>
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+          className={classes.dataGrid}
+          rows={filas ? filas.usuarioPedidos : []}
+          columns={columns}
+          pagination
+          pageSize={filasPerPage}
+          rowsPerPageOptions={[filasPerPage]}
+          rowCount={filas ? filas.total : 0}
+          paginationMode="server"
+          onPageChange={(newPage) => setPage(newPage)}
+          loading={loadingDataGrid}
+          page={page}
+          disableColumnMenu
+          onSelectionModelChange={(id) => {
+            setIdUsuarioPedidoSeleccionado(id[0])
+            setOpen(true);
+          }}
+      
+      />
     </div>
-  
-
-    </div>
+  </div>
   );
 }
 
 
-export default Pedidos;
+
+
+const actionCreators = {
+    getPedidosByIdUsuario: usuarioPedidoActions.getPedidosByIdUsuario
+  }
+  
+export default connect(null, actionCreators)(Pedidos);
+
+

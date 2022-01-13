@@ -1,238 +1,195 @@
+
 import React, { useState, useEffect } from 'react';
-import { withStyles, makeStyles } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import {
   Dialog,
-  DialogTitle as MuiDialogTitle,
-  DialogContent as MuiDialogContent,
-  IconButton,
-  Typography,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow
+  DialogTitle,
+  DialogContent,
 } from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { esES } from '@mui/material/locale';
+import { DataGrid ,esES } from '@mui/x-data-grid';
+import {  usuarioPedidoActions } from '@actions';
+import { connect } from 'react-redux';
 
-const styles = () => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-});
 
-const DialogTitle = withStyles(styles)((props) => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
 
-const DialogContent = withStyles(() => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-}))(MuiDialogContent);
+
+
+const useStyles = makeStyles({
+  dataGrid: {
+           "&.MuiDataGrid-root":{
+             fontSize: '1.4rem'
+           },
+           "& .MuiTablePagination-displayedRows":{
+             fontSize: '1.4rem'
+           },
+           "& .MuiInputBase-root":{
+             fontSize: '1.4rem'
+           },
+           '& .MuiDataGrid-cell:hover': {
+             color: 'black',
+           },
+           '& .super-app-theme--header': {
+             backgroundColor: '#39f',
+           },
+           '& .MuiDataGrid-columnHeaderTitle': {
+             fontWeight: 'bold'
+           }
+        }
+ });
+
+
 
 
 function PedidoDetalle(props) {
 
-//#region STYLES
-  const useStyles = makeStyles(() => ({
-    root: {
-      width: '100%',
-      overflowX: "auto"
-    },
-    container: {
-      maxHeight: 600
-    },
-    pagination: {
-      fontSize: '14px',
-    }
-  }));
+  const {
+    idUsuarioPedidoSeleccionado,
+    setOpen,
+    open,
+    getPedidoDetallesByIdUsuarioPedido
+  } = props
   
-  const EstiloCelda = withStyles(() => ({
-    head: {
-      // backgroundColor: theme.palette.common.black,
-      // color: theme.palette.common.white,
-      color: '#959595',
-      fontWeight: 400,
-      fontSize: '14px',
-      fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif'
-    },
-    body: {
-      fontSize: '14px',
-      fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif'
-    },
-    footer: {
-      fontSize: '14px',
-      fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif'
-    },
-  }))(TableCell);
+//data-grid
+  const [page, setPage] = useState(0);
+  const [filas, setFilas] = useState([]);
+  const [loadingDataGrid, setLoadingDataGrid] = useState(false);
+  const filasPerPage = 6;
+//data-grid
 
-
-  const EstiloFila = withStyles((theme) => ({
-    root: {
-      '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-    hover: {
-      "&:hover": {
-        backgroundColor: "#949ac9 !important",
-        color: " #fff !important",
-      },
-    },
-  }))(TableRow);
-
-  const theme = createTheme({
-    typography: {
-      body2: {
-        fontSize: '14px',
-        fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif'
-      }
+  useEffect( () => {
+    const payload = {
+      idUsuarioPedido: idUsuarioPedidoSeleccionado,
+      take: filasPerPage,
+      skip : page
     }
-  }, esES);
-//#endregion STYLES
+  loadDataGrid(payload); 
+}, [page]);
 
+  const valueFormatter = new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+  });
 
-//#region CONSTANTES-FUNCIONES ESTE JSX
-
-    const columnas = [
-        {
-            id: 'cantidad',
-            label: 'Cantidad',
-            minWidth: 170,
-            visible: 'true'
-        },
-        { 
-            id: 'codigoArticulo', 
-            label: 'Código Articulo', 
-            minWidth: 170 , 
-            visible: 'true'
-        },
-        { 
-            id: 'descripcionArticulo', 
-            label: 'Descripción Articulo', 
-            minWidth: 100 , 
-            visible: 'true' 
-        },
-        { 
-            id: 'txtDescMarca', 
-            label: 'Marca', 
-            minWidth: 100, 
-            visible: 'true'
-        },
-        { 
-            id: 'txtDescFamilia', 
-            label: 'Familia', 
-            minWidth: 100, 
-            visible: 'true'
-        },
-        {
-            id: 'precioListaPorCoeficientePorMedioIva',
-            label: 'Precio Costo',
-            minWidth: 170,
-            align: 'right',
-            format: (value) => value.toFixed(2),
-            visible: 'true'
-          },
+  const columns = [
+    {
+        field : "id", //este campo es el IdUsuarioPedido
+        headerName: '#',
+        type: 'string',
+        flex: 1,
+        headerClassName: 'super-app-theme--header',
+        sortable: false
+    },
+    { 
+        field : "codigoArticulo", //va
+        headerName: 'Codigo Articulo',
+        type: 'string',
+        flex: 2,
+        headerClassName: 'super-app-theme--header',
+        sortable: false
+    },
+    { 
+      field : "cantidad", //va
+      headerName: 'Cantidad',
+      type: 'string',
+      flex: 1,
+      headerClassName: 'super-app-theme--header',
+      sortable: false
+    },
+    { 
+      field : "descripcionArticulo", //va
+      headerName: 'Descripcion Articulo',
+      type: 'string',
+      flex: 3,
+      headerClassName: 'super-app-theme--header',
+      sortable: false
+    },
+    { 
+      field : "txtDescMarca", //va
+      headerName: 'Marca',
+      type: 'string',
+      flex: 1,
+      headerClassName: 'super-app-theme--header',
+      sortable: false
+    },
+    { 
+      field : "txtDescFamilia", //va
+      headerName: 'Familia',
+      type: 'string',
+      flex: 1,
+      headerClassName: 'super-app-theme--header',
+      sortable: false
+    },
+    {
+      field : "precioListaPorCoeficientePorMedioIva", //va
+      headerName: 'Precio',
+      type: 'number',
+      valueFormatter: ({ value }) => valueFormatter.format(Number(value)),
+      flex: 1,
+      headerClassName: 'super-app-theme--header',
+      sortable: false
+  },
   ];
-
-  const [pedidoDetalle,setPedidoDetalle] = useState([]);
-
 
   
   const handleClose_Dialog = () => {
-    props.handleClose_Dialog(false) 
+    setOpen(false)
   };
+
+  
+
+ 
+
+  async function loadDataGrid (payload) {
+    let active = true;
+      (async () => {
+        setLoadingDataGrid(true);
+        await getPedidoDetallesByIdUsuarioPedido(payload)
+        .then(newRows => {
+          if (!active) {
+            return;
+          }
+    
+          setFilas(newRows);
+          setLoadingDataGrid(false)
+        })
+        .catch(() => {
+          setFilas(null);
+          setLoadingDataGrid(false)
+        })
+      })();
+
+      return () => {
+        active = false;
+      };
+  }
 
   const classes = useStyles();
 
-  useEffect(() => {
-
-    // usuarioPedidosDetalleService.getByIdPedido(props.selectedRow.id_usuario_pedido)
-    // .then(x => setPedidoDetalle(x))
-    // .catch(error => {
-    //   alertService.error(error);
-    // });
-    }, []);
-
-
-  
-//#endregion CONSTANTES-FUNCIONES ESTE JSX
-
   return (
     <div>
-      <Dialog fullWidth={ true } maxWidth={"md"} onClose={handleClose_Dialog} aria-labelledby="customized-dialog-title" open={props.open} >
+      <Dialog fullWidth={ true } maxWidth={"md"} onClose={handleClose_Dialog} aria-labelledby="customized-dialog-title" open={open} >
         <DialogTitle id="customized-dialog-title" onClose={handleClose_Dialog}>
-          <span style={{fontWeight: 'bold', fontFamily: '"Helvetica Neue","Segoe UI",helvetica,verdana,sans-serif',fontSize: '18px'}}>Pedido Detalle</span>
+          <h3>Pedido Detalle</h3>
         </DialogTitle>
-        <DialogContent dividers>
-            <ThemeProvider theme={theme}>  {/* lo que este dentro de ThemeProvider , va es estar en ESPAÑOL */}
-                <Paper className={classes.root}>
-                    <TableContainer className={classes.container}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                        <TableRow>
-                            {columnas.map((column) => (
-                                column.visible === 'true' &&
-                                                <EstiloCelda
-                                                key={column.id}
-                                                align={column.align}
-                                                style={{ minWidth: column.minWidth}}
-                                                visible = {column.visible}     
-                                                >
-                                                {column.label}
-                                                </EstiloCelda>
-                                            
-                            ))}
-                        </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        {
-                            pedidoDetalle.map((pd,i) => {
-                            return (
-                            
-                            <EstiloFila  hover role="checkbox" tabIndex={-1} key={i} >
-                                {columnas.map((column) => {
-                                const value = pd[column.id];
-                                return (
-                                    
-                                    column.visible === 'true' &&
-                                                    <EstiloCelda key={column.id} align={column.align}>
-                                                        { 
-                                                            value
-                                                        }
-                                                    </EstiloCelda>
-                                );
-                                })}
-                            </EstiloFila>
-                            );
-                        })}
-                        </TableBody>
-                    </Table>
-                    </TableContainer>
-                </Paper>
-            </ThemeProvider>
+        <DialogContent dividers scrollbarSize={17}>
+          <div style={{ height: 400, width: 2000 }}>
+              <DataGrid
+                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                className={classes.dataGrid}
+                rows={filas ? filas.usuarioPedidoDetalles : []}
+                columns={columns}
+                pagination
+                pageSize={filasPerPage}
+                rowsPerPageOptions={[filasPerPage]}
+                rowCount={filas ? filas.total : 0}
+                paginationMode="server"
+                onPageChange={(newPage) => setPage(newPage)}
+                loading={loadingDataGrid}
+                page={page}
+                disableColumnMenu            
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
@@ -241,4 +198,9 @@ function PedidoDetalle(props) {
 
 
 
-export default  PedidoDetalle ;
+const actionCreators = {
+  getPedidoDetallesByIdUsuarioPedido: usuarioPedidoActions.getPedidoDetallesByIdUsuarioPedido
+}
+
+export default connect(null, actionCreators)(PedidoDetalle);
+

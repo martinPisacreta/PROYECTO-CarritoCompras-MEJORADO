@@ -110,7 +110,7 @@ const mapStateToProps = (state) => {
 
 const actionCreators = {
     eliminarArticuloPedido: usuarioPedidoActions.eliminarArticuloPedido,
-    getPedidoNotFinalizedByIdUsuario: usuarioPedidoActions.getByIdUsuarioNotFinalized
+    getPedidoNotFinalizedByIdUsuario: usuarioPedidoActions.getPedidoByIdUsuarioNotFinalized
 };
 
 

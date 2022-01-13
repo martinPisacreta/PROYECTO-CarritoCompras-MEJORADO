@@ -5,10 +5,12 @@ import { usuarioPedidosService , alertService } from '@services';
 
 export const usuarioPedidoActions = {
     finalizarPedido,
-    getByIdUsuarioNotFinalized,
+    getPedidoByIdUsuarioNotFinalized,
     agregarArticuloPedido,
     eliminarArticuloPedido,
-    modificarArticuloPedido
+    modificarArticuloPedido,
+    getPedidosByIdUsuario,
+    getPedidoDetallesByIdUsuarioPedido
 };
 
 
@@ -143,12 +145,12 @@ function finalizarPedido(pedido) {
 }
 
 
-function getByIdUsuarioNotFinalized( idUsuario ) {
+function getPedidoByIdUsuarioNotFinalized( idUsuario ) {
 
     return dispatch => {
 
     return new Promise((resolve, reject) => {
-        usuarioPedidosService.getByIdUsuarioNotFinalized(idUsuario)
+        usuarioPedidosService.getPedidoByIdUsuarioNotFinalized(idUsuario)
                 .then(
                     usuarioPedido => { 
 
@@ -166,5 +168,43 @@ function getByIdUsuarioNotFinalized( idUsuario ) {
         })
     };
 
-    function success(payload) { return { type: usuarioPedidoConstantes.GET_BY_ID_USUARIO_NOT_FINALIZED_SUCCESS,  payload } }
+    function success(payload) { return { type: usuarioPedidoConstantes.GET_PEDIDO_BY_ID_USUARIO_NOT_FINALIZED_SUCCESS,  payload } }
+}
+
+function getPedidosByIdUsuario(payload) {
+    return dispatch => {
+    return new Promise((resolve, reject) => {
+        usuarioPedidosService.getPedidosByIdUsuario(payload)
+                .then(
+                    usuarioPedidos => {
+                        
+                        dispatch( success(usuarioPedidos));
+                        
+                        resolve(usuarioPedidos); // respuesta correcta
+                    },
+                    error => {
+                        reject(error); // respuesta error
+                    })
+        })
+    };
+
+    function success(usuarioPedido) { return { type: usuarioPedidoConstantes.GET_PEDIDOS_BY_ID_USUARIO_SUCCESS,  usuarioPedido } }
+}
+
+function getPedidoDetallesByIdUsuarioPedido( payload ) {
+    return dispatch => {
+    return new Promise((resolve, reject) => {
+        usuarioPedidosService.getPedidoDetallesByIdUsuarioPedido(payload)
+                .then(
+                    usuarioPedidoDetalles => { 
+                        dispatch( success(usuarioPedidoDetalles));
+                        resolve(usuarioPedidoDetalles); // respuesta correcta
+                    },
+                    error => {
+                        reject(error); // respuesta error
+                    })
+        })
+    };
+
+    function success(usuarioPedidoDetalles) { return { type: usuarioPedidoConstantes.GET_PEDIDO_DETALLES_BY_ID_USUARIO_PEDIDO_SUCCESS,  usuarioPedidoDetalles } }
 }

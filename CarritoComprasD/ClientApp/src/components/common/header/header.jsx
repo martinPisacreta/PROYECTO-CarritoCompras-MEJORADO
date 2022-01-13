@@ -28,8 +28,7 @@ import {
     Logout as LogoutIcon,
     Login as LoginIcon,
     AccountCircle as AccountCircleIcon,
-    Home as HomeIcon,
-    AppRegistration as AppRegistrationIcon
+    Home as HomeIcon
 } from '@mui/icons-material';
 
 
@@ -191,23 +190,11 @@ function Header( props ) {
                                                         <ListItemIcon>
                                                             <LoginIcon fontSize="large" />
                                                         </ListItemIcon>
-                                                        <span style={{fontSize: '1.4rem'}}>Iniciar Sesión</span>
+                                                        <span style={{fontSize: '1.4rem'}}>Iniciar Sesión / Registrarse</span>
                                                     </MenuItem>
-                                                    <Divider />
-                                                    <MenuItem
-                                                        component={Link}
-                                                        to={{
-                                                            pathname: "register",
-                                                            state: {
-                                                                deDondeVengo: 1
-                                                            }
-                                                        }}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <AppRegistrationIcon fontSize="large" />
-                                                        </ListItemIcon>
-                                                        <span style={{fontSize: '1.4rem'}}>Registrarse</span>
-                                                    </MenuItem>
+
+                                                 
+                                                   
                                                 </div>
 
                                           }
