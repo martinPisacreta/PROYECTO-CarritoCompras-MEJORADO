@@ -7,7 +7,7 @@ const baseUrl = `/marcas`;
 
 export const marcaService = {
     getAllWithPathImgAndActive,
-    getIdTablaMarcaAndTxtDescMarcaWithActive,
+    loadComboBoxMarca,
     getById,
     marca: marcaSubject.asObservable(),
     get marcaValue () { return marcaSubject.value }
@@ -22,7 +22,7 @@ function getAllWithPathImgAndActive() {
     return fetchWrapper.get(` ${baseUrl}/get-all-with-pathImg-and-active`);
 }
 
-function getIdTablaMarcaAndTxtDescMarcaWithActive() {
-    return fetchWrapper.get(` ${baseUrl}/get-idTablaMarca-and-txtDescMarca-with-active`);
+function loadComboBoxMarca() {
+    return fetchWrapper.get(` ${baseUrl}/load-comboBox-marca`);
 }
 

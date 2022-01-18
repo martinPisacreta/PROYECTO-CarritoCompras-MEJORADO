@@ -72,8 +72,8 @@ namespace CarritoComprasD.Services
 
                 articuloResponse.Articulos = articuloResponse.Articulos
                                                  .Where(a =>
-                                                                ((model.IdTablaMarca > 0 && a.IdTablaMarca == model.IdTablaMarca) || (model.IdTablaMarca == 0))
-                                                                && ((model.IdTablaFamilia > 0 && a.IdTablaFamilia == model.IdTablaFamilia) || (model.IdTablaFamilia == 0))
+                                                                ((model.DescripcionMarca != "" && a.MarcaArticulo == model.DescripcionMarca) || (model.DescripcionMarca == ""))
+                                                                && ((model.DescripcionFamilia != "" && a.FamiliaArticulo == model.DescripcionFamilia) || (model.DescripcionFamilia == ""))
                                                                 && ((codigoArticulo != "" && codigoArticulo_separado.All(p => a.CodigoArticulo.ToUpper().Contains(p.ToUpper()))) || codigoArticulo == "")
                                                                 && ((descripcionArticulo != "" &&  descripcionArticulo_separado.All(p => a.DescripcionArticulo.ToUpper().Contains(p.ToUpper()))) || descripcionArticulo == "")
                                                                 && ((oferta == -1 && a.SnOferta == oferta) || oferta == 0)

@@ -20,7 +20,7 @@ function Register_UpdateUser(props) {
     //deDondeVengo -> si es 1 voy a registrar un usuario , si es 2 voy a updetear un usuario
     const { deDondeVengo} = props.location.state;
 
-    console.log(deDondeVengo)
+ 
     const usuario = JSON.parse(localStorage.getItem('user'));
     const {  registerUsuario , updateUsuario } = props;
 

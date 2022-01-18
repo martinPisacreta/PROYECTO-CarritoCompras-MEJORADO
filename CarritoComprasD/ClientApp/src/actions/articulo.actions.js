@@ -11,8 +11,8 @@ function getByFilters(page,rowsPerPage,marcaSeleccionadaComboBox,familiaSeleccio
     const payload = {
         skip: page,
         take: rowsPerPage,
-        idTablaMarca : marcaSeleccionadaComboBox ? marcaSeleccionadaComboBox.id : 0,
-        idTablaFamilia : familiaSeleccionadaComboBox ? familiaSeleccionadaComboBox.id : 0,
+        descripcionMarca : marcaSeleccionadaComboBox ? marcaSeleccionadaComboBox.label : '', //descripcionMarca -> texto que hay en vista (VArticulo) columna (MarcaArticulo)
+        descripcionFamilia : familiaSeleccionadaComboBox ? familiaSeleccionadaComboBox.label : '', //descripcionFamilia -> texto que hay en vista (VArticulo) columna (FamiliaArticulo)
         codigoArticulo : codigoArticulo ? codigoArticulo : "",
         descripcionArticulo : descripcionArticulo ? descripcionArticulo : '',
         utilidad,
@@ -20,7 +20,7 @@ function getByFilters(page,rowsPerPage,marcaSeleccionadaComboBox,familiaSeleccio
     };
 
 
-    
+
     return dispatch => {
         dispatch(request());
 

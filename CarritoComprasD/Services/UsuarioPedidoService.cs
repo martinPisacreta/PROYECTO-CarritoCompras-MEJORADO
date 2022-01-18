@@ -387,8 +387,8 @@ namespace CarritoComprasD.Services
                     usuarioPedido = _context.UsuarioPedido.Where(up => up.IdUsuario == model.IdUsuario && up.SnFinalizado == false).FirstOrDefault();
                   
 
-                    //voy a buscar el detalle del pedido en base al IdUsuarioPedido
-                    usuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido).ToList();
+                    //voy a buscar el detalle del pedido en base al IdUsuarioPedido (los articulos activos)
+                    usuarioPedidoDetalle = _context.UsuarioPedidoDetalle.Where(upd => upd.IdUsuarioPedido == usuarioPedido.IdUsuarioPedido && upd.SnActivo == -1).ToList();
 
                    
                     //finalizo el pedido

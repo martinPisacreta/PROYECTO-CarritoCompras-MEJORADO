@@ -122,8 +122,16 @@ function HomePage( props ) {
                                                 to={{pathname: `${process.env.PUBLIC_URL}/catalogo/list`}}
                                                 onClick={() => onLinkClick(_marca)}
                                             >
+                                                {/*     
+                                                    _marca.label -> hace referencia al texto que hay dentro de tabla (marca) columna (pathImg)
+                                                    esta puesto asi porque getAllMarcasWithPathImgAndActive devuelve un objeto creado por mi:
+                                                    que contiene    {
+                                                                        label -> texto que hay en tabla (marca) columna (pathImg) , 
+                                                                        campo -> de que campo de tabla (marca) sale el texto? de pathImg
+                                                                    }
+                                                */}
                                                 <LazyLoadImage
-                                                    src={ `${process.env.PUBLIC_URL}/assets/images/home/cats/${_marca.pathImg}.jpg` + '?' + Date.now() }
+                                                    src={ `${process.env.PUBLIC_URL}/assets/images/home/cats/${_marca.label}.jpg` + '?' + Date.now() }
                                                     alt="marca"
                                                     width={ 100 }
                                                     height={ 100 }

@@ -5,6 +5,12 @@ import { connect } from 'react-redux';
 
 import {  makeStyles } from '@mui/styles';
 import PedidoDetalle from './pedido_detalle'
+import {
+  Paper
+} from '@mui/material';
+import { Helmet } from 'react-helmet';
+import PageHeader from '../../common/page-header';
+import Breadcrumb from '../../common/breadcrumb';
 
 const useStyles = makeStyles({
   dataGrid: {
@@ -25,7 +31,13 @@ const useStyles = makeStyles({
            },
            '& .MuiDataGrid-columnHeaderTitle': {
              fontWeight: 'bold'
-           }
+           },
+           minWidth: 2000
+        },
+  root: {
+          width: "100%",
+          overflowX: "auto",
+          height: 400
         }
  });
 
@@ -133,39 +145,57 @@ function Pedidos(props) {
 
   return (
 
+
     <div>
-      {
-        open &&
-        <PedidoDetalle 
-            idUsuarioPedidoSeleccionado = {idUsuarioPedidoSeleccionado}
-            open = {open}
-            setOpen = {setOpen}
-        />
-      }
-      <p class="text-danger">* Al hacer click sobre una fila , vera el detalle del pedido</p>
-      <div style={{ height: 400, width: '100%' }}>
-        <DataGrid
-          localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-          className={classes.dataGrid}
-          rows={filas ? filas.usuarioPedidos : []}
-          columns={columns}
-          pagination
-          pageSize={filasPerPage}
-          rowsPerPageOptions={[filasPerPage]}
-          rowCount={filas ? filas.total : 0}
-          paginationMode="server"
-          onPageChange={(newPage) => setPage(newPage)}
-          loading={loadingDataGrid}
-          page={page}
-          disableColumnMenu
-          onSelectionModelChange={(id) => {
-            setIdUsuarioPedidoSeleccionado(id[0])
-            setOpen(true);
-          }}
+      <Helmet>
+          <title>Encendido Alsina - Mi Cuenta</title>
+      </Helmet>
       
-      />
+      <h1 className="d-none">Encendido Alsina - Mi Cuenta</h1>
+      
+      <div className="main">
+          <div>
+              <PageHeader  subTitle="Mi Cuenta" />
+              <Breadcrumb  parent1={  [ "Mi Cuenta", "usuario/dashboard" ] } />
+          </div>
+          <div className="page-content">
+            <div className="container">
+                 <h1>Pedidos</h1>
+                  {
+                    open &&
+                    <PedidoDetalle 
+                        idUsuarioPedidoSeleccionado = {idUsuarioPedidoSeleccionado}
+                        open = {open}
+                        setOpen = {setOpen}
+                    />
+                  }
+                  <p className="text-danger">* Al hacer click sobre una fila , vera el detalle del pedido</p>
+                  <Paper className={classes.root}>
+                    <DataGrid
+                      localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                      className={classes.dataGrid}
+                      rows={filas ? filas.usuarioPedidos : []}
+                      columns={columns}
+                      pagination
+                      pageSize={filasPerPage}
+                      rowsPerPageOptions={[filasPerPage]}
+                      rowCount={filas ? filas.total : 0}
+                      paginationMode="server"
+                      onPageChange={(newPage) => setPage(newPage)}
+                      loading={loadingDataGrid}
+                      page={page}
+                      disableColumnMenu
+                      onSelectionModelChange={(id) => {
+                        setIdUsuarioPedidoSeleccionado(id[0])
+                        setOpen(true);
+                      }}
+                  
+                  />
+                </Paper>
+            </div>
+          </div>
+      </div>
     </div>
-  </div>
   );
 }
 

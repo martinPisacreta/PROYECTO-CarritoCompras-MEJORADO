@@ -19,8 +19,8 @@ export const articuloService = {
 function getByFilters(payload) {
     const skip = parseInt(payload.skip);
     const take = parseInt(payload.take);
-    const idTablaMarca = payload.idTablaMarca;
-    const idTablaFamilia = payload.idTablaFamilia;
+    const descripcionMarca = payload.descripcionMarca;
+    const descripcionFamilia = payload.descripcionFamilia;
     const codigoArticulo = payload.codigoArticulo;
     const descripcionArticulo  = payload.descripcionArticulo;
     const utilidad = parseInt(payload.utilidad);
@@ -28,8 +28,8 @@ function getByFilters(payload) {
     return fetchWrapper.post(`${baseUrl}`, {
         skip,
         take,
-        idTablaMarca,
-        idTablaFamilia,
+        descripcionMarca,
+        descripcionFamilia,
         codigoArticulo,
         descripcionArticulo,
         utilidad,

@@ -13,10 +13,9 @@ namespace CarritoComprasD.Models.Articulo
         public int Take { get; set; }
 
        
-        public int IdTablaMarca { get; set; }
+        public string DescripcionMarca { get; set; }
 
-       
-        public int IdTablaFamilia { get; set; }
+        public string DescripcionFamilia { get; set; }
 
       
         public string CodigoArticulo { get; set; }

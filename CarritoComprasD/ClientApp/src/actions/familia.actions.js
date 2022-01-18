@@ -3,16 +3,16 @@ import { familiaService , alertService} from '@services';
 
 
 export const familiaActions = {
-    getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca
+    loadComboBoxFamilia
 };
 
 
-function getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca(idTablaMarca) {
+function loadComboBoxFamilia(marca) {
     return dispatch => {
         dispatch(request());
 
         return new Promise((resolve, reject) => {
-            familiaService.getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca(idTablaMarca)
+            familiaService.loadComboBoxFamilia(marca)
             .then(
                 familias => { 
                     dispatch(success(familias))

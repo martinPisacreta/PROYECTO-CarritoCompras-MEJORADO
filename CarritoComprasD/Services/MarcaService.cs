@@ -10,15 +10,15 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using CarritoComprasD.Entities;
-using CarritoComprasD.Models.ComboBox;
+using CarritoComprasD.Models.CombosBox;
 
 namespace CarritoComprasD.Services
 {
     public interface IMarcaService
     {
      
-        IEnumerable<Marca> GetAllWithPathImgAndActive();
-        IEnumerable<ComboBoxResponse> GetIdTablaMarcaAndTxtDescMarcaWithActive();
+        IEnumerable<ComboBox> GetAllWithPathImgAndActive();
+        IEnumerable<ComboBox> LoadComboBoxMarca();
         Marca GetById(int id);
     }
 
@@ -37,30 +37,48 @@ namespace CarritoComprasD.Services
         }
 
         //DEVUELVO SOLAMENTE LAS MARCAS CON LOS PATH_IMG , NO REPETIDOS Y ACTIVOS
-        public IEnumerable<Marca> GetAllWithPathImgAndActive()
+        public IEnumerable<ComboBox> GetAllWithPathImgAndActive()
         {
 
             var marcas = _context.Marca
                 .Where(m => m.PathImg != null && m.PathImg != "" && m.SnActivo == -1)
-                .Distinct().ToList();
-
-            return _mapper.Map<IList<Marca>>(marcas);
-        }
-
-        //DEVUELVO SOLAMENTE LAS MARCAS ACTIVAS Y NO REPETIDAS
-        public IEnumerable<ComboBoxResponse> GetIdTablaMarcaAndTxtDescMarcaWithActive()
-        {
-
-            var marcas = _context.Marca
-                .Where(m =>  m.SnActivo == -1)
-                .Select(m => new ComboBoxResponse
+                .Select(m => new ComboBox
                 {
-                    Id = m.IdTablaMarca,
-                    Label = m.TxtDescMarca
+                    Label = m.PathImg,
+                    Campo = "PathImg"
                 })
                 .Distinct().ToList();
 
             return marcas;
+        }
+
+        public IEnumerable<ComboBox> LoadComboBoxMarca()
+        {
+            //RETORNO LOS PATH_IMG QUE NO SEAN NULOS , VACIOS , NO REPETIDOS Y ESTEN ACTIVAS ESAS MARCAS
+            var marca_1 = _context.Marca
+                .Where(m => m.PathImg != null && m.PathImg != "" && m.SnActivo == -1)
+                .Select(m => new ComboBox
+                {
+                    Label = m.PathImg,
+                    Campo = "PathImg"
+                   
+                })
+                .Distinct().ToList();
+
+            //RETORNO LOS TXTDESMARCA , QUE EL CAMPO PATH_IMG SEA (NULO O VACIO) Y ESTEN ACTIVAS ESAS MARCAS
+            var marca_2 = _context.Marca
+              .Where(m => (m.PathImg == null || m.PathImg == "") && m.SnActivo == -1)
+              .Select(m => new ComboBox
+              {
+                  Label = m.TxtDescMarca,
+                  Campo = "TxtDescMarca"
+
+              })
+              .Distinct().ToList();
+
+            //UNO LAS DOS
+            var allPathImg = marca_1.Union(marca_2);
+            return allPathImg;
         }
 
         public Marca GetById(int id)

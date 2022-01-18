@@ -42,7 +42,9 @@ function Dashboard() {
                                                 </Tab>
 
                                                 <Tab className="nav-item">
-                                                    <span className="nav-link">Pedidos</span>
+                                                    <Link to={`${process.env.PUBLIC_URL}/usuario/dashboard/pedidos`}>
+                                                        <span className="nav-link">Pedidos</span>
+                                                    </Link>
                                                 </Tab>
 
                                                 <Tab className="nav-item">
@@ -55,7 +57,7 @@ function Dashboard() {
 
                                                 <Tab className="nav-item">
                                                     <Link to={{
-                                                            pathname: `${process.env.PUBLIC_URL}/usuario/dashboard_update_user`,
+                                                            pathname: `${process.env.PUBLIC_URL}/usuario/dashboard/update_user`,
                                                             state: {
                                                                 deDondeVengo: 2
                                                             }

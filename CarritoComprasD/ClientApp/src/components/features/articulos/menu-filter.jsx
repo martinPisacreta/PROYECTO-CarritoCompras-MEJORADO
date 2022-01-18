@@ -67,39 +67,49 @@ function MenuFilter(props) {
     //actions
     marcaSelectedHome,
     removeSelectedMarca,
-    getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca
+    loadComboBoxFamilia
   } = props
 
 //======================================================== USE EFECTS ================================================
-  useEffect( () => {
-    
-     //si viene una marca cargada desde Home , la seteo en el combo
+  
+  async function loadComponentAsync_1() {
+
+    //si viene una marca cargada desde Home , la seteo en el combo
     if(marcaSelectedHome) {
+
+      //marcaSelectedHome.label -> texto que hay en tabla (marca) columna (pathImg) , 
+      //marcaSelectedHome.campo -> de que campo de tabla (marca) sale el texto? de pathImg
       const _marcaSeleccionadaComboBox = {
-        id: marcaSelectedHome.idTablaMarca, 
-        label: marcaSelectedHome.txtDescMarca
+        label: marcaSelectedHome.label,
+        campo: marcaSelectedHome.campo
       }
 
       //seteo el valor de la marca que viene desde Home
       setMarcaSeleccionadaComboBox(_marcaSeleccionadaComboBox); 
       
+      //llamo a la funcion para cargar el combo familia
+      _loadComboBoxFamilia(_marcaSeleccionadaComboBox);
+
       //cargo el dataGrid , llamando a la siguiente funcion
       //1 parametro -> marca que viene desde Home
       //2 parametro -> valor que sirve para setear dentro de la funcion  "setPage"
       //3 parametro -> valor que sirve para indicar que NO accedo a la funcion desde contentMenuFilter
-      handleClickLoadDataGrid(_marcaSeleccionadaComboBox,0,0);
-    }     
+      await handleClickLoadDataGrid(_marcaSeleccionadaComboBox,0,0);
+    }
+  }
+
+  useEffect( () => {
+    loadComponentAsync_1()     
   }, []);
 
 
+  async function loadComponentAsync_2(page) {
+    await handleClickLoadDataGrid(marcaSeleccionadaComboBox,page,0); 
+  }
+
   //se va a llamar cada vez que se actualice "page"
   useEffect( () => {
-
-      //cargo el dataGrid , llamando a la siguiente funcion
-      //1 parametro -> marca seleccionada en el combo
-      //2 parametro -> valor que sirve para setear dentro de la funcion  "setPage"
-      //3 parametro -> valor que sirve para indicar que NO accedo a la funcion desde contentMenuFilter
-      handleClickLoadDataGrid(marcaSeleccionadaComboBox,page,0); 
+      loadComponentAsync_2(page);
   }, [page]);
 
 
@@ -112,15 +122,16 @@ function MenuFilter(props) {
     if(newValue === "" && marcaSelectedHome) {
         await removeSelectedMarca();
     }
-    await setMarcaSeleccionadaComboBox(newValue); //newValue contiene label y id
+    await setMarcaSeleccionadaComboBox(newValue); //newValue contiene label y  campo
     await setFamiliaSeleccionadaComboBox(null);  //cada vez que se modifica el combo marca , se modifica tmb el combo familia
-    await loadComboBoxFamilia(newValue); //llamo a la funcion para cargar el combo familia
+    await _loadComboBoxFamilia(newValue); //llamo a la funcion para cargar el combo familia
   }
 
 //====================================================  COMBOBOX FAMILIA  =========================================================      
-  async function loadComboBoxFamilia(marca) {
+  async function _loadComboBoxFamilia(marca) {
+
     if(marca) {  //si marca tiene algo escrito ... voy a buscar las familias de esa marca
-      await getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca(marca.id)
+      await loadComboBoxFamilia(marca)
       .then(familias => {
         setFamilias(familias)
       })
@@ -131,7 +142,7 @@ function MenuFilter(props) {
   } 
 
   async function onChangeComboBoxFamilia(event,newValue){
-    await setFamiliaSeleccionadaComboBox(newValue); //newValue contiene label y id
+    await setFamiliaSeleccionadaComboBox(newValue); //newValue contiene label  , campo
   }
 //======================================================== CODIGO ARTICULO ================================================
   function handleChangeCodigoArticulo (e) {
@@ -196,7 +207,7 @@ function MenuFilter(props) {
  
   const contentMenuFilter = (anchor) => (
     <Box
-      sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 400 }}
+      sx={{ width: 'auto' }}
       role="presentation"
     >
         <List>
@@ -206,7 +217,7 @@ function MenuFilter(props) {
                 <Autocomplete
                   options={marcas}
                   value={marcaSeleccionadaComboBox}
-                  isOptionEqualToValue={(option, value) =>  option.id === value.id }
+                  isOptionEqualToValue={(option, value) =>  option.label === value.label } //label -> texto que hay en tabla (marca) columna (pathImg o txtDescMarca)
                   noOptionsText= {"Sin Resultados"}
                   ListboxProps={{
                     sx: { fontSize: '1.4rem' },
@@ -415,7 +426,7 @@ const mapStateToProps = (state) => {
   
 const actionCreators = {
       removeSelectedMarca: marcaActions.removeSelectedMarca,
-      getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca: familiaActions.getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca
+      loadComboBoxFamilia: familiaActions.loadComboBoxFamilia
 }
     
 export default connect(mapStateToProps, actionCreators)(MenuFilter);

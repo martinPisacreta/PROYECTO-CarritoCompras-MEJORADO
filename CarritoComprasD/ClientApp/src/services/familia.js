@@ -6,13 +6,17 @@ const baseUrl = `/familias`;
 
 
 export const familiaService = {
-    getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca,
+    loadComboBoxFamilia,
     familia: familiaSubject.asObservable(),
     get familiaValue () { return familiaSubject.value }
 };
 
 
-function getIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca(idTablaMarca) {
-    return fetchWrapper.get(` ${baseUrl}/${idTablaMarca}`);
+function loadComboBoxFamilia(marca) {
+    const {label , campo} = marca;
+    return fetchWrapper.post(`${baseUrl}`, {
+        label,
+        campo
+    });
 }
 

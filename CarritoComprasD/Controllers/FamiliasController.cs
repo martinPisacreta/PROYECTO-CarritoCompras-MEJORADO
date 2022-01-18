@@ -11,7 +11,7 @@ using CarritoComprasD.Entities;
 using AutoMapper;
 using CarritoComprasD.Controllers;
 using CarritoComprasD.Services;
-using CarritoComprasD.Models.ComboBox;
+using CarritoComprasD.Models.CombosBox;
 
 namespace CarritoComprasD.Controllers
 {
@@ -31,10 +31,10 @@ namespace CarritoComprasD.Controllers
         }
 
 
-        [HttpGet("{idTablaFamilia:int}")]
-        public ActionResult<IEnumerable<ComboBoxResponse>> GetIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca(int idTablaFamilia)
+        [HttpPost]
+        public ActionResult<IEnumerable<ComboBox>> LoadComboBoxFamilia(ComboBox model)
         {
-            var familias = _familiaService.GetIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca(idTablaFamilia);
+            var familias = _familiaService.LoadComboBoxFamilia(model);
             return Ok(familias);
         }
     }

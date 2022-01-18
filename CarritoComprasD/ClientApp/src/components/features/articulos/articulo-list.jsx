@@ -8,6 +8,9 @@ import DescripcionFila from './descripcion_fila'
 import columns from './columns'
 import MenuFilter from './menu-filter'
 
+import {
+  Paper
+} from '@mui/material';
 
 const useStyles = makeStyles({
  dataGrid: {
@@ -28,8 +31,14 @@ const useStyles = makeStyles({
           },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 'bold'
-          }
-       }
+          },
+          minWidth: 800
+       },
+  root: {
+        width: "100%",
+        overflowX: "auto",
+        height: 400
+      }
 });
 
 
@@ -42,7 +51,7 @@ function ArticuloList(props) {
           agregarArticuloPedido, 
           empresa,
           getArticulosByFilters,
-          getIdTablaMarcaAndTxtDescMarcaWithActive
+          loadComboBoxMarca
         } = props
 
 
@@ -69,16 +78,16 @@ function ArticuloList(props) {
   
 
 
-  async function loadComboBoxMarca() {
-    //voy a buscar las marcas activas
-    await getIdTablaMarcaAndTxtDescMarcaWithActive()
+  async function _loadComboBoxMarca() {
+    //cargo el combo marca
+    await loadComboBoxMarca()
     .then(x => {         
         setMarcas(x);            
     });
   }
 
   useEffect( () => {
-    loadComboBoxMarca();     
+    _loadComboBoxMarca();     
   }, []);
 
 
@@ -151,7 +160,7 @@ function ArticuloList(props) {
     
 
 
-    <div style={{ height: 400, width: '100%' }}>
+    <Paper className={classes.root}>
        <DataGrid
           localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           className={classes.dataGrid}
@@ -178,7 +187,7 @@ function ArticuloList(props) {
           }}
       
       />
-    </div>
+    </Paper>
 
     <br/>
     <br/>
@@ -213,7 +222,7 @@ const mapStateToProps = (state) => {
 const actionCreators = {
     getArticulosByFilters: articuloActions.getByFilters,
     agregarArticuloPedido: usuarioPedidoActions.agregarArticuloPedido,
-    getIdTablaMarcaAndTxtDescMarcaWithActive: marcaActions.getIdTablaMarcaAndTxtDescMarcaWithActive,
+    loadComboBoxMarca: marcaActions.loadComboBoxMarca,
     getArticulosByFilters: articuloActions.getByFilters,
   }
   

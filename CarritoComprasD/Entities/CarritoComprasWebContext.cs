@@ -28,8 +28,7 @@ namespace CarritoComprasD.Entities
         public virtual DbSet<UsuarioPedidoDetalle> UsuarioPedidoDetalle { get; set; }
         public virtual DbSet<VArticulo> VArticulo { get; set; }
 
-     
-
+    
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Articulo>(entity =>

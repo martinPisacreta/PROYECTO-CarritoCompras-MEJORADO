@@ -4,7 +4,7 @@ import { marcaService , alertService} from '@services';
 
 export const marcaActions = {
     getAllWithPathImgAndActive,
-    getIdTablaMarcaAndTxtDescMarcaWithActive,
+    loadComboBoxMarca,
     selectedMarca,
     removeSelectedMarca
 };
@@ -36,12 +36,12 @@ function getAllWithPathImgAndActive() {
 
 }
 
-function getIdTablaMarcaAndTxtDescMarcaWithActive() {
+function loadComboBoxMarca() {
     return dispatch => {
         dispatch(request());
 
         return new Promise((resolve, reject) => {
-            marcaService.getIdTablaMarcaAndTxtDescMarcaWithActive()
+            marcaService.loadComboBoxMarca()
             .then(
                 marcas => { 
                     dispatch(success(marcas))

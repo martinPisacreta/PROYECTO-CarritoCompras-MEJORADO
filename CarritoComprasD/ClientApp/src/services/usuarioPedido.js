@@ -45,12 +45,10 @@ function finalizarPedido(params) {
 }
 
 function getPedidosByIdUsuario(params) {
-    console.log(params)
     return fetchWrapper.post(`${baseUrl}/get-pedidos-by-idUsuario`, params );
 }
 
 function getPedidoDetallesByIdUsuarioPedido(params) {
-    console.log(params)
     return fetchWrapper.post(`${baseUrl}/get-pedidoDetalles-by-idUsuarioPedido`, params );
 }
 

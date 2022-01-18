@@ -16,7 +16,7 @@ const columns = [
         field : "marcaArticulo", //va
         headerName: 'Marca',
         type: 'string',
-        flex: 1,
+        flex: 2,
         headerClassName: 'super-app-theme--header',
         sortable: false
     },
@@ -24,7 +24,7 @@ const columns = [
         field : "codigoArticulo", //va
         headerName: 'Código',
         type: 'string',
-        flex: 1,
+        flex: 2,
         headerClassName: 'super-app-theme--header',
         sortable: false
     },
@@ -32,7 +32,7 @@ const columns = [
         field : "descripcionArticulo", //va
         headerName: 'Descripción',
         type: 'string',
-        flex: 1,
+        flex: 4,
         headerClassName: 'super-app-theme--header',
         sortable: false
     }, 
@@ -40,7 +40,7 @@ const columns = [
         field : "familiaArticulo", //va
         headerName: 'Familia',
         type: 'string',
-        flex: 1,
+        flex: 2,
         headerClassName: 'super-app-theme--header',
         sortable: false
     },
@@ -50,7 +50,7 @@ const columns = [
         type: 'number',
         hide : usuario ? false : true,
         valueFormatter: ({ value }) => valueFormatter.format(Number(value)),
-        flex: 1,
+        flex: 2,
         headerClassName: 'super-app-theme--header',
         sortable: false
     },
@@ -60,7 +60,7 @@ const columns = [
         type: 'number',
         hide : usuario ? false : true,
         valueFormatter: ({ value }) => valueFormatter.format(Number(value)),
-        flex: 1,
+        flex: 2,
         headerClassName: 'super-app-theme--header',
         sortable: false
     },

@@ -10,14 +10,14 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using CarritoComprasD.Entities;
-using CarritoComprasD.Models.ComboBox;
+using CarritoComprasD.Models.CombosBox;
 
 namespace CarritoComprasD.Services
 {
     public interface IFamiliaService
     {
      
-        IEnumerable<ComboBoxResponse> GetIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca(int idTablaFamilia);
+        IEnumerable<ComboBox> LoadComboBoxFamilia(ComboBox model);
     }
 
     public class FamiliaService : IFamiliaService
@@ -36,15 +36,40 @@ namespace CarritoComprasD.Services
 
 
         //DEVUELVO SOLAMENTE LAS FAMILIAS ACTIVAS Y NO REPETIDAS , POR idTablaMarca
-        public IEnumerable<ComboBoxResponse> GetIdTablaFamiliaAndTxtDescFamiliaWithActiveByIdTablaMarca(int idTablaFamilia)
+        public IEnumerable<ComboBox> LoadComboBoxFamilia(ComboBox model)
         {
+            //voy a buscar el IdTablaMarca de :
+                //las marcas activas
+                //que correspondan por el campo (PathImg o TxtDescMarca)  con el label
+            var marcas  =  _context.Marca
+                            .Where(m => 
+                                            m.SnActivo == -1 
+                                            && (
+                                                    (model.Campo == "PathImg" && m.PathImg == model.Label) 
+                                                    || (model.Campo == "TxtDescMarca" && m.TxtDescMarca == model.Label)
+                                                )
+                                  )
+                            .Select(m => new Marca
+                            {
+                                IdTablaMarca = m.IdTablaMarca
+
+                            })
+                            .Distinct().ToList();
+
+            List<int> lista_IdTablaMarca = new List<int>();
+            foreach (Marca marca in marcas)
+            {
+                lista_IdTablaMarca.Add(marca.IdTablaMarca);
+            }
+               
+
 
             var familias = _context.Familia
-                .Where(f =>  f.SnActivo == -1 && f.IdTablaMarca == idTablaFamilia)
-                .Select(m => new ComboBoxResponse
-                {
-                    Id = m.IdTablaFamilia,
-                    Label = m.TxtDescFamilia
+                .Where(f =>  f.SnActivo == -1 && lista_IdTablaMarca.Contains(f.IdTablaMarca))
+                .Select(f => new ComboBox
+                {     
+                    Label = f.TxtDescFamilia,
+                    Campo= "TxtDescFamilia"
                 })
                 .Distinct().ToList();
 
