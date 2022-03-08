@@ -50,6 +50,9 @@ function Header( props ) {
             .then(x => {
                 setEmpresa(x)
             })
+            .catch(error => {
+                console.log(error)
+            });
         }
         funcionAsync();
 

@@ -70,7 +70,11 @@ function HomePage( props ) {
 
     useEffect(() => {
         async function funcionAsync() {
-            await getAllMarcasWithPathImgAndActive().then(x => setMarcas(x))
+            await getAllMarcasWithPathImgAndActive()
+            .then(x => setMarcas(x))
+            .catch(error => {
+               console.log(error)
+            });
         }
         funcionAsync();
       }, []);
@@ -109,7 +113,7 @@ function HomePage( props ) {
 
                     <div className="cat-blocks-container">
                         <div className="row">
-                            { marcas.map( ( _marca, index ) =>  
+                            { marcas && marcas.map( ( _marca, index ) =>  
 
                            
                                 <div className="col-6 col-sm-4 col-lg-2" key={ `popular_${index}` } >

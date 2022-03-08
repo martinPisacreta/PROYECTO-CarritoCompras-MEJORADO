@@ -223,7 +223,7 @@ function Carrito( props ) {
                                         </table>
 
 
-                                        {usuarioPedido && usuarioPedido.usuarioPedidoDetalle &&
+                                        {usuarioPedido && usuarioPedido.total > 0 && usuarioPedido.usuarioPedidoDetalle &&
                                             <button className="btn btn-outline-primary-2 btn-order btn-block" onClick={goToCheckout} disabled={loading}>
                                                 {loading && <span className="spinner-border spinner-border-sm mr-1"></span>}
                                                 FINALIZAR PEDIDO
