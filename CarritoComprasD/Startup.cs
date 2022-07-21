@@ -40,12 +40,10 @@ namespace CarritoComprasD
             services.AddControllers().AddNewtonsoftJson(x =>x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             // configure strongly typed settings object
-            services.Configure<_DomainName>(Configuration.GetSection("DomainName"));
-            services.Configure<_Email>(Configuration.GetSection("Email"));
             services.Configure<_Email_Destino_Pedido>(Configuration.GetSection("Email_Destino_Pedido"));
-            services.Configure<_Jwt>(Configuration.GetSection("Jwt"));
             services.Configure<_Upload_Image>(Configuration.GetSection("Upload_Image"));
             services.Configure<_WebApiQueCorreEnPcMaxi>(Configuration.GetSection("WebApiQueCorreEnPcMaxi"));
+            services.Configure<_AppSettings>(Configuration.GetSection("AppSettings"));
 
             // configure DI for application services
             services.AddScoped<IUsuarioService, UsuarioService>();

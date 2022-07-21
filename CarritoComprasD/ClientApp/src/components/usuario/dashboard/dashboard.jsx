@@ -14,7 +14,7 @@ import Pedidos from './pedidos';
 
 function Dashboard() {
 
-    const usuario = usuarioService.userValue;
+    const usuario = usuarioService.usuarioValue;
 
 
     return (

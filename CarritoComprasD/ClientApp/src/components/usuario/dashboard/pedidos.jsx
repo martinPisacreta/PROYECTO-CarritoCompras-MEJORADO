@@ -11,6 +11,7 @@ import {
 import { Helmet } from 'react-helmet';
 import PageHeader from '../../common/page-header';
 import Breadcrumb from '../../common/breadcrumb';
+import { usuarioService } from '@services'
 
 const useStyles = makeStyles({
   dataGrid: {
@@ -48,7 +49,7 @@ function Pedidos(props) {
     getPedidosByIdUsuario
   } = props
 
-  const usuario = JSON.parse(localStorage.getItem('user'));
+  const usuario = usuarioService.usuarioValue;
 
 //data-grid
   const [page, setPage] = useState(0);

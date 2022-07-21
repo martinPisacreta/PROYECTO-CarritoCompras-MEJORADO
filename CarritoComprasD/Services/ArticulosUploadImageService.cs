@@ -56,7 +56,7 @@ namespace CarritoComprasD.Services
                 string nombreImagenSinExtension = "";
                 string nombreImagenConExtensionPng = "";
 
-                foreach (var imagenOriginalTipoIFormFile in model.conjuntoImagenes)
+                foreach (var imagenOriginalTipoIFormFile in model.ConjuntoImagenes)
                 {
 
                     if (imagenOriginalTipoIFormFile.Length > 0)
@@ -67,7 +67,7 @@ namespace CarritoComprasD.Services
                             {
                                 extensionImagen = Path.GetExtension(imagenOriginalTipoIFormFile.FileName).Trim();
                                 nombreImagenSinExtension = Path.GetFileNameWithoutExtension(imagenOriginalTipoIFormFile.FileName).Trim();
-                                nombreImagenConExtensionPng = (nombreImagenSinExtension + _appSettings_uploadImage.FtpExtensionArchivos.Trim());
+                                nombreImagenConExtensionPng = (nombreImagenSinExtension + _appSettings_uploadImage.Ftp_ExtensionArchivos.Trim());
 
                                 var articulo_db = _context.Articulo.Where(a => a.IdArticulo.ToString() == nombreImagenSinExtension).FirstOrDefault();
 
@@ -111,7 +111,7 @@ namespace CarritoComprasD.Services
                                         MemoryStream imagen_nueva_en_memoria = imagen_original_en_memoria;
 
                                         //si la extension de la imagen es <>  ".png" 
-                                        if (extensionImagen != _appSettings_uploadImage.FtpExtensionArchivos)
+                                        if (extensionImagen != _appSettings_uploadImage.Ftp_ExtensionArchivos)
                                         {
                                             //convierto IMAGEN_NUEVA_MEMORIA -> a PNG
                                             imagen_nueva_tipo_Image.Save(imagen_nueva_en_memoria, ImageFormat.Png);
@@ -131,7 +131,7 @@ namespace CarritoComprasD.Services
                                         }
 
                                         //YA PASO LAS VALIDACIONES ... Y VIENE ESTA PARTE
-                                        pathImg = _appSettings_uploadImage.PathImgBD + nombreImagenConExtensionPng;
+                                        pathImg = _appSettings_uploadImage.Path_ImgBD + nombreImagenConExtensionPng;
                                         if(pathImg.Length > 400)
                                         {
                                             throw new Exception("Error : pathImg con mas de 400 caracteres  ----> Imagen: " + imagenOriginalTipoIFormFile.FileName);
@@ -141,7 +141,7 @@ namespace CarritoComprasD.Services
                                         _context.Update(articulo_db);
 
                                         //SUBO LA IMAGEN AL SERVIDOR
-                                        bool bandera_create_imagen = CreateImageFtp(imagen_nueva_en_memoria, nombreImagenConExtensionPng, _appSettings_uploadImage.FtpUser, _appSettings_uploadImage.FtpPass, _appSettings_uploadImage.FtpServerIP, _appSettings_uploadImage.FtpUbicacionImagenesArticulos);
+                                        bool bandera_create_imagen = CreateImageFtp(imagen_nueva_en_memoria, nombreImagenConExtensionPng, _appSettings_uploadImage.Ftp_User, _appSettings_uploadImage.Ftp_Pass, _appSettings_uploadImage.Ftp_ServerIP, _appSettings_uploadImage.Ftp_UbicacionImagenesArticulos);
                                         if (bandera_create_imagen == false)
                                         {
                                             throw new Exception("Error : fallo CreateImageFtp  ----> Imagen: " + imagenOriginalTipoIFormFile.FileName);
@@ -186,10 +186,10 @@ namespace CarritoComprasD.Services
                                 dbContextTransaction.Rollback();
 
                                 //BORRO LA IMAGEN EN EL SERVIDOR SI ES QUE EXISTE
-                                bool bandera_existe_imagen_en_servidor = CheckIfFileExistsOnServer(nombreImagenConExtensionPng, _appSettings_uploadImage.FtpUser, _appSettings_uploadImage.FtpPass, _appSettings_uploadImage.FtpServerIP, _appSettings_uploadImage.FtpUbicacionImagenesArticulos);
+                                bool bandera_existe_imagen_en_servidor = CheckIfFileExistsOnServer(nombreImagenConExtensionPng, _appSettings_uploadImage.Ftp_User, _appSettings_uploadImage.Ftp_Pass, _appSettings_uploadImage.Ftp_ServerIP, _appSettings_uploadImage.Ftp_UbicacionImagenesArticulos);
                                 if (bandera_existe_imagen_en_servidor == true)
                                 {
-                                    bool bandera_delete_imagen = DeleteImageFtp(nombreImagenConExtensionPng, _appSettings_uploadImage.FtpUser, _appSettings_uploadImage.FtpPass, _appSettings_uploadImage.FtpServerIP, _appSettings_uploadImage.FtpUbicacionImagenesArticulos);
+                                    bool bandera_delete_imagen = DeleteImageFtp(nombreImagenConExtensionPng, _appSettings_uploadImage.Ftp_User, _appSettings_uploadImage.Ftp_Pass, _appSettings_uploadImage.Ftp_ServerIP, _appSettings_uploadImage.Ftp_UbicacionImagenesArticulos);
                                     if (bandera_delete_imagen == false)
                                     {
                                         throw new Exception("Error : fallo DeleteImageFtp  ----> Imagen: " + imagenOriginalTipoIFormFile.FileName);
@@ -211,7 +211,7 @@ namespace CarritoComprasD.Services
 
                 var _response = new
                 {
-                    imagenes_a_subir_cantidad = model.conjuntoImagenes.Count,
+                    imagenes_a_subir_cantidad = model.ConjuntoImagenes.Count,
                     imagenes_bien_subidas_cantidad = imagenesBienSubidas.Count,
                     imagenesBienSubidas,
                     imagenes_atencion_cantidad = imagenesAtencion.Count,

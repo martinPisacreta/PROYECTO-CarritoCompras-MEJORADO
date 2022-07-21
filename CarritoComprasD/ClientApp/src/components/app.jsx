@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {  useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 // import Custom Components
@@ -8,11 +8,9 @@ import Footer from './common/footer';
 import MobileMenu from './common/mobile-menu';
 
 function App( props ) {
-    const [ container, setContainer ] = useState( "container" );
-    const [ prevPath, setPrevPath ] = useState( '' );
 
-   
-
+    const container = "container";
+    const prevPath = '';
 
     useEffect( () => {
         setTimeout( () => {

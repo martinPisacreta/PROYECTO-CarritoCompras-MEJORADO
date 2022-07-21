@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import {rol} from '@helpers'
+import { usuarioService } from '@services'
 
 export default function MainMenu(  ) {
-    const [ path, setPath ] = useState( "" );
    
-    const usuario = JSON.parse(localStorage.getItem('user'));
 
-    useEffect( () => {
-        setPath( window.location.href );
-    } )
-
-  
-    
+    const usuario = usuarioService.usuarioValue;
 
     return (
 

@@ -42,8 +42,8 @@ function Header( props ) {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const open = Boolean(anchorEl);
-    const usuario = JSON.parse(localStorage.getItem('user'));
-
+    const usuario = usuarioService.usuarioValue;
+    
     useEffect(() => {
         async function funcionAsync() {
             await getEmpresaById(1)
@@ -70,8 +70,7 @@ function Header( props ) {
 
  
     function onDelete() {
-        usuarioService.logout(usuario.idUsuario);
-        window.location.href =  `${process.env.PUBLIC_URL}`;
+        usuarioService.logout();
     }
 
     
@@ -88,13 +87,13 @@ function Header( props ) {
 
                                        
                                         <li className="login">
-                                            <a className="nav-item nav-link" href="#"><FontAwesomeIcon icon={faPhoneAlt} /> <span> </span> {empresa.telefono}</a>
+                                            <a className="nav-item nav-link" href="#"><FontAwesomeIcon icon={faPhoneAlt} /> <span> </span> {empresa && empresa.telefono}</a>
                                         </li>
                                         <li className="login">
-                                            <a href={`https://web.whatsapp.com/send?phone=549${empresa.celular}`} className="nav-item nav-link"><FontAwesomeIcon icon={faWhatsapp} /> <span> </span> {empresa.celular}</a>
+                                            <a href={empresa ? `https://web.whatsapp.com/send?phone=549${empresa.celular}` : '#'} className="nav-item nav-link"><FontAwesomeIcon icon={faWhatsapp} /> <span> </span> {empresa && empresa.celular}</a>
                                         </li>
                                         <li className="login">
-                                            <a className="nav-item nav-link" href={`mailto:${empresa.email}`}><FontAwesomeIcon icon={faEnvelope} /> <span> </span>{empresa.email}</a>
+                                            <a className="nav-item nav-link" href={empresa ? `mailto:${empresa.email}` : "#"}><FontAwesomeIcon icon={faEnvelope} /> <span> </span>{empresa && empresa.email}</a>
                                         </li>
                                     </ul>
                                 </li>

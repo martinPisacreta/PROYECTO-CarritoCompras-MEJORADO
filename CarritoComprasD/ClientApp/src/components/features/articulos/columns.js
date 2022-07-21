@@ -1,4 +1,6 @@
-const usuario = JSON.parse(localStorage.getItem('user'));
+import { usuarioService } from '@services'
+
+const usuario = usuarioService.usuarioValue;
 
 const valueFormatter = new Intl.NumberFormat('es-AR', {
     style: 'currency',

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import Carousel from 'react-owl-carousel2';
+import Carousel from 'react-owl-carousel';
 
 export default function OwlCarousel( props ) {
     const { adClass, carouselOptions } = props;
@@ -77,7 +77,7 @@ export default function OwlCarousel( props ) {
     return (
         props.children !== undefined ?
             props.children.length > 0 || ( props.children && props.children.length === undefined ) ?
-                <Carousel ref={ carouselRef } className={ `owl-carousel ${adClass}` } options={ res } events={ events }>
+                <Carousel ref={ carouselRef } className={ `owl-theme owl-carousel ${adClass}` } { ...res } events={ events }>
                     { props.children }
                 </Carousel>
                 : ""

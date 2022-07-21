@@ -10,11 +10,19 @@ const initialState = {
 
 export default function marcaReducer(state = initialState, action) {
   switch (action.type) {
-    case marcaConstantes.GET_BY_FILTERS_REQUEST:
+    case marcaConstantes.GET_ALL_WITH_PATH_IMG_AND_ACTIVE_REQUEST:
       return {
         cargando: true
       };
-    case marcaConstantes.GET_BY_FILTERS_SUCCESS:
+    case marcaConstantes.GET_ALL_WITH_PATH_IMG_AND_ACTIVE_SUCCESS:
+      return {
+        marcas: action.marcas
+      };
+    case marcaConstantes.GET_BY_FAMILIA_REQUEST:
+      return {
+        cargando: true
+      };
+    case marcaConstantes.GET_BY_FAMILIA_SUCCESS:
       return {
         marcas: action.marcas
       };

@@ -8,11 +8,11 @@ namespace CarritoComprasD.Helpers.AppSettings
     public class _Upload_Image
     {
 
-        public string FtpUser { get; set; }
-        public string FtpPass { get; set; }
-        public string FtpServerIP { get; set; }
-        public string FtpUbicacionImagenesArticulos { get; set; }
-        public string FtpExtensionArchivos { get; set; }
-        public string PathImgBD { get; set; }
+        public string Ftp_User { get; set; }
+        public string Ftp_Pass { get; set; }
+        public string Ftp_ServerIP { get; set; }
+        public string Ftp_UbicacionImagenesArticulos { get; set; }
+        public string Ftp_ExtensionArchivos { get; set; }
+        public string Path_ImgBD { get; set; }
     }
 }

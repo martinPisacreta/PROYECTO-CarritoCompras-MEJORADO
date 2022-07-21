@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React,{useEffect} from 'react';
 import { Route, Switch } from 'react-router-dom';
 import LoadingOverlay from '../components/features/loading-overlay';
 import { PrivateRouteUser } from './private_route_user';
 import { scrollTop } from '@utils';
 import {Alert} from '../components/alert'
+
 
 const ShopPages = React.lazy( () => import( './shop-route.js' ) );
 const OtherPages = React.lazy( () => import( './others-route.js' ) );
@@ -12,6 +13,9 @@ const UsuarioPage = React.lazy( () => import( './usuario-route.js' ) );
 const CatalogoPage = React.lazy( () => import( './catalogo-route.js' ) );
 
 function AppRoot() {
+
+   
+
     useEffect( () => {
         scrollTop();
     

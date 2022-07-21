@@ -74,7 +74,7 @@ function DescripcionFila(props) {
             <div>    
                 <div className="articulo-photo">
                     <img
-                        src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} //selectedRowArticulo -> viene de <ArticuloList/>
+                        src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png' + '?' + Date.now() } //selectedRowArticulo -> viene de <ArticuloList/>
                         onLoad={handleImageLoaded}
                         onClick={handleShowDialog}
                         loading="lazy"
@@ -97,7 +97,7 @@ function DescripcionFila(props) {
                         onClick={handleShowDialog}
                     >   
                         <img
-                            src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png'} //selectedRowArticulo -> viene de <ArticuloList/>
+                            src={selectedRowArticulo.pathImagenArticulo ? selectedRowArticulo.pathImagenArticulo + '?' + Date.now() : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png' + + '?' + Date.now()} //selectedRowArticulo -> viene de <ArticuloList/>
                             onLoad={handleImageLoadedDialog}
                             onClick={handleShowDialog}
                             loading="lazy"

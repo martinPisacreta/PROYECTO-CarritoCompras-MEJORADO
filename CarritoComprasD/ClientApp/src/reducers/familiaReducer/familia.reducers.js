@@ -9,11 +9,19 @@ const initialState = {
 
 export default function familiaReducer(state = initialState, action) {
   switch (action.type) {
-    case familiaConstantes.GET_BY_FILTERS_REQUEST:
+    case familiaConstantes.GET_ALL_ACTIVE_REQUEST:
+        return {
+          cargando: true
+        };
+    case familiaConstantes.GET_ALL_ACTIVE_SUCCESS:
+        return {
+          familias: action.familias
+        };
+    case familiaConstantes.GET_BY_MARCA_REQUEST:
       return {
         cargando: true
       };
-    case familiaConstantes.GET_BY_FILTERS_SUCCESS:
+    case familiaConstantes.GET_BY_MARCA_SUCCESS:
       return {
         familias: action.familias
       };

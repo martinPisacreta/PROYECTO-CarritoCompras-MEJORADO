@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import { DataGrid ,esES } from '@mui/x-data-grid';
 import { articuloActions, usuarioPedidoActions , marcaActions} from '@actions';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import {  makeStyles } from '@mui/styles';
 import DescripcionFila from './descripcion_fila'
 import columns from './columns'
 import MenuFilter from './menu-filter'
-
+import { usuarioService } from '@services'
 import {
   Paper
 } from '@mui/material';
@@ -48,24 +48,25 @@ const useStyles = makeStyles({
 function ArticuloList(props) {
 
   const {
-          agregarArticuloPedido, 
+          //mapStateToProps
           empresa,
+
+          //actions
+          agregarArticuloPedido, 
           getArticulosByFilters,
-          loadComboBoxMarca
         } = props
 
 
-  const usuario = JSON.parse(localStorage.getItem('user'));
+  const usuario = usuarioService.usuarioValue;
 
 //data-grid
   const [page, setPage] = useState(0);
-  const [filas, setFilas] = useState([]);
+  const [filas, setFilas] = useState(null);
   const [loadingDataGrid, setLoadingDataGrid] = useState(false);
   const filasPerPage = 6;
 //data-grid
 
 //menu-filters.jsx
-  const [marcas,setMarcas] = useState([]) 
   const [utilidad,setUtilidad] = useState(usuario ? usuario.utilidad : 20); //seteo la utilidad del usuario
 //menu-filters.jsx
  
@@ -78,30 +79,16 @@ function ArticuloList(props) {
   
 
 
-  async function _loadComboBoxMarca() {
-    //cargo el combo marca
-    await loadComboBoxMarca()
-    .then(x => {         
-        setMarcas(x);            
-    });
-  }
-
-  useEffect( () => {
-    _loadComboBoxMarca();     
-  }, []);
-
-
 //======================================================== DATAGRID ================================================
-  async function loadDataGrid (_page,_filasPerPage,_marcaSeleccionadaComboBox,_familiaSeleccionadaComboBox,_codigoArticulo,_descripcionArticulo,_utilidad,_snOferta) {
+  async function loadDataGrid (page,filasPerPage,marcaSeleccionadaComboBox,familiaSeleccionadaComboBox,codigoArticulo,descripcionArticulo,utilidad,snOferta) {
     let active = true;
       (async () => {
         setLoadingDataGrid(true);
-        await getArticulosByFilters(_page,_filasPerPage,_marcaSeleccionadaComboBox,_familiaSeleccionadaComboBox,_codigoArticulo,_descripcionArticulo,_utilidad,_snOferta)
+        await getArticulosByFilters(page,filasPerPage,marcaSeleccionadaComboBox,familiaSeleccionadaComboBox,codigoArticulo,descripcionArticulo,utilidad,snOferta)
         .then(newRows => {
           if (!active) {
             return;
           }
-    
           setFilas(newRows);
           setLoadingDataGrid(false)
         })
@@ -133,26 +120,17 @@ function ArticuloList(props) {
 //====================================================  STYLE  =========================================================    
   const classes = useStyles();
 
-  
-
-
-
   return (
     <div>
-   
     <MenuFilter
-      marcas = {marcas}
-      usuario = {usuario}
-
-      utilidad = {utilidad}
-      setUtilidad = {setUtilidad}
+      prop_utilidad = {utilidad}
+      prop_setUtilidad = {setUtilidad}
 
       page={page}
       setPage = {setPage}
 
       filasPerPage={filasPerPage}
       loadingDataGrid = {loadingDataGrid}
-   
       loadDataGrid = {loadDataGrid}
       />
 
@@ -185,7 +163,6 @@ function ArticuloList(props) {
             setImagenCargada(false);
         
           }}
-      
       />
     </Paper>
 
@@ -193,6 +170,7 @@ function ArticuloList(props) {
     <br/>
 
     {
+      
         showArticuloInfo &&
             <DescripcionFila 
                 selectedRowArticulo={selectedRowArticulo} //le paso al Children <DescripcionFila/> la funcion selectedRowArticulo
@@ -222,8 +200,7 @@ const mapStateToProps = (state) => {
 const actionCreators = {
     getArticulosByFilters: articuloActions.getByFilters,
     agregarArticuloPedido: usuarioPedidoActions.agregarArticuloPedido,
-    loadComboBoxMarca: marcaActions.loadComboBoxMarca,
-    getArticulosByFilters: articuloActions.getByFilters,
+    loadComboBoxMarca: marcaActions.loadComboBoxMarca
   }
   
   export default connect(mapStateToProps, actionCreators)(ArticuloList);

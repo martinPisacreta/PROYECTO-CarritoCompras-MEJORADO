@@ -8,7 +8,6 @@ namespace CarritoComprasD.Helpers.AppSettings
     public class _Email_Destino_Pedido
     {
 
-        public string Cuenta { get; set; }
-        public string Nombre { get; set; }
+        public string Email_To { get; set; }
     }
 }

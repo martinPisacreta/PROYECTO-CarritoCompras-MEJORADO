@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { safeContent } from '@utils';
 import { usuarioPedidoActions } from '@actions';
-
+import { usuarioService } from '@services'
 import LoadMultipleImg from '../load-multiple-img'
 
 
@@ -14,8 +14,7 @@ function CartMenu( props ) {
     const { usuarioPedido, eliminarArticuloPedido , getPedidoNotFinalizedByIdUsuario  } = props;
    
     const existePedido = Object.entries(usuarioPedido).length === 0 ? false : true;
-    const usuario = JSON.parse(localStorage.getItem('user'));
-    
+    const usuario = usuarioService.usuarioValue;
     useEffect(() => {
         
         async function funcionAsync() {

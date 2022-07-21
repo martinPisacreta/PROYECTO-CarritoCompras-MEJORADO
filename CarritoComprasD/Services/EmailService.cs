@@ -15,31 +15,26 @@ namespace CarritoComprasD.Services
 
     public class EmailService : IEmailService
     {
-        private readonly _Email _appSettings_email;
+        private readonly _AppSettings _appSettings_appSettings;
 
-        public EmailService(IOptions<_Email> _appSettings_email)
+        public EmailService(IOptions<_AppSettings> _appSettings_email)
         {
-            this._appSettings_email = _appSettings_email.Value;
+            this._appSettings_appSettings = _appSettings_email.Value;
         }
 
         public void Send(string to, string subject, string html, string from = null)
         {
-
-
-           
-
-
             // create message
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(from ?? _appSettings_email.Cuenta));
+            email.From.Add(MailboxAddress.Parse(from ?? _appSettings_appSettings.Email_From));
             email.To.Add(MailboxAddress.Parse(to));
             email.Subject = subject;
             email.Body = new TextPart(TextFormat.Html) { Text = html };
 
             // send email
             using var smtp = new SmtpClient();
-            smtp.Connect(_appSettings_email.Host, _appSettings_email.Port, MailKit.Security.SecureSocketOptions.None);
-            smtp.Authenticate(_appSettings_email.Cuenta, _appSettings_email.Contrasena);
+            smtp.Connect(_appSettings_appSettings.Smtp_Host, _appSettings_appSettings.Smtp_Port, MailKit.Security.SecureSocketOptions.None);
+            smtp.Authenticate(_appSettings_appSettings.Email_From, _appSettings_appSettings.Smtp_Pass);
             smtp.Send(email);
             smtp.Disconnect(true);
         }

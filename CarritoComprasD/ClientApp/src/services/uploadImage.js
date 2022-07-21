@@ -12,6 +12,6 @@ export const articulosUploadImageService = {
 
 
 function uploadFilesInServer(params) {
-    return fetchWrapper.postSinCovertirBodyEnJson(`${baseUrl}`, params);
+    return fetchWrapper.post(`${baseUrl}`, params);
 }
 

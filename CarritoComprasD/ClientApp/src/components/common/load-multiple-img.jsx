@@ -14,7 +14,7 @@ function LoadMultipleImg  (props)  {
     return (
             <div className="articulo-image-container">
             <img
-                src={process.env.PUBLIC_URL +  (existeImagenArticulo ? (item.articulo.pathImagenArticulo  + '?' + Date.now()) : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png')}
+                src={process.env.PUBLIC_URL +  (existeImagenArticulo ? (item.articulo.pathImagenArticulo  + '?' + Date.now()) : '/assets/images/articulos/shop_encendido_alsina/sin_imagen.png' +  '?' + Date.now())}
                 onLoad={handleImageLoaded}
                 loading="lazy"
                 style={{

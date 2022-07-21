@@ -19,8 +19,9 @@ namespace CarritoComprasD.Services
     public interface IUsuarioService
     {
         AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress);
-        AuthenticateResponse RefreshToken(int idUsuario,string ipAddress);
-     
+        AuthenticateResponse RefreshToken(string token,string ipAddress);
+
+        void RevokeToken(string token, string ipAddress);
         void Register(RegisterRequest model, string origin);
         void VerifyEmail(string token);
         void ForgotPassword(ForgotPasswordRequest model, string origin);
@@ -28,7 +29,6 @@ namespace CarritoComprasD.Services
         void ResetPassword(ResetPasswordRequest model);
         IEnumerable<UsuarioResponse> GetAll();
         UsuarioResponse GetById(int id);
-        UsuarioResponse Create(CreateUsuarioRequest model);
         UsuarioResponse Update(int id, UpdateUsuarioRequest model);
         void Delete(int id);
     }
@@ -37,20 +37,20 @@ namespace CarritoComprasD.Services
     {
         private readonly CarritoComprasWebContext _context;
         private readonly IMapper _mapper;
-        private readonly _Jwt _appSettings_jwt;
+        private readonly _AppSettings _appSettings_appSettings;
         private readonly _Email_Destino_Pedido _appSettings_emailDestinoPedido;
         private readonly IEmailService _emailService;
 
         public UsuarioService(
             CarritoComprasWebContext context,
             IMapper mapper,
-            IOptions<_Jwt> appSettings_jwt,
+            IOptions<_AppSettings> appSettings_appSettings,
             IOptions<_Email_Destino_Pedido> appSettings_emailDestinoPedido,
             IEmailService emailService)
         {
             _context = context;
             _mapper = mapper;
-            _appSettings_jwt = appSettings_jwt.Value;
+            _appSettings_appSettings = appSettings_appSettings.Value;
             _appSettings_emailDestinoPedido = appSettings_emailDestinoPedido.Value;
             _emailService = emailService;
         }
@@ -62,68 +62,68 @@ namespace CarritoComprasD.Services
             if (usuario == null || !usuario.IsVerified || !BC.Verify(model.Password, usuario.Password))
                 throw new AppException("Email o contraseña incorrectos");
 
-            //voy a buscar el refresh_token activo del usuario
-            RefreshToken refreshToken = _context.RefreshToken.Where(rt => rt.IdUsuario == usuario.IdUsuario && rt.Revoked == null).FirstOrDefault();
-           
-         
+            // authentication successful so generate jwt and refresh tokens
+            var jwtToken = generateJwtToken(usuario);
+            var refreshToken = generateRefreshToken(ipAddress);
+            usuario.RefreshToken.Add(refreshToken);
 
-            //si el usuario no tiene un refresh_token activo , lo genero
-            if (refreshToken == null)
-            {
-                refreshToken = generateRefreshToken(ipAddress);
-                usuario.RefreshToken.Add(refreshToken);
-            }
+            // remove old refresh tokens from usuario
+            removeOldRefreshTokens(usuario);
 
-            //genero el token del usuario
-            var token = generateToken(usuario);
-
-            // grabo en la base
+            // save changes to db
             _context.Update(usuario);
             _context.SaveChanges();
 
             var response = _mapper.Map<AuthenticateResponse>(usuario);
-            response.Token = token;
+            response.Token = jwtToken;
             response.RefreshToken = refreshToken.Token;
             return response;
+
         }
 
-        public AuthenticateResponse RefreshToken(int idUsuario,string ipAddress)
+        public AuthenticateResponse RefreshToken(string token, string ipAddress)
         {
+            var (refreshToken, usuario) = getRefreshToken(token);
 
-            var usuario = getUsuario(idUsuario);
+            // replace old refresh token with a new one and save
+            var newRefreshToken = generateRefreshToken(ipAddress);
+            refreshToken.Revoked = DateTime.UtcNow;
+            refreshToken.RevokedByIp = ipAddress;
+            refreshToken.ReplacedByToken = newRefreshToken.Token;
+            usuario.RefreshToken.Add(newRefreshToken);
 
-            //voy a buscar el refresh_token activo del usuario
-            var refreshToken = _context.RefreshToken.Where(rt => rt.IdUsuario == usuario.IdUsuario && rt.Revoked == null).FirstOrDefault();
+            removeOldRefreshTokens(usuario);
 
-            //si el usuario no tiene refresh_token activo , genero uno
-            if (refreshToken == null)
-            {
-                refreshToken = generateRefreshToken(ipAddress);
-                usuario.RefreshToken.Add(refreshToken);
-            }
-
-
-            //genero el token del usuario
-            var token = generateToken(usuario);
-
-            // grabo en la base
             _context.Update(usuario);
             _context.SaveChanges();
 
+            // generate new jwt
+            var jwtToken = generateJwtToken(usuario);
+
             var response = _mapper.Map<AuthenticateResponse>(usuario);
-            response.Token = token;
-            response.RefreshToken = refreshToken.Token;
+            response.Token = jwtToken;
+            response.RefreshToken = newRefreshToken.Token;
             return response;
         }
 
+
+        public void RevokeToken(string token, string ipAddress)
+        {
+            var (refreshToken, usuario) = getRefreshToken(token);
+
+            // revoke token and save
+            refreshToken.Revoked = DateTime.UtcNow;
+            refreshToken.RevokedByIp = ipAddress;
+            _context.Update(usuario);
+            _context.SaveChanges();
+        }
 
         public void Register(RegisterRequest model, string origin)
         {
+
             // validate
             if (_context.Usuario.Any(x => x.Email == model.Email))
             {
-                // send already registered error in email to prevent usuario enumeration
-                //sendAlreadyRegisteredEmail(model.Email, origin);
                 throw new AppException("Email ya registrado");
             }
 
@@ -131,12 +131,7 @@ namespace CarritoComprasD.Services
             var usuario = _mapper.Map<Usuario>(model);
 
             // first registered usuario is an admin
-
-
-
-
             var isFirstUsuario = _context.Usuario.Count() == 0;
-
             usuario.Email = model.Email;
             usuario.Password = BC.HashPassword(model.Password);
             usuario.RazonSocial = model.RazonSocial;
@@ -157,15 +152,12 @@ namespace CarritoComprasD.Services
             usuario.Lng = model.Lng;
             usuario.Utilidad = 20;
 
-
-     
-
             // save usuario
             _context.Usuario.Add(usuario);
             _context.SaveChanges();
 
             // send email
-            sendVerificationEmail(usuario, origin,_appSettings_emailDestinoPedido.Cuenta);
+            sendVerificationEmail(usuario, origin, _appSettings_emailDestinoPedido.Email_To);
         }
 
         public void VerifyEmail(string token)
@@ -247,34 +239,14 @@ namespace CarritoComprasD.Services
             return _mapper.Map<UsuarioResponse>(usuario);
         }
 
-        public UsuarioResponse Create(CreateUsuarioRequest model)
-        {
-            // validate
-            if (_context.Usuario.Any(x => x.Email == model.Email))
-                throw new AppException($"Email '{model.Email}' esta registrado");
-
-            // map model to new usuario object
-            var usuario = _mapper.Map<Usuario>(model);
-            usuario.FechaCreacionUsuario = DateTime.UtcNow;
-            usuario.Verified = DateTime.UtcNow;
-
-            // hash password
-            usuario.Password = BC.HashPassword(model.Password);
-
-            // save usuario
-            _context.Usuario.Add(usuario);
-            _context.SaveChanges();
-
-            return _mapper.Map<UsuarioResponse>(usuario);
-        }
-
+    
         public UsuarioResponse Update(int id, UpdateUsuarioRequest model)
         {
             var usuario = getUsuario(id);
 
             // validate
             if (usuario.Email != model.Email && _context.Usuario.Any(x => x.Email == model.Email))
-                throw new AppException($"email '{model.Email}' ya esta eligido");
+                throw new AppException($"Email '{model.Email}' ya esta eligido");
 
             // hash password if it was entered
             if (!string.IsNullOrEmpty(model.Password))
@@ -306,18 +278,25 @@ namespace CarritoComprasD.Services
         }
 
 
-        private string generateToken(Usuario usuario)
+        private string generateJwtToken(Usuario usuario)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings_jwt.Key);
+            var key = Encoding.ASCII.GetBytes(_appSettings_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", usuario.IdUsuario.ToString()) }),
-                Expires = DateTime.UtcNow.AddMinutes(15), 
+                Expires = DateTime.UtcNow.AddMinutes(30), 
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        private void removeOldRefreshTokens(Usuario usuario)
+        {
+            usuario.RefreshToken.ToList().RemoveAll(x =>
+                !x.IsActive &&
+                x.Created.AddDays(_appSettings_appSettings.Refresh_Token_TTL) <= DateTime.UtcNow);
         }
 
         private RefreshToken generateRefreshToken(string ipAddress)
@@ -331,7 +310,20 @@ namespace CarritoComprasD.Services
             };
         }
 
-      
+
+        private (RefreshToken, Usuario) getRefreshToken(string token)
+        {
+            var usuario = _context.Usuario.SingleOrDefault(u => u.RefreshToken.Any(t => t.Token == token));
+            
+            if (usuario == null) throw new AppException("Token invalido");
+
+            usuario.RefreshToken = _context.RefreshToken.Where(rt => rt.IdUsuario == usuario.IdUsuario).ToList();
+
+            var refreshToken = usuario.RefreshToken.Single(x => x.Token == token);
+            if (!refreshToken.IsActive) throw new AppException("Token invalido");
+            return (refreshToken, usuario);
+        }
+
 
         private string randomTokenString()
         {

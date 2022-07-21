@@ -9,18 +9,19 @@ using System.Threading.Tasks;
 using CarritoComprasD.Entities;
 using CarritoComprasD.Helpers;
 using CarritoComprasD.Helpers.AppSettings;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarritoComprasD.Middleware
 {
     public class JwtMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly _Jwt _appSettings_jwt;
+        private readonly _AppSettings _appSettings_appSettings;
 
-        public JwtMiddleware(RequestDelegate next, IOptions<_Jwt> appSettings_jwt)
+        public JwtMiddleware(RequestDelegate next, IOptions<_AppSettings> appSettings_jwt)
         {
             _next = next;
-            _appSettings_jwt = appSettings_jwt.Value;
+            _appSettings_appSettings = appSettings_jwt.Value;
         }
 
         public async Task Invoke(HttpContext context, CarritoComprasWebContext dataContext)
@@ -38,7 +39,7 @@ namespace CarritoComprasD.Middleware
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings_jwt.Key);
+                var key = Encoding.ASCII.GetBytes(_appSettings_appSettings.Secret);
                 tokenHandler.ValidateToken(_token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -53,7 +54,12 @@ namespace CarritoComprasD.Middleware
                 var usuarioId = int.Parse(token.Claims.First(x => x.Type == "id").Value);
 
                 // attach usuario to context on successful jwt validation
-                context.Items["Usuario"] = await dataContext.Usuario.FindAsync(usuarioId);
+                Usuario usuario = await dataContext.Usuario
+                                                   .Include(m => m.RefreshToken) //agrego a la respuesta esta tabla RefreshToken
+                                                   .Where(u => u.IdUsuario == usuarioId)
+                                                   .FirstOrDefaultAsync();
+                context.Items["Usuario"] = usuario;
+          
             }
             catch 
             {

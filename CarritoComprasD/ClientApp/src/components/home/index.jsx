@@ -71,7 +71,9 @@ function HomePage( props ) {
     useEffect(() => {
         async function funcionAsync() {
             await getAllMarcasWithPathImgAndActive()
-            .then(x => setMarcas(x))
+            .then(x => {
+                setMarcas(x)
+            })
             .catch(error => {
                console.log(error)
             });
@@ -97,7 +99,7 @@ function HomePage( props ) {
 
             <div className="main">
                 <div className="intro-slider-container">
-                    <OwlCarousel adClass="intro-slider owl-simple owl-nav-inside" data-toggle="owl" carouselOptions={ introSlider } >
+                    <OwlCarousel adClass="owl-simple owl-nav-inside" data-toggle="owl" carouselOptions={ introSlider } >
                         { data.map( ( slider, index ) =>
                             <IntroSlider slider={ slider } key={ `introSlider_${index}` }  />
                         ) }
@@ -126,16 +128,8 @@ function HomePage( props ) {
                                                 to={{pathname: `${process.env.PUBLIC_URL}/catalogo/list`}}
                                                 onClick={() => onLinkClick(_marca)}
                                             >
-                                                {/*     
-                                                    _marca.label -> hace referencia al texto que hay dentro de tabla (marca) columna (pathImg)
-                                                    esta puesto asi porque getAllMarcasWithPathImgAndActive devuelve un objeto creado por mi:
-                                                    que contiene    {
-                                                                        label -> texto que hay en tabla (marca) columna (pathImg) , 
-                                                                        campo -> de que campo de tabla (marca) sale el texto? de pathImg
-                                                                    }
-                                                */}
                                                 <LazyLoadImage
-                                                    src={ `${process.env.PUBLIC_URL}/assets/images/home/cats/${_marca.label}.jpg` + '?' + Date.now() }
+                                                    src={ `${process.env.PUBLIC_URL}/assets/images/home/cats/${_marca.descripcionMarca}.jpg` + '?' + Date.now() }
                                                     alt="marca"
                                                     width={ 100 }
                                                     height={ 100 }

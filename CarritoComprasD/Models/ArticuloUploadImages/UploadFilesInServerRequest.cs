@@ -9,7 +9,7 @@ namespace CarritoComprasD.Models.ArticuloUploadImage
     public class UploadFilesInServerRequest
     {
 
-        public List<IFormFile> conjuntoImagenes { get; set; }
+        public List<IFormFile> ConjuntoImagenes { get; set; }
 
 
     }

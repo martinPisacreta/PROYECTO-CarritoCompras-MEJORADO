@@ -146,7 +146,6 @@ function finalizarPedido(pedido) {
 
 
 function getPedidoByIdUsuarioNotFinalized( idUsuario ) {
-
     return dispatch => {
 
     return new Promise((resolve, reject) => {

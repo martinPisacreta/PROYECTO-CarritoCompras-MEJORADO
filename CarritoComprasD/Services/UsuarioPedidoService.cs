@@ -694,7 +694,7 @@ namespace CarritoComprasD.Services
                         "</html>";
 
                 _emailService.Send(
-                    to: _appSettings_emailDestinoPedido.Cuenta,
+                    to: _appSettings_emailDestinoPedido.Email_To,
                     subject: "Ingreso de pedido : " + usuario.RazonSocial,
                     html: $@"{message}"
                 );

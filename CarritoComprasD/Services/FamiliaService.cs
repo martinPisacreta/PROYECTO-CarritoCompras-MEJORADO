@@ -10,14 +10,17 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using CarritoComprasD.Entities;
-using CarritoComprasD.Models.CombosBox;
+using CarritoComprasD.Models.Familia;
+using CarritoComprasD.Models.Marca;
 
 namespace CarritoComprasD.Services
 {
     public interface IFamiliaService
     {
-     
-        IEnumerable<ComboBox> LoadComboBoxFamilia(ComboBox model);
+
+        IEnumerable<ComboBoxFamilia> LoadComboBoxFamiliaByMarca(ComboBoxMarca model);
+
+        IEnumerable<ComboBoxFamilia> LoadComboBoxFamilia();
     }
 
     public class FamiliaService : IFamiliaService
@@ -35,50 +38,49 @@ namespace CarritoComprasD.Services
         }
 
 
-        //DEVUELVO SOLAMENTE LAS FAMILIAS ACTIVAS Y NO REPETIDAS , POR idTablaMarca
-        public IEnumerable<ComboBox> LoadComboBoxFamilia(ComboBox model)
+        ////DEVUELVO SOLAMENTE LAS FAMILIAS ACTIVAS Y NO REPETIDAS , POR idTablaMarca
+        public IEnumerable<ComboBoxFamilia> LoadComboBoxFamiliaByMarca(ComboBoxMarca model)
         {
-            //voy a buscar el IdTablaMarca de :
-                //las marcas activas
-                //que correspondan por el campo (PathImg o TxtDescMarca)  con el label
-            var marcas  =  _context.Marca
-                            .Where(m => 
-                                            m.SnActivo == -1 
-                                            && (
-                                                    (model.Campo == "PathImg" && m.PathImg == model.Label) 
-                                                    || (model.Campo == "TxtDescMarca" && m.TxtDescMarca == model.Label)
-                                                )
-                                  )
-                            .Select(m => new Marca
+         
+            var familias = _context.Marca
+                            .Join(_context.Familia,
+                              marca => marca.IdTablaMarca,
+                              familia => familia.IdTablaMarca,
+                              (marca, familia) => new { Marca = marca, Familia = familia })
+                            .Where(marcaAndFamilia => 
+                                                       marcaAndFamilia.Marca.SnActivo == -1 &&
+                                                       marcaAndFamilia.Familia.SnActivo == -1 &&
+                                                       model.List_IdTablaMarca.Contains(marcaAndFamilia.Familia.IdTablaMarca))
+                            .Select(marcaAndFamilia => new ComboBoxFamilia
                             {
-                                IdTablaMarca = m.IdTablaMarca
-
+                                DescripcionFamilia = marcaAndFamilia.Familia.TxtDescFamilia,
+                                IdTablaFamilia = marcaAndFamilia.Familia.IdTablaFamilia
                             })
                             .Distinct().ToList();
 
-            List<int> lista_IdTablaMarca = new List<int>();
-            foreach (Marca marca in marcas)
-            {
-                lista_IdTablaMarca.Add(marca.IdTablaMarca);
-            }
-               
 
+       
+            return familias;
+        }
 
+        //DEVUELVO SOLAMENTE LAS FAMILIAS ACTIVAS Y NO REPETIDAS 
+        public IEnumerable<ComboBoxFamilia> LoadComboBoxFamilia()
+        {
             var familias = _context.Familia
-                .Where(f =>  f.SnActivo == -1 && lista_IdTablaMarca.Contains(f.IdTablaMarca))
-                .Select(f => new ComboBox
-                {     
-                    Label = f.TxtDescFamilia,
-                    Campo= "TxtDescFamilia"
-                })
-                .Distinct().ToList();
+               .Where(f => f.SnActivo == -1)
+               .Select(f => new ComboBoxFamilia
+               {
+                   DescripcionFamilia = f.TxtDescFamilia,
+                   IdTablaFamilia = f.IdTablaFamilia
+               })
+               .Distinct().ToList();
 
             return familias;
         }
 
-      
 
-      
+
+
 
     }
 }

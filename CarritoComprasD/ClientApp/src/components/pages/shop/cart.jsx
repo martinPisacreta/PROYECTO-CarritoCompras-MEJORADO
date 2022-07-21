@@ -11,13 +11,15 @@ import { usuarioPedidoActions } from '@actions';
 import { connect } from 'react-redux';
 import LoadMultipleImg from '../../common/load-multiple-img'
 import { history } from '@helpers';
+import { usuarioService } from '@services'
+
 
 function Carrito( props ) {
     const { usuarioPedido , modificarArticuloPedido , finalizarPedido , eliminarArticuloPedido , empresa} = props;
     const [loading,setLoading] = useState(false);
     const [modificandoArticulo , setModificandoArticulo] = useState(false);
     const [eliminandoArticulo , setEliminandoArticulo] = useState(false);
-    const usuario = JSON.parse(localStorage.getItem('user'));
+    const usuario = usuarioService.usuarioValue;
 
 
    

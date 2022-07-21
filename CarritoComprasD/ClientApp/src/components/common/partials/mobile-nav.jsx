@@ -2,10 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { mobileMenu } from '@utils';
 import {rol} from '@helpers'
+import { usuarioService } from '@services'
 
 function MobileMainNav( ) {
 
-    const usuario = JSON.parse(localStorage.getItem('user'));
+    const usuario = usuarioService.usuarioValue;
 
     React.useEffect( () => {
         mobileMenu();

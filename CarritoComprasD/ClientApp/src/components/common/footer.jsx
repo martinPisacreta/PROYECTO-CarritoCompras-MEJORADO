@@ -13,7 +13,7 @@ function Footer( props ) {
                         <li><Link to="#">Privacy Policy</Link></li>
                     </ul> */}
 
-                    <div className="social-icons social-icons-color">
+                    {/* <div className="social-icons social-icons-color">
                         <span className="social-label">Redes Sociales</span>
 
                         <a href="https://www.facebook.com" className="social-icon social-facebook" rel="noopener noreferrer" title="Facebook" target="_blank"><i className="icon-facebook-f"></i></a>
@@ -21,7 +21,7 @@ function Footer( props ) {
                         <a href="https://instagram.com" className="social-icon social-instagram" rel="noopener noreferrer" title="Instagram" target="_blank"><i className="icon-instagram"></i></a>
                         <a href="https://youtube.com" className="social-icon social-youtube" rel="noopener noreferrer" title="Youtube" target="_blank"><i className="icon-youtube"></i></a>
                         <a href="https://pinterest.com" className="social-icon social-pinterest" rel="noopener noreferrer" title="Pinterest" target="_blank"><i className="icon-pinterest"></i></a>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </footer>

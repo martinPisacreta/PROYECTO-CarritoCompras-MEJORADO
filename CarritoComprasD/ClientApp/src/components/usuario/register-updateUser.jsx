@@ -13,6 +13,7 @@ import { makeStyles } from "@mui/styles";
 import './form-control.css'
 import { usuarioActions } from '@actions';
 import { connect } from 'react-redux';
+import { usuarioService } from '@services'
 
 function Register_UpdateUser(props) {
 
@@ -21,7 +22,7 @@ function Register_UpdateUser(props) {
     const { deDondeVengo} = props.location.state;
 
  
-    const usuario = JSON.parse(localStorage.getItem('user'));
+    const usuario = usuarioService.usuarioValue;
     const {  registerUsuario , updateUsuario } = props;
 
   

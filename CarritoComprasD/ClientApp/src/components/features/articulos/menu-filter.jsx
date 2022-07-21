@@ -15,7 +15,7 @@ import {
   
 
 import {  makeStyles } from '@mui/styles';
-import {alertService} from '@services';
+import {alertService,usuarioService} from '@services';
 
 
 //estilos personalizados del componente
@@ -40,22 +40,29 @@ const useStyles = makeStyles({
 
 
 
-
 function MenuFilter(props) {
-
-  const [familias,setFamilias] = useState([]) 
   const [marcaSeleccionadaComboBox, setMarcaSeleccionadaComboBox] = React.useState(null);
   const [familiaSeleccionadaComboBox, setFamiliaSeleccionadaComboBox] = React.useState(null);
   const [codigoArticulo, setCodigoArticulo] = useState("");
   const [descripcionArticulo, setDescripcionArticulo] = useState("");
   const [snOferta, setSnOferta] = useState(false);
 
-  const {
-    marcas,  //viene cargado desde articulo-list.jsx
-    usuario,
+  const [marcas,setMarcas] = useState([]) 
+  const [familias,setFamilias] = useState([]) 
 
-    utilidad,
-    setUtilidad,
+
+  const [stateContentMenuFilter, setStateContentMenuFilter] = useState({
+    busquedaFilter: false,
+  });
+
+  const usuario = usuarioService.usuarioValue;
+  
+
+
+
+  const {
+    prop_utilidad,
+    prop_setUtilidad,
 
     page,
     setPage,
@@ -64,37 +71,53 @@ function MenuFilter(props) {
     loadingDataGrid,
     loadDataGrid,
 
-    //actions
+    //mapStateToProps
     marcaSelectedHome,
-    removeSelectedMarca,
-    loadComboBoxFamilia
+
+    //actions
+    action_removeSelectedMarca,
+
+    action_loadComboBoxMarca,
+
+    action_loadComboBoxFamilia,
+    action_loadComboBoxFamiliaByMarca,    
   } = props
+
+
+//======================================================== TOGGLE DRAWER ==============================================
+  const toggleDrawer = (anchor, open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setStateContentMenuFilter({...stateContentMenuFilter,[anchor]: open });
+  };
+
 
 //======================================================== USE EFECTS ================================================
   
   async function loadComponentAsync_1() {
-
-    //si viene una marca cargada desde Home , la seteo en el combo
-    if(marcaSelectedHome) {
-
-      //marcaSelectedHome.label -> texto que hay en tabla (marca) columna (pathImg) , 
-      //marcaSelectedHome.campo -> de que campo de tabla (marca) sale el texto? de pathImg
-      const _marcaSeleccionadaComboBox = {
-        label: marcaSelectedHome.label,
-        campo: marcaSelectedHome.campo
+    if(marcaSelectedHome) { //si viene una marca cargada desde Home , la seteo en el combo
+      const marcaSeleccionadaComboBox = {
+        descripcionMarca: marcaSelectedHome.descripcionMarca,
+        list_IdTablaMarca: marcaSelectedHome.list_IdTablaMarca
       }
 
       //seteo el valor de la marca que viene desde Home
-      setMarcaSeleccionadaComboBox(_marcaSeleccionadaComboBox); 
+      setMarcaSeleccionadaComboBox(marcaSeleccionadaComboBox); 
       
       //llamo a la funcion para cargar el combo familia
-      _loadComboBoxFamilia(_marcaSeleccionadaComboBox);
+      await loadComboBoxFamiliaByMarca(marcaSeleccionadaComboBox);
 
       //cargo el dataGrid , llamando a la siguiente funcion
       //1 parametro -> marca que viene desde Home
       //2 parametro -> valor que sirve para setear dentro de la funcion  "setPage"
       //3 parametro -> valor que sirve para indicar que NO accedo a la funcion desde contentMenuFilter
-      await handleClickLoadDataGrid(_marcaSeleccionadaComboBox,0,0);
+      await handleClickLoadDataGrid(marcaSeleccionadaComboBox,0,0);
+    }
+    else {
+      await loadComboBoxMarca();
+      await loadComboBoxFamilia();
     }
   }
 
@@ -104,6 +127,10 @@ function MenuFilter(props) {
 
 
   async function loadComponentAsync_2(page) {
+    //cargo el dataGrid , llamando a la siguiente funcion
+    //1 parametro -> marca que viene desde Home (si entro por aca seria NULL)
+    //2 parametro -> valor que sirve para setear dentro de la funcion  "setPage"
+    //3 parametro -> valor que sirve para indicar que NO accedo a la funcion desde contentMenuFilter
     await handleClickLoadDataGrid(marcaSeleccionadaComboBox,page,0); 
   }
 
@@ -117,32 +144,55 @@ function MenuFilter(props) {
 
 //====================================================  COMBOBOX MARCA  =========================================================    
   async function onChangeComboBoxMarca(event,newValue){
-
+    
     //si newValue no tiene valor , y hay una marca que viene desde Home , remuevo la marca que viene desde Home
     if(newValue === "" && marcaSelectedHome) {
-        await removeSelectedMarca();
+        await action_removeSelectedMarca();
     }
-    await setMarcaSeleccionadaComboBox(newValue); //newValue contiene label y  campo
+    await setMarcaSeleccionadaComboBox(newValue); //newValue contiene [DescripcionMarca -  List<int> List_IdTablaMarca]
     await setFamiliaSeleccionadaComboBox(null);  //cada vez que se modifica el combo marca , se modifica tmb el combo familia
-    await _loadComboBoxFamilia(newValue); //llamo a la funcion para cargar el combo familia
+    
+    if(newValue === null) {
+      await loadComboBoxFamilia();
+    } else {
+      await loadComboBoxFamiliaByMarca(newValue); //llamo a la funcion para cargar el combo familia con filtro
+    }
+  }
+
+
+
+  //cargo el combo marca
+  async function loadComboBoxMarca() {
+    await action_loadComboBoxMarca()
+    .then(m => {  
+        setMarcas(m);            
+    });
   }
 
 //====================================================  COMBOBOX FAMILIA  =========================================================      
-  async function _loadComboBoxFamilia(marca) {
+  async function onChangeComboBoxFamilia(event,newValue){
+    await setFamiliaSeleccionadaComboBox(newValue); //newValue contiene [DescripcionFamilia - IdTablaFamilia]
+  }
 
+  async function loadComboBoxFamiliaByMarca(marca) {
     if(marca) {  //si marca tiene algo escrito ... voy a buscar las familias de esa marca
-      await loadComboBoxFamilia(marca)
-      .then(familias => {
-        setFamilias(familias)
+      await action_loadComboBoxFamiliaByMarca(marca) //esta funcion viene de actionCreators
+      .then(f => {
+        setFamilias(f)
+        if(f.length === 1) {
+          var newObj = Object.assign({}, ...f ) //convierto array en objeto
+          setFamiliaSeleccionadaComboBox(newObj); //newObj contiene [DescripcionMarca -  List<int> List_IdTablaMarca]
+        }
       })
-    }
-    else {  //si no tiene nada escrito , limpio el combo familias
-      setFamilias([]);
     }
   } 
 
-  async function onChangeComboBoxFamilia(event,newValue){
-    await setFamiliaSeleccionadaComboBox(newValue); //newValue contiene label  , campo
+  //cargo el combo familia
+  async function loadComboBoxFamilia() {
+    await action_loadComboBoxFamilia()
+    .then(f => {  
+        setFamilias(f);            
+    });
   }
 //======================================================== CODIGO ARTICULO ================================================
   function handleChangeCodigoArticulo (e) {
@@ -154,55 +204,64 @@ function MenuFilter(props) {
   }
 //======================================================== UTILIDAD ================================================
   function handleChange_Utilidad(e) {
-    let _utilidad = e.target.value;
+    let utilidad = e.target.value;
 
-    if (!Number(_utilidad)) { //si no es numerico sale
+    if (!Number(utilidad)) { //si no es numerico sale
         return;
     }
 
-    if(parseInt(_utilidad) > parseInt(100)) { //si supero el maximo , sale
+    if(parseInt(utilidad) > parseInt(100)) { //si supero el maximo , sale
         return;
     }
 
-    if(parseInt(_utilidad) < parseInt(1)) { //si supero el maximo , sale
-        _utilidad = 20;
-    }       
-    setUtilidad(_utilidad);
+    if(parseInt(utilidad) < parseInt(1)) { //si supero el maximo , sale
+        utilidad = 20;
+    }  
+
+    prop_setUtilidad(utilidad);
   }
 
 //======================================================== OFERTA ================================================
   function handleChange_Oferta(event) { 
-    let _snOferta = event.target.checked;
-    setSnOferta(_snOferta);
+    let snOferta = event.target.checked;
+    setSnOferta(snOferta);
   }
-//====================================================  MENU FILTERS  =========================================================    
+
+//====================================================  LOAD DATA IN DATAGRID  =========================================================    
   
-  async function handleClickLoadDataGrid(_marcaSeleccionadaComboBox,_page,_accedoDesde_contentMenuFilter) {
-    setPage(_page);  //seteo en setPage , el valor de _page
+  async function handleClickLoadDataGrid(marcaSeleccionadaComboBox,page,accedoDesde_contentMenuFilter) {
+    setPage(page);  //seteo en setPage , el valor de page
 
     //si alguno de estos tiene valor , cargo el dataGrid
-    if(_marcaSeleccionadaComboBox || familiaSeleccionadaComboBox || codigoArticulo || descripcionArticulo || snOferta) {
-      await loadDataGrid(_page,filasPerPage,_marcaSeleccionadaComboBox,familiaSeleccionadaComboBox,codigoArticulo,descripcionArticulo,utilidad,snOferta)
+    if(marcaSeleccionadaComboBox || familiaSeleccionadaComboBox || codigoArticulo || descripcionArticulo || snOferta) {
+      await loadDataGrid( 
+                          page,
+                          filasPerPage,
+                          marcaSeleccionadaComboBox,
+                          familiaSeleccionadaComboBox,
+                          codigoArticulo,
+                          descripcionArticulo,
+                          prop_utilidad,
+                          snOferta
+                        )
     }
     else { //si ninguno tiene valor , y accedo a la funcion desde contentMenuFilter , muestro mensaje 
-      if(_accedoDesde_contentMenuFilter === 1) {
+      if(accedoDesde_contentMenuFilter === 1) {
         alertService.error("Seleccione un filtro");
       }
     }
   }
 
-  const [stateContentMenuFilter, setStateContentMenuFilter] = useState({
-    busquedaFilter: false,
-  });
-
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
-
-    setStateContentMenuFilter({...stateContentMenuFilter,[anchor]: open });
-  };
-
+//====================================================  CLEAN UP DATA IN MENU-FILTER  =========================================================    
+  
+  async function handleClickCleanUpAllMenuFilter() {
+    setMarcaSeleccionadaComboBox(null);
+    setFamiliaSeleccionadaComboBox(null);
+    setCodigoArticulo("");
+    setDescripcionArticulo("");
+    setSnOferta(false)
+  }
+  
 
  
   const contentMenuFilter = (anchor) => (
@@ -217,7 +276,8 @@ function MenuFilter(props) {
                 <Autocomplete
                   options={marcas}
                   value={marcaSeleccionadaComboBox}
-                  isOptionEqualToValue={(option, value) =>  option.label === value.label } //label -> texto que hay en tabla (marca) columna (pathImg o txtDescMarca)
+                  getOptionLabel={(option) => option.descripcionMarca || ""}
+                  isOptionEqualToValue={(option, value) =>  option.descripcionMarca === value.descripcionMarca }
                   noOptionsText= {"Sin Resultados"}
                   ListboxProps={{
                     sx: { fontSize: '1.4rem' },
@@ -242,8 +302,10 @@ function MenuFilter(props) {
 
                 {/********* Autocomplete FAMILIA *********/}  
                 <Autocomplete
-                  options={familias ? familias : null}
+                  options={familias}
                   value={familiaSeleccionadaComboBox}
+                  getOptionLabel={(option) => option.descripcionFamilia || ""}
+                  isOptionEqualToValue={(option, value) =>  option.descripcionFamilia === value.descripcionFamilia }
                   noOptionsText= {"Sin Resultados"}
                   ListboxProps={{
                     sx: { fontSize: '1.4rem' },
@@ -316,7 +378,7 @@ function MenuFilter(props) {
                         id="outlined-utilidad"
                         label= "Utilidad"
                         placeholder="Utilidad"
-                        value =  {utilidad}
+                        value =  {prop_utilidad}
                         type='number'
                         variant="filled"
                         onChange={(e) => {handleChange_Utilidad(e)}}
@@ -359,6 +421,16 @@ function MenuFilter(props) {
                       Buscar
                   </button>
                 </div>
+
+                 {/********* button LIMPIAR *********/}  
+                 <div className={classes.button}>
+                    <button 
+                      className="btn btn-warning"             
+                      onClick={() => handleClickCleanUpAllMenuFilter()}
+                    >
+                      Limpiar
+                  </button>
+                </div>
                 
                 {/********* button CLOSE *********/}  
                 <div className={classes.button}>
@@ -370,7 +442,12 @@ function MenuFilter(props) {
                         Cerrar
                   </button>
                 </div>
+
+                 
+
               </div>
+
+             
           </ListItem>
         </List>
                    
@@ -425,8 +502,10 @@ const mapStateToProps = (state) => {
   
   
 const actionCreators = {
-      removeSelectedMarca: marcaActions.removeSelectedMarca,
-      loadComboBoxFamilia: familiaActions.loadComboBoxFamilia
+      action_removeSelectedMarca: marcaActions.removeSelectedMarca,
+      action_loadComboBoxFamilia: familiaActions.loadComboBoxFamilia,
+      action_loadComboBoxMarca: marcaActions.loadComboBoxMarca,
+      action_loadComboBoxFamiliaByMarca: familiaActions.loadComboBoxFamiliaByMarca
 }
     
 export default connect(mapStateToProps, actionCreators)(MenuFilter);

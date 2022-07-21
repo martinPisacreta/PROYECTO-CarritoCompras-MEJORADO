@@ -1,3 +1,5 @@
+using CarritoComprasD.Models.Familia;
+using CarritoComprasD.Models.Marca;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,9 +15,9 @@ namespace CarritoComprasD.Models.Articulo
         public int Take { get; set; }
 
        
-        public string DescripcionMarca { get; set; }
+        public ComboBoxMarca ComboBoxMarca { get; set; }
 
-        public string DescripcionFamilia { get; set; }
+        public ComboBoxFamilia ComboBoxFamilia { get; set; }
 
       
         public string CodigoArticulo { get; set; }

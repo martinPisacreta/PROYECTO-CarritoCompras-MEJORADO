@@ -54,9 +54,11 @@ namespace CarritoComprasD.Services
             ArticuloResponse articuloResponse = new ArticuloResponse();
             int oferta = (model.Oferta == true ? -1 : 0);
 
+            //divido "model.DescripcionArticulo" cuando aparece un espacio y genero una lista en base a eso
             string descripcionArticulo = model.DescripcionArticulo;
             var descripcionArticulo_separado = descripcionArticulo.Split(' ').ToList();
 
+            //divido "model.CodigoArticulo" cuando aparece un espacio y genero una lista en base a eso
             string codigoArticulo = model.CodigoArticulo;
             var codigoArticulo_separado = codigoArticulo.Split(' ').ToList();
 
@@ -67,13 +69,15 @@ namespace CarritoComprasD.Services
             try
             {
 
-
+                //voy a buscar todos los datos de la vista VArticulo (esta vista ya me trae los articulos ACTIVOS)
+                //uso AsNoTracking para -> que Entity Framework no realice ningún procesamiento o almacenamiento adicional de las entidades que devuelve la consulta
                 articuloResponse.Articulos = await _context.VArticulo.AsNoTracking().ToListAsync();
 
+                //filtro
                 articuloResponse.Articulos = articuloResponse.Articulos
                                                  .Where(a =>
-                                                                ((model.DescripcionMarca != "" && a.MarcaArticulo == model.DescripcionMarca) || (model.DescripcionMarca == ""))
-                                                                && ((model.DescripcionFamilia != "" && a.FamiliaArticulo == model.DescripcionFamilia) || (model.DescripcionFamilia == ""))
+                                                                ((model.ComboBoxMarca != null && model.ComboBoxMarca.List_IdTablaMarca.Contains(a.IdTablaMarca)) || (model.ComboBoxMarca == null))
+                                                                && ((model.ComboBoxFamilia != null && a.IdTablaFamilia == model.ComboBoxFamilia.IdTablaFamilia) || (model.ComboBoxFamilia == null))
                                                                 && ((codigoArticulo != "" && codigoArticulo_separado.All(p => a.CodigoArticulo.ToUpper().Contains(p.ToUpper()))) || codigoArticulo == "")
                                                                 && ((descripcionArticulo != "" &&  descripcionArticulo_separado.All(p => a.DescripcionArticulo.ToUpper().Contains(p.ToUpper()))) || descripcionArticulo == "")
                                                                 && ((oferta == -1 && a.SnOferta == oferta) || oferta == 0)
@@ -95,6 +99,10 @@ namespace CarritoComprasD.Services
                                                       Coeficiente = a.Coeficiente
                                                         
                                                  })
+                                                 .OrderBy(a => a.MarcaArticulo)
+                                                 .ThenBy(a => a.CodigoArticulo)
+                                                 .ThenBy(a => a.DescripcionArticulo)
+                                                 .ThenBy(a => a.FamiliaArticulo)
                                                  .ToList();
 
 

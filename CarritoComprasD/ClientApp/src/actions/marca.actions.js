@@ -31,8 +31,8 @@ function getAllWithPathImgAndActive() {
         
     };
 
-    function request() { return { type: marcaConstantes.GET_BY_FILTERS_REQUEST } }
-    function success(marcas) { return { type: marcaConstantes.GET_BY_FILTERS_SUCCESS, marcas } }
+    function request() { return { type: marcaConstantes.GET_ALL_WITH_PATH_IMG_AND_ACTIVE_REQUEST } }
+    function success(marcas) { return { type: marcaConstantes.GET_ALL_WITH_PATH_IMG_AND_ACTIVE_SUCCESS, marcas } }
 
 }
 
@@ -57,8 +57,8 @@ function loadComboBoxMarca() {
         
     };
 
-    function request() { return { type: marcaConstantes.GET_BY_FILTERS_REQUEST } }
-    function success(marcas) { return { type: marcaConstantes.GET_BY_FILTERS_SUCCESS, marcas } }
+    function request() { return { type: marcaConstantes.GET_ALL_WITH_PATH_IMG_AND_ACTIVE_REQUEST } }
+    function success(marcas) { return { type: marcaConstantes.GET_ALL_WITH_PATH_IMG_AND_ACTIVE_SUCCESS, marcas } }
 
 }
 
